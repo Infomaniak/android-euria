@@ -1,0 +1,18 @@
+[versions]
+androidGradlePlugin = "8.13.0"
+compose = "1.9.3"
+kotlin = "2.2.0"
+ksp = "2.2.0-2.0.2"
+navigation = "2.9.5"
+
+[libraries]
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "compose" }
+compose-ui-android = { module = "androidx.compose.ui:ui-android", version.ref = "compose" }
+navigation-safeargs = { module = "androidx.navigation:navigation-safe-args-gradle-plugin", version.ref = "navigation" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin" }

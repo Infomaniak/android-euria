@@ -1,0 +1,99 @@
+plugins {
+    alias(libs.plugins.android.application) // This line should be 1st, or you'll have Gradle sync issue
+    alias(core.plugins.compose.compiler)
+    alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.jetbrains.kotlin.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.navigation.safeargs)
+}
+
+val appCompileSdk: Int by rootProject.extra
+val appTargetSdk: Int by rootProject.extra
+val appMinSdk: Int by rootProject.extra
+val javaVersion: JavaVersion by rootProject.extra
+
+android {
+
+    namespace = "com.infomaniak.euria"
+
+    compileSdk = appCompileSdk
+
+    defaultConfig {
+        applicationId = "com.infomaniak.euria"
+        minSdk = appMinSdk
+        targetSdk = appTargetSdk
+        versionCode = 1
+        versionName = "0.0.1"
+
+        buildConfigField("String", "CLIENT_ID", "\"10476B29-7B98-4D42-B06B-2B7AB0F06FDE\"") // Drive Client ID
+        buildConfigField("String", "EURIA_URL", "\"https://euria.infomaniak.com/\"")
+    }
+
+    compileOptions {
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
+    }
+
+    kotlin {
+        jvmToolchain(javaVersion.toString().toInt())
+    }
+
+    val debugSigningConfig = signingConfigs.getByName("debug") {
+        storeFile = rootProject.file("debug.keystore")
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+
+        debug {
+            signingConfig = debugSigningConfig
+        }
+    }
+
+    flavorDimensions += "distribution"
+
+    buildFeatures {
+        viewBinding = true
+        buildConfig = true
+        compose = true
+    }
+
+    productFlavors {
+        create("standard") {
+            dimension = "distribution"
+            isDefault = true
+        }
+        create("fdroid") {
+            dimension = "distribution"
+        }
+    }
+}
+
+dependencies {
+    implementation(project(":Core"))
+    implementation(project(":Core:Auth"))
+    implementation(project(":Core:Compose:Basics"))
+    implementation(project(":Core:Compose:Margin"))
+    implementation(project(":Core:CrossAppLogin:Back"))
+    implementation(project(":Core:CrossAppLogin:Front"))
+    implementation(project(":Core:FragmentNavigation"))
+    implementation(project(":Core:Legacy"))
+    implementation(project(":Core:Network"))
+    implementation(project(":Core:Network:Models"))
+    implementation(project(":Core:Onboarding"))
+    implementation(project(":Core:WebView"))
+
+    // Compose
+    implementation(platform(core.compose.bom))
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.compose.ui.android)
+    implementation(core.compose.runtime)
+    implementation(core.compose.material3)
+    implementation(core.compose.ui.tooling.preview)
+}
