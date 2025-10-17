@@ -17,6 +17,6 @@
   -->
 
 <resources>
-    <color name="startGradient">#121318</color>
-    <color name="endGradient">#FF24405b</color>
+    <color name="startGradient">#FF24405b</color>
+    <color name="endGradient">#121318</color>
 </resources>
