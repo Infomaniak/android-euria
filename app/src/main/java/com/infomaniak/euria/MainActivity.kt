@@ -112,17 +112,26 @@ class MainActivity : ComponentActivity() {
 
                 EuriaTheme {
                     Surface {
-                        OnboardingScreen(
-                            accounts = { accounts },
-                            skippedIds = { skippedIds },
-                            isLoginButtonLoading = { loginRequest.isAwaitingCall.not() || isLoginButtonLoading },
-                            isSignUpButtonLoading = { isSignUpButtonLoading },
-                            onLoginRequest = { accounts -> loginRequest(accounts) },
-                            onCreateAccount = { openAccountCreationWebView() },
-                            onSaveSkippedAccounts = {
-                                crossAppLoginViewModel.skippedAccountIds.value = it
-                            },
-                        )
+                        if (token == null) {
+                            OnboardingScreen(
+                                accounts = { accounts },
+                                skippedIds = { skippedIds },
+                                isLoginButtonLoading = { loginRequest.isAwaitingCall.not() || isLoginButtonLoading },
+                                isSignUpButtonLoading = { isSignUpButtonLoading },
+                                onLoginRequest = { accounts -> loginRequest(accounts) },
+                                onCreateAccount = { openAccountCreationWebView() },
+                                onSaveSkippedAccounts = {
+                                    crossAppLoginViewModel.skippedAccountIds.value = it
+                                },
+                            )
+                        } else {
+                            WebView(
+                                url = EURIA_MAIN_URL,
+                                headersString = Json.encodeToString(mapOf("Authorization" to "Bearer $token")),
+                                onUrlToQuitReached = {},
+                                urlToQuit = "",
+                            )
+                        }
                     }
                 }
             }
