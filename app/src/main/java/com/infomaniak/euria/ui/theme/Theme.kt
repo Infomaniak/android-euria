@@ -1,3 +1,21 @@
+/*
+ * Infomaniak Euria - Android
+ * Copyright (C) 2025 Infomaniak Network SA
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.infomaniak.euria.ui.theme
 
 import android.app.Activity
@@ -13,8 +31,11 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
@@ -23,6 +44,9 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import com.google.android.material.color.ColorContrast.isContrastAvailable
 import com.infomaniak.core.compose.basics.bottomsheet.ProvideBottomSheetTheme
+
+val LocalCustomColorScheme: ProvidableCompositionLocal<CustomColorScheme> =
+    staticCompositionLocalOf { CustomColorScheme() }
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -253,20 +277,10 @@ private val highContrastDarkColorScheme = darkColorScheme(
 )
 
 @Immutable
-data class ColorFamily(
-    val color: Color,
-    val onColor: Color,
-    val colorContainer: Color,
-    val onColorContainer: Color
+data class CustomColorScheme(
+    val primaryTextColor: Color = Color.Unspecified,
+    val secondaryTextColor: Color = Color.Unspecified,
 )
-
-val unspecified_scheme = ColorFamily(
-    Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified
-)
-
-fun isContrastAvailable(): Boolean {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-}
 
 @Composable
 fun selectSchemeForContrast(isDark: Boolean): ColorScheme {
@@ -293,37 +307,47 @@ fun selectSchemeForContrast(isDark: Boolean): ColorScheme {
     } else return colorScheme
 }
 
+object EuriaTheme {
+    val colors: CustomColorScheme
+        @Composable
+        get() = LocalCustomColorScheme.current
+}
+
 @Composable
 fun EuriaTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    isDarkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
-    content:
-    @Composable()
-        () -> Unit,
+    content: @Composable() () -> Unit,
 ) {
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            if (isDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        else -> selectSchemeForContrast(darkTheme)
+        else -> selectSchemeForContrast(isDarkTheme)
     }
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = isDarkTheme
         }
     }
 
-    ProvideBottomSheetTheme {
-        MaterialTheme(
-            colorScheme = colorScheme,
-            typography = AppTypography,
-            shapes = shapes,
-            content = content,
-        )
+    val customColors = if (isDarkTheme) CustomDarkColorScheme else CustomLightColorScheme
+
+    CompositionLocalProvider(
+        LocalCustomColorScheme provides customColors
+    ) {
+        ProvideBottomSheetTheme {
+            MaterialTheme(
+                colorScheme = colorScheme,
+                typography = AppTypography,
+                shapes = shapes,
+                content = content,
+            )
+        }
     }
 }

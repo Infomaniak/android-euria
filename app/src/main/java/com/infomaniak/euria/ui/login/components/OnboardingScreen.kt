@@ -1,3 +1,21 @@
+/*
+ * Infomaniak Euria - Android
+ * Copyright (C) 2025 Infomaniak Network SA
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.infomaniak.euria.ui.login.components
 
 import androidx.annotation.DrawableRes
@@ -10,12 +28,16 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.infomaniak.core.compose.basics.Typography
 import com.infomaniak.core.crossapplogin.back.BaseCrossAppLoginViewModel.Companion.filterSelectedAccounts
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
@@ -24,9 +46,9 @@ import com.infomaniak.core.onboarding.OnboardingPage
 import com.infomaniak.core.onboarding.OnboardingScaffold
 import com.infomaniak.core.onboarding.components.OnboardingComponents
 import com.infomaniak.core.onboarding.components.OnboardingComponents.DefaultBackground
-import com.infomaniak.core.onboarding.components.OnboardingComponents.DefaultLottieIllustration
 import com.infomaniak.core.onboarding.components.OnboardingComponents.DefaultTitleAndDescription
 import com.infomaniak.euria.R
+import com.infomaniak.euria.ui.theme.EuriaTheme
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,8 +68,7 @@ fun OnboardingScreen(
         pagerState = pagerState,
         onboardingPages = Page.entries.mapIndexed { index, page ->
             page.toOnboardingPage(
-                pagerState,
-                index
+                pagerState, index
             )
         },
         bottomContent = { paddingValues ->
@@ -60,8 +81,8 @@ fun OnboardingScreen(
                 skippedIds = skippedIds,
                 isLoginButtonLoading = isLoginButtonLoading,
                 isSignUpButtonLoading = isSignUpButtonLoading,
-                titleColor = colorResource(android.R.color.black),
-                descriptionColor = colorResource(android.R.color.darker_gray),
+                titleColor = EuriaTheme.colors.primaryTextColor,
+                descriptionColor = EuriaTheme.colors.secondaryTextColor,
                 onLogin = { onLoginRequest(emptyList()) },
                 onContinueWithSelectedAccounts = {
                     onLoginRequest(
@@ -80,35 +101,34 @@ fun OnboardingScreen(
 
 @Composable
 private fun Page.toOnboardingPage(pagerState: PagerState, index: Int): OnboardingPage =
-    OnboardingPage(
-        background = {
-            DefaultBackground(
-                ImageVector.vectorResource(backgroundRes),
-                modifier = Modifier.padding(bottom = 300.dp)
+    OnboardingPage(background = {
+        DefaultBackground(
+            ImageVector.vectorResource(backgroundRes),
+            modifier = Modifier.padding(bottom = 300.dp)
+        )
+    }, illustration = {
+        val composition by rememberLottieComposition(
+            LottieCompositionSpec.RawRes(
+                illustrationRes
             )
-        },
-        illustration = {
-            DefaultLottieIllustration(
-                lottieRawRes = illustrationRes,
-                isCurrentPageVisible = { pagerState.currentPage == index },
-                // Height of the biggest of the three illustrations. Because all animations don't have the same height, we need to
-                // force them to have the same height so the content of every page is correctly aligned
-                modifier = Modifier.height(270.dp)
-            )
-        },
-        text = {
-            DefaultTitleAndDescription(
-                title = stringResource(titleRes),
-                description = stringResource(descriptionRes),
-                titleStyle = com.infomaniak.core.compose.basics.Typography.h2.copy(
-                    color = colorResource(
-                        android.R.color.black
-                    )
-                ),
-                descriptionStyle = Typography.bodyRegular.copy(color = colorResource(android.R.color.darker_gray)),
-            )
-        }
-    )
+        )
+
+        LottieAnimation(
+            composition,
+            restartOnPlay = true,
+            reverseOnRepeat = true,
+            iterations = LottieConstants.IterateForever,
+            isPlaying = pagerState.currentPage == index,
+            modifier = Modifier.height(150.dp)
+        )
+    }, text = {
+        DefaultTitleAndDescription(
+            title = stringResource(titleRes),
+            description = stringResource(descriptionRes),
+            titleStyle = Typography.h2.copy(color = EuriaTheme.colors.primaryTextColor),
+            descriptionStyle = Typography.bodyRegular.copy(color = EuriaTheme.colors.secondaryTextColor),
+        )
+    })
 
 private enum class Page(
     @DrawableRes val backgroundRes: Int,
@@ -116,10 +136,22 @@ private enum class Page(
     @StringRes val titleRes: Int,
     @StringRes val descriptionRes: Int,
 ) {
-    AccessFiles(
-        backgroundRes = R.drawable.ic_launcher_background,
-        illustrationRes = android.R.drawable.star_on,
-        titleRes = R.string.app_name,
-        descriptionRes = R.string.app_name,
+    WhoIsEuria(
+        backgroundRes = R.drawable.vertical_gradient,
+        illustrationRes = R.raw.euria,
+        titleRes = R.string.onboardingFirstPageTitle,
+        descriptionRes = R.string.onboardingFirstPageDescription,
+    ),
+    OurValues(
+        backgroundRes = R.drawable.vertical_gradient,
+        illustrationRes = R.raw.euria,
+        titleRes = R.string.onboardingSecondPageTitle,
+        descriptionRes = R.string.onboardingSecondPageDescription,
+    ),
+    BuiltIntoInfomaniakTools(
+        backgroundRes = R.drawable.vertical_gradient,
+        illustrationRes = R.raw.euria,
+        titleRes = R.string.onboardingThirdPageTitle,
+        descriptionRes = R.string.onboardingThirdPageDescription,
     ),
 }
