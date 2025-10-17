@@ -21,11 +21,7 @@ package com.infomaniak.euria
 import android.content.Context
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
-import android.util.Log
-import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -49,20 +45,14 @@ import com.infomaniak.core.legacy.utils.SnackbarUtils.showSnackbar
 import com.infomaniak.core.network.ApiEnvironment
 import com.infomaniak.core.network.LOGIN_ENDPOINT_URL
 import com.infomaniak.core.network.NetworkConfiguration
-import com.infomaniak.core.webview.ui.components.WebView
 import com.infomaniak.euria.ui.login.CrossAppLoginViewModel
 import com.infomaniak.euria.ui.login.components.OnboardingScreen
 import com.infomaniak.euria.ui.theme.EuriaTheme
 import com.infomaniak.lib.login.InfomaniakLogin
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
 import splitties.coroutines.repeatWhileActive
 import splitties.experimental.ExperimentalSplittiesApi
-import java.io.InputStream
 
 @OptIn(ExperimentalSplittiesApi::class)
 class MainActivity : ComponentActivity() {
@@ -75,8 +65,6 @@ class MainActivity : ComponentActivity() {
 
     private val loginRequest = CallableState<List<ExternalAccount>>()
     private val infomaniakLogin: InfomaniakLogin by lazy { getInfomaniakLogin() }
-
-    private val client by lazy { OkHttpClient() }
 
     private val webViewLoginResultLauncher =
         registerForActivityResult(StartActivityForResult()) { result ->
@@ -132,21 +120,22 @@ class MainActivity : ComponentActivity() {
 
                 EuriaTheme {
                     Surface {
-                            OnboardingScreen(
-                                accounts = { accounts },
-                                skippedIds = { skippedIds },
-                                isLoginButtonLoading = { loginRequest.isAwaitingCall.not() || isLoginButtonLoading },
-                                isSignUpButtonLoading = { isSignUpButtonLoading },
-                                onLoginRequest = { accounts -> loginRequest(accounts) },
-                                onCreateAccount = { /*openAccountCreationWebView()*/ },
-                                onSaveSkippedAccounts = {
-                                    crossAppLoginViewModel.skippedAccountIds.value = it
-                                },
-                            )
+                        OnboardingScreen(
+                            accounts = { accounts },
+                            skippedIds = { skippedIds },
+                            isLoginButtonLoading = { loginRequest.isAwaitingCall.not() || isLoginButtonLoading },
+                            isSignUpButtonLoading = { isSignUpButtonLoading },
+                            onLoginRequest = { accounts -> loginRequest(accounts) },
+                            onCreateAccount = { openAccountCreationWebView() },
+                            onSaveSkippedAccounts = {
+                                crossAppLoginViewModel.skippedAccountIds.value = it
+                            },
+                        )
+                    }
                 }
             }
+            initCrossLogin()
         }
-        initCrossLogin()
     }
 
     fun Context.getInfomaniakLogin() = InfomaniakLogin(
@@ -226,12 +215,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun startAccountCreation() {
-        /*infomaniakLogin.startCreateAccountWebView(
+        infomaniakLogin.startCreateAccountWebView(
             resultLauncher = createAccountResultLauncher,
             createAccountUrl = CREATE_ACCOUNT_URL,
             successHost = CREATE_ACCOUNT_SUCCESS_HOST,
             cancelHost = CREATE_ACCOUNT_CANCEL_HOST,
-        )*/
+        )
     }
 
     private fun ActivityResult.handleCreateAccountActivityResult() {
@@ -253,7 +242,10 @@ class MainActivity : ComponentActivity() {
     companion object {
         const val TAG = "MainActivity"
 
-        fun getLoginErrorDescription(context: Context, error: InfomaniakLogin.ErrorStatus): String {
+        fun getLoginErrorDescription(
+            context: Context,
+            error: InfomaniakLogin.ErrorStatus
+        ): String {
             return context.getString(
                 when (error) {
                     InfomaniakLogin.ErrorStatus.SERVER -> R.string.serverError
