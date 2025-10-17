@@ -1,0 +1,37 @@
+name: Android CI
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  instrumentation-tests:
+    if: github.event.pull_request.draft == false
+    runs-on: [ self-hosted, Android ]
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v5.0.0
+        with:
+          token: ${{ github.token }}
+          submodules: recursive
+
+      - name: Create test env
+        run: touch uitest-env.properties
+
+      # Setup Gradle and run Build
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Clean gradle cache
+        run: ./gradlew clean
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      # Run tests
+      - name: Run Unit tests
+        run: ./gradlew testDebugUnitTest --stacktrace
