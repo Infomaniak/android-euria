@@ -22,8 +22,8 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.RawRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -119,8 +120,9 @@ private fun Page.toOnboardingPage(pagerState: PagerState, index: Int): Onboardin
             reverseOnRepeat = true,
             iterations = LottieConstants.IterateForever,
             isPlaying = pagerState.currentPage == index,
-            modifier = Modifier.height(150.dp)
+            modifier = if (illustrationSize != null) Modifier.width(illustrationSize) else Modifier
         )
+
     }, text = {
         DefaultTitleAndDescription(
             title = stringResource(titleRes),
@@ -133,24 +135,26 @@ private fun Page.toOnboardingPage(pagerState: PagerState, index: Int): Onboardin
 private enum class Page(
     @DrawableRes val backgroundRes: Int,
     @RawRes val illustrationRes: Int,
+    val illustrationSize: Dp? = null,
     @StringRes val titleRes: Int,
     @StringRes val descriptionRes: Int,
 ) {
     WhoIsEuria(
         backgroundRes = R.drawable.vertical_gradient,
         illustrationRes = R.raw.euria,
+        illustrationSize = 150.dp,
         titleRes = R.string.onboardingFirstPageTitle,
         descriptionRes = R.string.onboardingFirstPageDescription,
     ),
     OurValues(
         backgroundRes = R.drawable.vertical_gradient,
-        illustrationRes = R.raw.euria,
+        illustrationRes = R.raw.data_protection,
         titleRes = R.string.onboardingSecondPageTitle,
         descriptionRes = R.string.onboardingSecondPageDescription,
     ),
     BuiltIntoInfomaniakTools(
         backgroundRes = R.drawable.vertical_gradient,
-        illustrationRes = R.raw.euria,
+        illustrationRes = R.raw.tools,
         titleRes = R.string.onboardingThirdPageTitle,
         descriptionRes = R.string.onboardingThirdPageDescription,
     ),
