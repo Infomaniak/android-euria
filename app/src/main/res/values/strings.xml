@@ -1,0 +1,32 @@
+<!--
+  ~ Infomaniak Euria - Android
+  ~ Copyright (C) 2025 Infomaniak Network SA
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="app_name" translatable="false">Euria</string>
+
+    <string name="onboardingFirstPageTitle">Who is Euria?</string>
+    <string name="onboardingFirstPageDescription">Euria is an ethical, responsible AI, 100% hosted in Switzerland and developed by Infomaniak using open-source models. It stores no data and runs on locally sourced renewable energy.</string>
+    <string name="onboardingSecondPageTitle">Our Values</string>
+    <string name="onboardingSecondPageDescription">Euria stands for Ethics, Universality, Responsibility, Independence, and Autonomy. It protects your privacy, supports the local economy, and never compromises on ecological or technological integrity.</string>
+    <string name="onboardingThirdPageTitle">Built into your Infomaniak tools</string>
+    <string name="onboardingThirdPageDescription">Euria powers kChat, kMail, and kDrive to assist you daily — with no data collection, no surveillance, and full transparency. Your AI, in Switzerland, for you.</string>
+
+    <string name="anErrorHasOccurred">An error has occurred</string>
+    <string name="serverError">Server Error</string>
+    <string name="connectionError">Internet connection problem</string>
+</resources>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Infomaniak Euria - Android
+  ~ Copyright (C) 2025 Infomaniak Network SA
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <group>
+        <clip-path android:pathData="M0,0 L100,0 L100,100 L0,100 Z" />
+        <path android:pathData="M0,0 L100,0 L100,100 L0,100 Z">
+            <aapt:attr xmlns:aapt="http://schemas.android.com/aapt"
+                name="android:fillColor">
+                <gradient
+                    android:endX="0"
+                    android:endY="0"
+                    android:startX="0"
+                    android:startY="100"
+                    android:type="linear">
+                    <item
+                        android:color="@color/endGradient"
+                        android:offset="0" />
+                    <item
+                        android:color="@color/startGradient"
+                        android:offset="1" />
+                </gradient>
+            </aapt:attr>
+        </path>
+    </group>
+</vector>

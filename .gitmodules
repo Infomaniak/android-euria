@@ -1,0 +1,3 @@
+[submodule "/Users/vincent/Documents/Work/android/android-euria/Core"]
+	path = Core
+	url = git@github.com:Infomaniak/android-core.git
