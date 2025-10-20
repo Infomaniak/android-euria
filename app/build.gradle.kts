@@ -43,7 +43,7 @@ android {
         versionCode = 1
         versionName = "0.0.1"
 
-        buildConfigField("String", "CLIENT_ID", "\"10476B29-7B98-4D42-B06B-2B7AB0F06FDE\"") // Drive Client ID
+        buildConfigField("String", "CLIENT_ID", "\"10476B29-7B98-4D42-B06B-2B7AB0F06FDE\"")
         buildConfigField("String", "EURIA_URL", "\"https://euria.infomaniak.com/\"")
     }
 
@@ -101,10 +101,10 @@ dependencies {
     implementation(project(":Core:CrossAppLogin:Back"))
     implementation(project(":Core:CrossAppLogin:Front"))
     implementation(project(":Core:FragmentNavigation"))
-    implementation(project(":Core:Legacy"))
     implementation(project(":Core:Network"))
     implementation(project(":Core:Network:Models"))
     implementation(project(":Core:Onboarding"))
+    implementation(project(":Core:Sentry"))
     implementation(project(":Core:WebView"))
 
     // Compose
@@ -115,4 +115,5 @@ dependencies {
     implementation(core.compose.runtime)
     implementation(core.compose.ui.tooling.preview)
     implementation(core.lottie.compose)
+    implementation(core.material)
 }

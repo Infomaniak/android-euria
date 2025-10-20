@@ -36,15 +36,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.infomaniak.core.auth.AuthConfiguration
+import com.google.android.material.snackbar.Snackbar
 import com.infomaniak.core.compose.basics.CallableState
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
-import com.infomaniak.core.legacy.networking.HttpClient
-import com.infomaniak.core.legacy.utils.SentryLog
-import com.infomaniak.core.legacy.utils.SnackbarUtils.showSnackbar
 import com.infomaniak.core.network.ApiEnvironment
 import com.infomaniak.core.network.LOGIN_ENDPOINT_URL
 import com.infomaniak.core.network.NetworkConfiguration
+import com.infomaniak.core.network.networking.DefaultHttpClientProvider
+import com.infomaniak.core.sentry.SentryLog
 import com.infomaniak.euria.ui.login.CrossAppLoginViewModel
 import com.infomaniak.euria.ui.login.components.OnboardingScreen
 import com.infomaniak.euria.ui.theme.EuriaTheme
@@ -101,13 +100,6 @@ class MainActivity : ComponentActivity() {
             appVersionCode = BuildConfig.VERSION_CODE,
             appVersionName = BuildConfig.VERSION_NAME,
             apiEnvironment = ApiEnvironment.PreProd,
-        )
-
-        AuthConfiguration.init(
-            appId = BuildConfig.APPLICATION_ID,
-            appVersionCode = BuildConfig.VERSION_CODE,
-            appVersionName = BuildConfig.VERSION_NAME,
-            clientId = BuildConfig.CLIENT_ID,
         )
 
         enableEdgeToEdge()
@@ -178,13 +170,13 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             runCatching {
                 val tokenResult = infomaniakLogin.getToken(
-                    okHttpClient = HttpClient.okHttpClientNoTokenInterceptor,
+                    okHttpClient = DefaultHttpClientProvider.okHttpClient,
                     code = authCode,
                 )
 
                 when (tokenResult) {
                     is InfomaniakLogin.TokenResult.Success -> {
-                        token = tokenResult.apiToken.accessToken // SAVE THIS TOKEN SOMEWHERE
+                        token = tokenResult.apiToken.accessToken //TODO Save this token in SharedPreferences
                     }
 
                     is InfomaniakLogin.TokenResult.Error -> {
@@ -204,7 +196,11 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun showError(error: String) {
-        showSnackbar(error)
+        Snackbar.make(
+            window.decorView.findViewById(android.R.id.content),
+            error,
+            Snackbar.LENGTH_LONG
+        ).show()
         isLoginButtonLoading = false
         isSignUpButtonLoading = false
     }

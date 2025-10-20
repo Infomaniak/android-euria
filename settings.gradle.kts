@@ -52,8 +52,6 @@ include(
     ":Core:CrossAppLogin:Back",
     ":Core:CrossAppLogin:Front",
     ":Core:FragmentNavigation",
-    ":Core:Legacy",
-    ":Core:Legacy:Stores",
     ":Core:Matomo",
     ":Core:Network",
     ":Core:Network:Models",
