@@ -44,12 +44,17 @@ import com.infomaniak.core.network.LOGIN_ENDPOINT_URL
 import com.infomaniak.core.network.NetworkConfiguration
 import com.infomaniak.core.network.networking.DefaultHttpClientProvider
 import com.infomaniak.core.sentry.SentryLog
+import com.infomaniak.core.webview.ui.components.WebView
+import com.infomaniak.euria.data.UserSharedPref.getToken
+import com.infomaniak.euria.data.UserSharedPref.saveToken
+import com.infomaniak.euria.data.UserSharedPref.saveUserId
 import com.infomaniak.euria.ui.login.CrossAppLoginViewModel
 import com.infomaniak.euria.ui.login.components.OnboardingScreen
 import com.infomaniak.euria.ui.theme.EuriaTheme
 import com.infomaniak.lib.login.InfomaniakLogin
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import splitties.coroutines.repeatWhileActive
 import splitties.experimental.ExperimentalSplittiesApi
 
@@ -92,6 +97,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        token = this@MainActivity.getToken()
+
         WebView.setWebContentsDebuggingEnabled(true)
 
         // New modules configuration
@@ -130,6 +137,7 @@ class MainActivity : ComponentActivity() {
                                 headersString = Json.encodeToString(mapOf("Authorization" to "Bearer $token")),
                                 onUrlToQuitReached = {},
                                 urlToQuit = "",
+                                domStorageEnabled = true,
                             )
                         }
                     }
@@ -185,7 +193,11 @@ class MainActivity : ComponentActivity() {
 
                 when (tokenResult) {
                     is InfomaniakLogin.TokenResult.Success -> {
-                        token = tokenResult.apiToken.accessToken //TODO Save this token in SharedPreferences
+                        with(tokenResult.apiToken) {
+                            token = this.accessToken
+                            saveToken(this.accessToken)
+                            saveUserId(this.userId)
+                        }
                     }
 
                     is InfomaniakLogin.TokenResult.Error -> {

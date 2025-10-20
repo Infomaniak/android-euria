@@ -2,12 +2,14 @@
 androidGradlePlugin = "8.13.0"
 compose = "1.9.3"
 kotlin = "2.2.0"
+kotlinxSerializationJson = "1.9.0"
 ksp = "2.2.0-2.0.2"
 navigation = "2.9.5"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "compose" }
 compose-ui-android = { module = "androidx.compose.ui:ui-android", version.ref = "compose" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 navigation-safeargs = { module = "androidx.navigation:navigation-safe-args-gradle-plugin", version.ref = "navigation" }
 
 [plugins]

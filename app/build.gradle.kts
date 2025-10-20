@@ -111,6 +111,7 @@ dependencies {
     implementation(platform(core.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.compose.ui.android)
+    implementation(libs.kotlinx.serialization.json)
     implementation(core.compose.material3)
     implementation(core.compose.runtime)
     implementation(core.compose.ui.tooling.preview)
