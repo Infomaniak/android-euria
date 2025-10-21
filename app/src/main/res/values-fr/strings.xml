@@ -18,7 +18,7 @@
 
 <resources>
     <string name="onboardingFirstPageTitle">Qui est Euria ?</string>
-    <string name="onboardingFirstPageDescription">Euria est une IA éthique, responsable et 100% hébergée en Suisse, développée par Infomaniak sur des modèles open source. Elle ne conserve aucune donnée et fonctionne avec de l’énergie renouvelable locale.</string>
+    <string name="onboardingFirstPageDescription" formatted="false">Euria est une IA éthique, responsable et 100% hébergée en Suisse, développée par Infomaniak sur des modèles open source. Elle ne conserve aucune donnée et fonctionne avec de l’énergie renouvelable locale.</string>
     <string name="onboardingSecondPageTitle">Nos Valeurs</string>
     <string name="onboardingSecondPageDescription">Euria incarne l’Éthique, l’Universel, la Responsabilité, l’Indépendance et l’Autonomie. Elle protège votre vie privée, soutient l’économie locale et refuse tout compromis écologique ou technologique.</string>
     <string name="onboardingThirdPageTitle">Intégrée à vos outils Infomaniak</string>

@@ -20,7 +20,7 @@
     <string name="app_name" translatable="false">Euria</string>
 
     <string name="onboardingFirstPageTitle">Who is Euria?</string>
-    <string name="onboardingFirstPageDescription">Euria is an ethical, responsible AI, 100% hosted in Switzerland and developed by Infomaniak using open-source models. It stores no data and runs on locally sourced renewable energy.</string>
+    <string name="onboardingFirstPageDescription" formatted="false">Euria is an ethical, responsible AI, 100% hosted in Switzerland and developed by Infomaniak using open-source models. It stores no data and runs on locally sourced renewable energy.</string>
     <string name="onboardingSecondPageTitle">Our Values</string>
     <string name="onboardingSecondPageDescription">Euria stands for Ethics, Universality, Responsibility, Independence, and Autonomy. It protects your privacy, supports the local economy, and never compromises on ecological or technological integrity.</string>
     <string name="onboardingThirdPageTitle">Built into your Infomaniak tools</string>
