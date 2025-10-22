@@ -81,7 +81,7 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
 
                 when (tokenResult) {
                     is InfomaniakLogin.TokenResult.Success -> {
-                        tokenResult.apiToken.saveUserInfo()
+                        saveUserInfo(tokenResult.apiToken)
                     }
                     is InfomaniakLogin.TokenResult.Error -> {
                         showError(getLoginErrorDescription(context, tokenResult.errorStatus))
@@ -94,11 +94,11 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
         }
     }
 
-    private fun ApiToken.saveUserInfo() {
+    fun saveUserInfo(apiToken: ApiToken) {
         with(context) {
-            token = this@saveUserInfo.accessToken
-            saveToken(this@saveUserInfo.accessToken)
-            saveUserId(this@saveUserInfo.userId)
+            token = apiToken.accessToken
+            saveToken(apiToken.accessToken)
+            saveUserId(apiToken.userId)
         }
     }
 

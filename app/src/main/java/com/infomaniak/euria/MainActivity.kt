@@ -148,7 +148,10 @@ class MainActivity : ComponentActivity() {
             mainViewModel.handleLogin(
                 loginRequest,
                 openLoginWebView = { openLoginWebView() },
-                attemptLogin = { mainViewModel.token = crossAppLoginViewModel.attemptLogin(it).tokens[0].accessToken }
+                attemptLogin = {
+                    val apiToken = crossAppLoginViewModel.attemptLogin(it).tokens[0]
+                    mainViewModel.saveUserInfo(apiToken)
+                }
             )
         }
     }
