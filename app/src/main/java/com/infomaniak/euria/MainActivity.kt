@@ -192,12 +192,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     is InfomaniakLogin.TokenResult.Error -> {
-                        showError(
-                            getLoginErrorDescription(
-                                this@MainActivity,
-                                tokenResult.errorStatus
-                            )
-                        )
+                        showError(getLoginErrorDescription(this@MainActivity, tokenResult.errorStatus))
                     }
                 }
             }.onFailure { exception ->
