@@ -51,6 +51,7 @@ import com.infomaniak.euria.data.UserSharedPref.saveUserId
 import com.infomaniak.euria.ui.login.CrossAppLoginViewModel
 import com.infomaniak.euria.ui.login.components.OnboardingScreen
 import com.infomaniak.euria.ui.theme.EuriaTheme
+import com.infomaniak.lib.login.ApiToken
 import com.infomaniak.lib.login.InfomaniakLogin
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
@@ -169,13 +170,7 @@ class MainActivity : ComponentActivity() {
         }
 
     private suspend fun connectAccounts(selectedAccounts: List<ExternalAccount>) {
-        val loginResult = crossAppLoginViewModel.attemptLogin(selectedAccounts)
-
-        with(loginResult) {
-            tokens.forEachIndexed { index, token -> }
-
-            errorMessageIds.forEach { errorId -> showError(getString(errorId)) }
-        }
+        crossAppLoginViewModel.attemptLogin(selectedAccounts).tokens[0].saveUserInfo()
     }
 
     private fun openLoginWebView() {
@@ -193,20 +188,11 @@ class MainActivity : ComponentActivity() {
 
                 when (tokenResult) {
                     is InfomaniakLogin.TokenResult.Success -> {
-                        with(tokenResult.apiToken) {
-                            token = this.accessToken
-                            saveToken(this.accessToken)
-                            saveUserId(this.userId)
-                        }
+                        tokenResult.apiToken.saveUserInfo()
                     }
 
                     is InfomaniakLogin.TokenResult.Error -> {
-                        showError(
-                            getLoginErrorDescription(
-                                this@MainActivity,
-                                tokenResult.errorStatus
-                            )
-                        )
+                        showError(getLoginErrorDescription(this@MainActivity, tokenResult.errorStatus))
                     }
                 }
             }.onFailure { exception ->
@@ -214,6 +200,12 @@ class MainActivity : ComponentActivity() {
                 SentryLog.e(TAG, "Failure on getToken", exception)
             }
         }
+    }
+
+    private fun ApiToken.saveUserInfo() {
+        token = this.accessToken
+        saveToken(this.accessToken)
+        saveUserId(this.userId)
     }
 
     private fun showError(error: String) {
@@ -244,11 +236,7 @@ class MainActivity : ComponentActivity() {
         if (resultCode == RESULT_OK) {
             val translatedError = data?.getStringExtra(InfomaniakLogin.ERROR_TRANSLATED_TAG)
             when {
-                translatedError.isNullOrBlank() -> infomaniakLogin.startWebViewLogin(
-                    webViewLoginResultLauncher,
-                    false
-                )
-
+                translatedError.isNullOrBlank() -> infomaniakLogin.startWebViewLogin(webViewLoginResultLauncher, false)
                 else -> showError(translatedError)
             }
         } else {

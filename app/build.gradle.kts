@@ -56,10 +56,6 @@ android {
         jvmToolchain(javaVersion.toString().toInt())
     }
 
-    val debugSigningConfig = signingConfigs.getByName("debug") {
-        storeFile = rootProject.file("debug.keystore")
-    }
-
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -68,9 +64,8 @@ android {
                 "proguard-rules.pro"
             )
         }
-
         debug {
-            signingConfig = debugSigningConfig
+            applicationIdSuffix = ".debug"
         }
     }
 
