@@ -21,7 +21,7 @@ plugins {
     alias(core.plugins.compose.compiler)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.jetbrains.kotlin.serialization)
-    alias(libs.plugins.ksp)
+    alias(core.plugins.kapt)
     alias(libs.plugins.navigation.safeargs)
 }
 
@@ -105,7 +105,12 @@ dependencies {
     // Compose
     implementation(platform(core.compose.bom))
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.compose.ui.android)
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.androidx.work)
+    kapt(libs.hilt.android.compiler)
+    kapt(libs.hilt.androidx.compiler)
     implementation(libs.kotlinx.serialization.json)
     implementation(core.compose.material3)
     implementation(core.compose.runtime)

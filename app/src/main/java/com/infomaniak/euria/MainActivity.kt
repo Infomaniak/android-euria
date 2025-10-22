@@ -29,11 +29,10 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
@@ -43,6 +42,7 @@ import com.infomaniak.core.network.ApiEnvironment
 import com.infomaniak.core.network.LOGIN_ENDPOINT_URL
 import com.infomaniak.core.network.NetworkConfiguration
 import com.infomaniak.core.network.networking.DefaultHttpClientProvider
+import com.infomaniak.core.observe
 import com.infomaniak.core.sentry.SentryLog
 import com.infomaniak.core.webview.ui.components.WebView
 import com.infomaniak.euria.data.UserSharedPref.getToken
@@ -62,6 +62,7 @@ import splitties.experimental.ExperimentalSplittiesApi
 @OptIn(ExperimentalSplittiesApi::class)
 class MainActivity : ComponentActivity() {
 
+    private val mainViewModel: MainViewModel by viewModels()
     private val crossAppLoginViewModel: CrossAppLoginViewModel by viewModels()
 
     private var isLoginButtonLoading by mutableStateOf(false)
@@ -97,6 +98,12 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val installSplashScreen = installSplashScreen()
+
+        installSplashScreen.setKeepOnScreenCondition { true }
+        mainViewModel.showSplashScreen.observe(this) { showSplashScreen ->
+            installSplashScreen.setKeepOnScreenCondition { showSplashScreen }
+        }
 
         token = this@MainActivity.getToken()
 
@@ -162,12 +169,13 @@ class MainActivity : ComponentActivity() {
         launch { handleLogin(loginRequest) }
     }
 
-    private suspend fun handleLogin(loginRequest: CallableState<List<ExternalAccount>>): Nothing =
+    private suspend fun handleLogin(loginRequest: CallableState<List<ExternalAccount>>) {
         repeatWhileActive {
             val accountsToLogin = loginRequest.awaitOneCall()
             if (accountsToLogin.isEmpty()) openLoginWebView()
             else connectAccounts(selectedAccounts = accountsToLogin)
         }
+    }
 
     private suspend fun connectAccounts(selectedAccounts: List<ExternalAccount>) {
         crossAppLoginViewModel.attemptLogin(selectedAccounts).tokens[0].saveUserInfo()
@@ -259,12 +267,5 @@ class MainActivity : ComponentActivity() {
                 }
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    EuriaTheme {
     }
 }

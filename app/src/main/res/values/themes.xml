@@ -18,6 +18,12 @@
 
 <resources>
 
+    <style name="AppThemeLauncher" parent="AppTheme.LauncherBase" />
+
+    <style name="AppTheme.LauncherBase" parent="Theme.SplashScreen">
+        <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
+    </style>
+
     <style name="AppTheme" parent="AppThemeBase" />
 
     <style name="AppThemeBase" parent="Theme.MaterialComponents.DayNight.NoActionBar">
