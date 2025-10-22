@@ -83,7 +83,6 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
                     is InfomaniakLogin.TokenResult.Success -> {
                         tokenResult.apiToken.saveUserInfo()
                     }
-
                     is InfomaniakLogin.TokenResult.Error -> {
                         showError(getLoginErrorDescription(context, tokenResult.errorStatus))
                     }
