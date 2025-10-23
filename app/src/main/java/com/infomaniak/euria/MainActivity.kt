@@ -90,7 +90,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-    private var filePathCallback: ValueCallback<Array<out Uri?>?>? = null
+    private var filePathCallback: ValueCallback<Array<out Uri>>? = null
 
     private val createAccountResultLauncher =
         registerForActivityResult(StartActivityForResult()) { result ->
@@ -141,10 +141,8 @@ class MainActivity : ComponentActivity() {
                         } else {
                             setTokenToCookie(mainViewModel.token)
 
-                            if (mainViewModel.launchMediaChooser) {
-                                ShowFileChooser()
-                            }
-
+                            ShowFileChooser()
+                            
                             val customWebChromeClient = getCustomWebChromeClient()
                             WebView(
                                 url = EURIA_MAIN_URL,
@@ -178,13 +176,16 @@ class MainActivity : ComponentActivity() {
                 mainViewModel.launchMediaChooser = false
             }
         )
-        launcher.launch(arrayOf("*/*"))
+
+        if (mainViewModel.launchMediaChooser) {
+            launcher.launch(arrayOf("*/*"))
+        }
     }
 
     @Composable
     private fun getCustomWebChromeClient(): CustomWebChromeClient {
         return CustomWebChromeClient(
-            onShowFileChooser = { filePathCallback, fileChooserParams ->
+            onShowFileChooser = { filePathCallback, _ ->
                 this@MainActivity.filePathCallback = filePathCallback
                 mainViewModel.launchMediaChooser = true
                 true

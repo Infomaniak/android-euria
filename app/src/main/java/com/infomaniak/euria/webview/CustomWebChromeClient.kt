@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.infomaniak.euria.webview
 
 import android.net.Uri
@@ -24,13 +23,13 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 
 class CustomWebChromeClient(
-    private val onShowFileChooser: (ValueCallback<Array<out Uri?>?>, FileChooserParams?) -> Boolean,
+    private val onShowFileChooser: (ValueCallback<Array<out Uri>>, FileChooserParams) -> Boolean,
 ) : WebChromeClient() {
 
     override fun onShowFileChooser(
         webView: WebView?,
-        filePathCallback: ValueCallback<Array<out Uri?>?>,
-        fileChooserParams: FileChooserParams?
+        filePathCallback: ValueCallback<Array<out Uri>>,
+        fileChooserParams: FileChooserParams,
     ): Boolean {
         return onShowFileChooser(filePathCallback, fileChooserParams)
     }
