@@ -20,7 +20,10 @@ package com.infomaniak.euria.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+private val systemBarsColor = Color(0xffffffff)
+
 val CustomLightColorScheme = CustomColorScheme(
     primaryTextColor = Color.Black,
     secondaryTextColor = Color.DarkGray,
+    systemBarsColor = systemBarsColor,
 )

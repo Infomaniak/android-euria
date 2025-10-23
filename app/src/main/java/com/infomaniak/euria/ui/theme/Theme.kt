@@ -280,6 +280,7 @@ private val highContrastDarkColorScheme = darkColorScheme(
 data class CustomColorScheme(
     val primaryTextColor: Color = Color.Unspecified,
     val secondaryTextColor: Color = Color.Unspecified,
+    val systemBarsColor: Color = Color.Unspecified,
 )
 
 @Composable
