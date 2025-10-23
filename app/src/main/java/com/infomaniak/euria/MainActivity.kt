@@ -39,24 +39,15 @@ import com.google.android.material.snackbar.Snackbar
 import com.infomaniak.core.compose.basics.CallableState
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
 import com.infomaniak.core.network.ApiEnvironment
-import com.infomaniak.core.network.LOGIN_ENDPOINT_URL
 import com.infomaniak.core.network.NetworkConfiguration
-import com.infomaniak.core.network.networking.DefaultHttpClientProvider
 import com.infomaniak.core.observe
-import com.infomaniak.core.sentry.SentryLog
 import com.infomaniak.core.webview.ui.components.WebView
-import com.infomaniak.euria.data.UserSharedPref.getToken
-import com.infomaniak.euria.data.UserSharedPref.saveToken
-import com.infomaniak.euria.data.UserSharedPref.saveUserId
 import com.infomaniak.euria.ui.login.CrossAppLoginViewModel
 import com.infomaniak.euria.ui.login.components.OnboardingScreen
 import com.infomaniak.euria.ui.theme.EuriaTheme
-import com.infomaniak.lib.login.ApiToken
 import com.infomaniak.lib.login.InfomaniakLogin
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import splitties.coroutines.repeatWhileActive
 import splitties.experimental.ExperimentalSplittiesApi
 
 @OptIn(ExperimentalSplittiesApi::class)
@@ -67,10 +58,8 @@ class MainActivity : ComponentActivity() {
 
     private var isLoginButtonLoading by mutableStateOf(false)
     private var isSignUpButtonLoading by mutableStateOf(false)
-    private var token by mutableStateOf<String?>(null)
 
     private val loginRequest = CallableState<List<ExternalAccount>>()
-    private val infomaniakLogin: InfomaniakLogin by lazy { getInfomaniakLogin() }
 
     private val webViewLoginResultLauncher =
         registerForActivityResult(StartActivityForResult()) { result ->
@@ -81,7 +70,7 @@ class MainActivity : ComponentActivity() {
                         data?.extras?.getString(InfomaniakLogin.ERROR_TRANSLATED_TAG)
                     when {
                         translatedError?.isNotBlank() == true -> showError(translatedError)
-                        authCode?.isNotBlank() == true -> authenticateUser(authCode)
+                        authCode?.isNotBlank() == true -> mainViewModel.authenticateUser(authCode) { showError(it) }
                         else -> showError(getString(R.string.anErrorHasOccurred))
                     }
                 } else {
@@ -105,8 +94,6 @@ class MainActivity : ComponentActivity() {
             installSplashScreen.setKeepOnScreenCondition { showSplashScreen }
         }
 
-        token = this@MainActivity.getToken()
-
         WebView.setWebContentsDebuggingEnabled(true)
 
         // New modules configuration
@@ -127,7 +114,7 @@ class MainActivity : ComponentActivity() {
 
                 EuriaTheme {
                     Surface {
-                        if (token == null) {
+                        if (mainViewModel.token == null) {
                             OnboardingScreen(
                                 accounts = { accounts },
                                 skippedIds = { skippedIds },
@@ -142,7 +129,7 @@ class MainActivity : ComponentActivity() {
                         } else {
                             WebView(
                                 url = EURIA_MAIN_URL,
-                                headersString = Json.encodeToString(mapOf("Authorization" to "Bearer $token")),
+                                headersString = Json.encodeToString(mapOf("Authorization" to "Bearer ${mainViewModel.token}")),
                                 onUrlToQuitReached = {},
                                 urlToQuit = "",
                                 domStorageEnabled = true,
@@ -155,72 +142,30 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    fun Context.getInfomaniakLogin() = InfomaniakLogin(
-        context = this,
-        loginUrl = "${LOGIN_ENDPOINT_URL}/",
-        appUID = BuildConfig.APPLICATION_ID,
-        clientID = BuildConfig.CLIENT_ID,
-        accessType = null,
-        sentryCallback = { error -> SentryLog.e(tag = "WebViewLogin", error) }
-    )
-
     private fun initCrossLogin() = lifecycleScope.launch {
         launch { crossAppLoginViewModel.activateUpdates(this@MainActivity) }
-        launch { handleLogin(loginRequest) }
-    }
-
-    private suspend fun handleLogin(loginRequest: CallableState<List<ExternalAccount>>) {
-        repeatWhileActive {
-            val accountsToLogin = loginRequest.awaitOneCall()
-            if (accountsToLogin.isEmpty()) openLoginWebView()
-            else connectAccounts(selectedAccounts = accountsToLogin)
+        launch {
+            mainViewModel.handleLogin(
+                loginRequest,
+                openLoginWebView = { openLoginWebView() },
+                attemptLogin = {
+                    val apiToken = crossAppLoginViewModel.attemptLogin(it).tokens[0]
+                    mainViewModel.saveUserInfo(apiToken)
+                },
+            )
         }
-    }
-
-    private suspend fun connectAccounts(selectedAccounts: List<ExternalAccount>) {
-        crossAppLoginViewModel.attemptLogin(selectedAccounts).tokens[0].saveUserInfo()
     }
 
     private fun openLoginWebView() {
         isLoginButtonLoading = true
-        infomaniakLogin.startWebViewLogin(webViewLoginResultLauncher)
-    }
-
-    private fun authenticateUser(authCode: String) {
-        lifecycleScope.launch {
-            runCatching {
-                val tokenResult = infomaniakLogin.getToken(
-                    okHttpClient = DefaultHttpClientProvider.okHttpClient,
-                    code = authCode,
-                )
-
-                when (tokenResult) {
-                    is InfomaniakLogin.TokenResult.Success -> {
-                        tokenResult.apiToken.saveUserInfo()
-                    }
-
-                    is InfomaniakLogin.TokenResult.Error -> {
-                        showError(getLoginErrorDescription(this@MainActivity, tokenResult.errorStatus))
-                    }
-                }
-            }.onFailure { exception ->
-                if (exception is CancellationException) throw exception
-                SentryLog.e(TAG, "Failure on getToken", exception)
-            }
-        }
-    }
-
-    private fun ApiToken.saveUserInfo() {
-        token = this.accessToken
-        saveToken(this.accessToken)
-        saveUserId(this.userId)
+        mainViewModel.infomaniakLogin.startWebViewLogin(webViewLoginResultLauncher)
     }
 
     private fun showError(error: String) {
         Snackbar.make(
             window.decorView.findViewById(android.R.id.content),
             error,
-            Snackbar.LENGTH_LONG
+            Snackbar.LENGTH_LONG,
         ).show()
         isLoginButtonLoading = false
         isSignUpButtonLoading = false
@@ -232,7 +177,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun startAccountCreation() {
-        infomaniakLogin.startCreateAccountWebView(
+        mainViewModel.infomaniakLogin.startCreateAccountWebView(
             resultLauncher = createAccountResultLauncher,
             createAccountUrl = CREATE_ACCOUNT_URL,
             successHost = CREATE_ACCOUNT_SUCCESS_HOST,
@@ -244,7 +189,9 @@ class MainActivity : ComponentActivity() {
         if (resultCode == RESULT_OK) {
             val translatedError = data?.getStringExtra(InfomaniakLogin.ERROR_TRANSLATED_TAG)
             when {
-                translatedError.isNullOrBlank() -> infomaniakLogin.startWebViewLogin(webViewLoginResultLauncher, false)
+                translatedError.isNullOrBlank() -> {
+                    mainViewModel.infomaniakLogin.startWebViewLogin(webViewLoginResultLauncher, removeCookies = false)
+                }
                 else -> showError(translatedError)
             }
         } else {
