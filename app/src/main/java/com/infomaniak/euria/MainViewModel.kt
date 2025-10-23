@@ -54,6 +54,7 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
     val infomaniakLogin: InfomaniakLogin by lazy { context.getInfomaniakLogin() }
 
     var token by mutableStateOf(context.getToken())
+    var launchMediaChooser by mutableStateOf(false)
 
     init {
         viewModelScope.launch {
