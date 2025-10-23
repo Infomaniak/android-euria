@@ -68,7 +68,7 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
         appUID = BuildConfig.APPLICATION_ID,
         clientID = BuildConfig.CLIENT_ID,
         accessType = null,
-        sentryCallback = { error -> SentryLog.e(tag = "WebViewLogin", error) }
+        sentryCallback = { error -> SentryLog.e(tag = "WebViewLogin", error) },
     )
 
     fun authenticateUser(authCode: String, showError: (String) -> Unit) {

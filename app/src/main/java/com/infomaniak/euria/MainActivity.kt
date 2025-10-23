@@ -151,7 +151,7 @@ class MainActivity : ComponentActivity() {
                 attemptLogin = {
                     val apiToken = crossAppLoginViewModel.attemptLogin(it).tokens[0]
                     mainViewModel.saveUserInfo(apiToken)
-                }
+                },
             )
         }
     }
@@ -189,11 +189,9 @@ class MainActivity : ComponentActivity() {
         if (resultCode == RESULT_OK) {
             val translatedError = data?.getStringExtra(InfomaniakLogin.ERROR_TRANSLATED_TAG)
             when {
-                translatedError.isNullOrBlank() -> mainViewModel.infomaniakLogin.startWebViewLogin(
-                    webViewLoginResultLauncher,
-                    false
-                )
-
+                translatedError.isNullOrBlank() -> {
+                    mainViewModel.infomaniakLogin.startWebViewLogin(webViewLoginResultLauncher, removeCookies = false)
+                }
                 else -> showError(translatedError)
             }
         } else {
