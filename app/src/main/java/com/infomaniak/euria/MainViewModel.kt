@@ -116,6 +116,6 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
     }
 
     companion object {
-        const val DELAY_SPLASHSCREEN = 2_000L
+        private const val DELAY_SPLASHSCREEN = 2_000L
     }
 }
