@@ -71,7 +71,8 @@ class MainActivity : ComponentActivity() {
     private val cookieManager by lazy { CookieManager.getInstance() }
     private val jsBridge by lazy {
         JavascriptBridge(onLogout = {
-
+            cookieManager.removeAllCookies(null)
+            mainViewModel.logout()
         })
     }
 

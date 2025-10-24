@@ -31,6 +31,7 @@ import com.infomaniak.core.network.networking.DefaultHttpClientProvider
 import com.infomaniak.core.sentry.SentryLog
 import com.infomaniak.euria.MainActivity.Companion.TAG
 import com.infomaniak.euria.MainActivity.Companion.getLoginErrorDescription
+import com.infomaniak.euria.data.UserSharedPref.deleteUserInfo
 import com.infomaniak.euria.data.UserSharedPref.getToken
 import com.infomaniak.euria.data.UserSharedPref.saveToken
 import com.infomaniak.euria.data.UserSharedPref.saveUserId
@@ -114,6 +115,10 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
             if (accountsToLogin.isEmpty()) openLoginWebView()
             else attemptLogin(accountsToLogin)
         }
+    }
+
+    fun logout() {
+        context.deleteUserInfo()
     }
 
     companion object {
