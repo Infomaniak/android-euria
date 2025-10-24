@@ -70,10 +70,12 @@ class MainActivity : ComponentActivity() {
 
     private val cookieManager by lazy { CookieManager.getInstance() }
     private val jsBridge by lazy {
-        JavascriptBridge(onLogout = {
-            cookieManager.removeAllCookies(null)
-            mainViewModel.logout()
-        })
+        JavascriptBridge(
+            onLogout = {
+                cookieManager.removeAllCookies(null)
+                mainViewModel.logout()
+            },
+        )
     }
 
     private val loginRequest = CallableState<List<ExternalAccount>>()
@@ -141,9 +143,7 @@ class MainActivity : ComponentActivity() {
                                 isSignUpButtonLoading = { isSignUpButtonLoading },
                                 onLoginRequest = { accounts -> loginRequest(accounts) },
                                 onCreateAccount = { openAccountCreationWebView() },
-                                onSaveSkippedAccounts = {
-                                    crossAppLoginViewModel.skippedAccountIds.value = it
-                                },
+                                onSaveSkippedAccounts = { crossAppLoginViewModel.skippedAccountIds.value = it },
                             )
                         } else {
                             EuriaMainScreen(mainViewModel.token)
@@ -167,9 +167,7 @@ class MainActivity : ComponentActivity() {
             systemBarsColor = LocalCustomColorScheme.current.systemBarsColor,
             webViewClient = CustomWebViewClient(),
             webChromeClient = getCustomWebChromeClient(),
-            callback = { webview ->
-                webview.addJavascriptInterface(jsBridge, JavascriptBridge.NAME)
-            }
+            callback = { webview -> webview.addJavascriptInterface(jsBridge, JavascriptBridge.NAME) },
         )
     }
 
