@@ -38,6 +38,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.os.ConfigurationCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -135,21 +136,19 @@ class MainActivity : ComponentActivity() {
                 val accounts by crossAppLoginViewModel.availableAccounts.collectAsStateWithLifecycle()
                 val skippedIds by crossAppLoginViewModel.skippedAccountIds.collectAsStateWithLifecycle()
 
-                EuriaTheme {
-                    Surface {
-                        if (mainViewModel.token == null) {
-                            OnboardingScreen(
-                                accounts = { accounts },
-                                skippedIds = { skippedIds },
-                                isLoginButtonLoading = { loginRequest.isAwaitingCall.not() || isLoginButtonLoading },
-                                isSignUpButtonLoading = { isSignUpButtonLoading },
-                                onLoginRequest = { accounts -> loginRequest(accounts) },
-                                onCreateAccount = { openAccountCreationWebView() },
-                                onSaveSkippedAccounts = { crossAppLoginViewModel.skippedAccountIds.value = it },
-                            )
-                        } else {
-                            EuriaMainScreen(mainViewModel.token)
-                        }
+                Surface {
+                    if (mainViewModel.token == null) {
+                        OnboardingScreen(
+                            accounts = { accounts },
+                            skippedIds = { skippedIds },
+                            isLoginButtonLoading = { loginRequest.isAwaitingCall.not() || isLoginButtonLoading },
+                            isSignUpButtonLoading = { isSignUpButtonLoading },
+                            onLoginRequest = { accounts -> loginRequest(accounts) },
+                            onCreateAccount = { openAccountCreationWebView() },
+                            onSaveSkippedAccounts = { crossAppLoginViewModel.skippedAccountIds.value = it },
+                        )
+                    } else {
+                        EuriaMainScreen(mainViewModel.token)
                     }
                 }
             }
@@ -175,7 +174,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun setTokenToCookie(token: String?) {
-        val cookieString = "USER-TOKEN=${token}; path=/"
+        val currentLocale = ConfigurationCompat.getLocales(resources.configuration).get(0)?.toLanguageTag() ?: "en-US"
+        val cookieString = "USER-TOKEN=${token}; USER-LANGUAGE=${currentLocale} path=/"
         cookieManager.setCookie(EURIA_MAIN_URL.toHttpUrl().host, cookieString)
     }
 
