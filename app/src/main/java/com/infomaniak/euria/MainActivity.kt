@@ -53,9 +53,10 @@ import com.infomaniak.euria.ui.login.components.OnboardingScreen
 import com.infomaniak.euria.ui.theme.EuriaTheme
 import com.infomaniak.euria.ui.theme.LocalCustomColorScheme
 import com.infomaniak.euria.webview.CustomWebChromeClient
+import com.infomaniak.euria.webview.CustomWebViewClient
 import com.infomaniak.lib.login.InfomaniakLogin
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import splitties.experimental.ExperimentalSplittiesApi
 
 @OptIn(ExperimentalSplittiesApi::class)
@@ -106,7 +107,7 @@ class MainActivity : ComponentActivity() {
             installSplashScreen.setKeepOnScreenCondition { showSplashScreen }
         }
 
-        WebView.setWebContentsDebuggingEnabled(true)
+        WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
 
         // New modules configuration
         NetworkConfiguration.init(
@@ -142,16 +143,15 @@ class MainActivity : ComponentActivity() {
                             setTokenToCookie(mainViewModel.token)
 
                             ShowFileChooser()
-                            
-                            val customWebChromeClient = getCustomWebChromeClient()
+
                             WebView(
                                 url = EURIA_MAIN_URL,
-                                headersString = Json.encodeToString(mapOf("Authorization" to "Bearer ${mainViewModel.token}")),
                                 onUrlToQuitReached = {},
                                 urlToQuit = "",
                                 domStorageEnabled = true,
                                 systemBarsColor = LocalCustomColorScheme.current.systemBarsColor,
-                                webChromeClient = customWebChromeClient,
+                                webViewClient = CustomWebViewClient(),
+                                webChromeClient = getCustomWebChromeClient(),
                             )
                         }
                     }
@@ -162,9 +162,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun setTokenToCookie(token: String?) {
-        cookieManager.removeAllCookies(null)
         val cookieString = "USER-TOKEN=${token}; path=/"
-        cookieManager.setCookie(EURIA_MAIN_URL, cookieString)
+        cookieManager.setCookie(EURIA_MAIN_URL.toHttpUrl().host, cookieString)
     }
 
     @Composable
@@ -182,7 +181,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @Composable
     private fun getCustomWebChromeClient(): CustomWebChromeClient {
         return CustomWebChromeClient(
             onShowFileChooser = { filePathCallback, _ ->
