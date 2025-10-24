@@ -34,10 +34,17 @@ object UserSharedPref {
         getSharedPref(this).save(TOKEN_KEY, token)
     }
 
-    fun Context.getUserId() = getSharedPref(this).getString(USER_ID_KEY, null)
+    fun Context.getUserId() = getSharedPref(this).getInt(USER_ID_KEY, -1)
 
     fun Context.saveUserId(userId: Int) {
         getSharedPref(this).save(USER_ID_KEY, userId)
+    }
+
+    fun Context.deleteUserInfo() {
+        getSharedPref(this).edit {
+            clear()
+            apply()
+        }
     }
 
     private fun getSharedPref(context: Context) = context.getSharedPreferences(NAME, Context.MODE_PRIVATE)
