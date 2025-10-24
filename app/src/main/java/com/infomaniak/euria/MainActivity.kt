@@ -15,20 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.infomaniak.euria
 
 import android.content.Context
+import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
+import android.webkit.CookieManager
+import android.webkit.ValueCallback
 import android.webkit.WebView
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -46,9 +51,11 @@ import com.infomaniak.euria.ui.login.CrossAppLoginViewModel
 import com.infomaniak.euria.ui.login.components.OnboardingScreen
 import com.infomaniak.euria.ui.theme.EuriaTheme
 import com.infomaniak.euria.ui.theme.LocalCustomColorScheme
+import com.infomaniak.euria.webview.CustomWebChromeClient
+import com.infomaniak.euria.webview.CustomWebViewClient
 import com.infomaniak.lib.login.InfomaniakLogin
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import splitties.experimental.ExperimentalSplittiesApi
 
 @OptIn(ExperimentalSplittiesApi::class)
@@ -59,6 +66,8 @@ class MainActivity : ComponentActivity() {
 
     private var isLoginButtonLoading by mutableStateOf(false)
     private var isSignUpButtonLoading by mutableStateOf(false)
+
+    private val cookieManager by lazy { CookieManager.getInstance() }
 
     private val loginRequest = CallableState<List<ExternalAccount>>()
 
@@ -81,6 +90,8 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+    private var filePathCallback: ValueCallback<Array<out Uri>>? = null
+
     private val createAccountResultLauncher =
         registerForActivityResult(StartActivityForResult()) { result ->
             result.handleCreateAccountActivityResult()
@@ -95,7 +106,7 @@ class MainActivity : ComponentActivity() {
             installSplashScreen.setKeepOnScreenCondition { showSplashScreen }
         }
 
-        WebView.setWebContentsDebuggingEnabled(true)
+        WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
 
         // New modules configuration
         NetworkConfiguration.init(
@@ -128,13 +139,18 @@ class MainActivity : ComponentActivity() {
                                 },
                             )
                         } else {
+                            setTokenToCookie(mainViewModel.token)
+
+                            ShowFileChooser()
+
                             WebView(
                                 url = EURIA_MAIN_URL,
-                                headersString = Json.encodeToString(mapOf("Authorization" to "Bearer ${mainViewModel.token}")),
                                 onUrlToQuitReached = {},
                                 urlToQuit = "",
                                 domStorageEnabled = true,
                                 systemBarsColor = LocalCustomColorScheme.current.systemBarsColor,
+                                webViewClient = CustomWebViewClient(),
+                                webChromeClient = getCustomWebChromeClient(),
                             )
                         }
                     }
@@ -142,6 +158,36 @@ class MainActivity : ComponentActivity() {
             }
             initCrossLogin()
         }
+    }
+
+    private fun setTokenToCookie(token: String?) {
+        val cookieString = "USER-TOKEN=${token}; path=/"
+        cookieManager.setCookie(EURIA_MAIN_URL.toHttpUrl().host, cookieString)
+    }
+
+    @Composable
+    private fun ShowFileChooser() {
+        val launcher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.OpenMultipleDocuments(),
+            onResult = { uris: List<Uri> ->
+                filePathCallback?.onReceiveValue(uris.toTypedArray())
+                mainViewModel.launchMediaChooser = false
+            }
+        )
+
+        if (mainViewModel.launchMediaChooser) {
+            launcher.launch(arrayOf("*/*"))
+        }
+    }
+
+    private fun getCustomWebChromeClient(): CustomWebChromeClient {
+        return CustomWebChromeClient(
+            onShowFileChooser = { filePathCallback, _ ->
+                this@MainActivity.filePathCallback = filePathCallback
+                mainViewModel.launchMediaChooser = true
+                true
+            }
+        )
     }
 
     private fun initCrossLogin() = lifecycleScope.launch {
