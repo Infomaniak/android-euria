@@ -18,6 +18,7 @@
 package com.infomaniak.euria
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
@@ -37,6 +38,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.os.ConfigurationCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -47,6 +49,7 @@ import com.infomaniak.core.network.ApiEnvironment
 import com.infomaniak.core.network.NetworkConfiguration
 import com.infomaniak.core.observe
 import com.infomaniak.core.webview.ui.components.WebView
+import com.infomaniak.euria.data.UserSharedPref.getUserId
 import com.infomaniak.euria.ui.login.CrossAppLoginViewModel
 import com.infomaniak.euria.ui.login.components.OnboardingScreen
 import com.infomaniak.euria.ui.theme.EuriaTheme
@@ -133,24 +136,23 @@ class MainActivity : ComponentActivity() {
                 val accounts by crossAppLoginViewModel.availableAccounts.collectAsStateWithLifecycle()
                 val skippedIds by crossAppLoginViewModel.skippedAccountIds.collectAsStateWithLifecycle()
 
-                EuriaTheme {
-                    Surface {
-                        if (mainViewModel.token == null) {
-                            OnboardingScreen(
-                                accounts = { accounts },
-                                skippedIds = { skippedIds },
-                                isLoginButtonLoading = { loginRequest.isAwaitingCall.not() || isLoginButtonLoading },
-                                isSignUpButtonLoading = { isSignUpButtonLoading },
-                                onLoginRequest = { accounts -> loginRequest(accounts) },
-                                onCreateAccount = { openAccountCreationWebView() },
-                                onSaveSkippedAccounts = { crossAppLoginViewModel.skippedAccountIds.value = it },
-                            )
-                        } else {
-                            EuriaMainScreen(mainViewModel.token)
-                        }
+                Surface {
+                    if (mainViewModel.token == null) {
+                        OnboardingScreen(
+                            accounts = { accounts },
+                            skippedIds = { skippedIds },
+                            isLoginButtonLoading = { loginRequest.isAwaitingCall.not() || isLoginButtonLoading },
+                            isSignUpButtonLoading = { isSignUpButtonLoading },
+                            onLoginRequest = { accounts -> loginRequest(accounts) },
+                            onCreateAccount = { openAccountCreationWebView() },
+                            onSaveSkippedAccounts = { crossAppLoginViewModel.skippedAccountIds.value = it },
+                        )
+                    } else {
+                        EuriaMainScreen(mainViewModel.token)
                     }
                 }
             }
+            startCrossAppLoginService()
             initCrossLogin()
         }
     }
@@ -172,7 +174,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun setTokenToCookie(token: String?) {
-        val cookieString = "USER-TOKEN=${token}; path=/"
+        val currentLocale = ConfigurationCompat.getLocales(resources.configuration).get(0)?.toLanguageTag() ?: "en-US"
+        val cookieString = "USER-TOKEN=${token}; USER-LANGUAGE=${currentLocale} path=/"
         cookieManager.setCookie(EURIA_MAIN_URL.toHttpUrl().host, cookieString)
     }
 
@@ -199,6 +202,14 @@ class MainActivity : ComponentActivity() {
                 true
             }
         )
+    }
+
+    fun startCrossAppLoginService() {
+        val intent = Intent(this, CrossAppLoginService::class.java).apply {
+            putExtra(CrossAppLoginService.EXTRA_USER_ID, getUserId())
+        }
+
+        startService(intent)
     }
 
     private fun initCrossLogin() = lifecycleScope.launch {
