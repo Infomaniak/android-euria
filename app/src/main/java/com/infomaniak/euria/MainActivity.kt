@@ -18,6 +18,7 @@
 package com.infomaniak.euria
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
@@ -47,6 +48,7 @@ import com.infomaniak.core.network.ApiEnvironment
 import com.infomaniak.core.network.NetworkConfiguration
 import com.infomaniak.core.observe
 import com.infomaniak.core.webview.ui.components.WebView
+import com.infomaniak.euria.data.UserSharedPref.getUserId
 import com.infomaniak.euria.ui.login.CrossAppLoginViewModel
 import com.infomaniak.euria.ui.login.components.OnboardingScreen
 import com.infomaniak.euria.ui.theme.EuriaTheme
@@ -151,6 +153,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+            startCrossAppLoginService()
             initCrossLogin()
         }
     }
@@ -201,6 +204,14 @@ class MainActivity : ComponentActivity() {
                 true
             }
         )
+    }
+
+    fun startCrossAppLoginService() {
+        val intent = Intent(this, CrossAppLoginService::class.java).apply {
+            putExtra(CrossAppLoginService.EXTRA_USER_ID, getUserId())
+        }
+
+        startService(intent)
     }
 
     private fun initCrossLogin() = lifecycleScope.launch {
