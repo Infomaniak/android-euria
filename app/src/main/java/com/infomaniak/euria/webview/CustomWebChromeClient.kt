@@ -23,7 +23,7 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 
 class CustomWebChromeClient(
-    private val onShowFileChooser: (ValueCallback<Array<out Uri>>, FileChooserParams) -> Boolean,
+    private val onShowFileChooser: (ValueCallback<Array<out Uri>>, FileChooserParams) -> Boolean
 ) : WebChromeClient() {
 
     override fun onShowFileChooser(
