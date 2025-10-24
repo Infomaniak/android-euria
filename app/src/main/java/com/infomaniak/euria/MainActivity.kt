@@ -53,6 +53,7 @@ import com.infomaniak.euria.ui.theme.EuriaTheme
 import com.infomaniak.euria.ui.theme.LocalCustomColorScheme
 import com.infomaniak.euria.webview.CustomWebChromeClient
 import com.infomaniak.euria.webview.CustomWebViewClient
+import com.infomaniak.euria.webview.JavascriptBridge
 import com.infomaniak.lib.login.InfomaniakLogin
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -68,6 +69,11 @@ class MainActivity : ComponentActivity() {
     private var isSignUpButtonLoading by mutableStateOf(false)
 
     private val cookieManager by lazy { CookieManager.getInstance() }
+    private val jsBridge by lazy {
+        JavascriptBridge(onLogout = {
+
+        })
+    }
 
     private val loginRequest = CallableState<List<ExternalAccount>>()
 
@@ -139,25 +145,31 @@ class MainActivity : ComponentActivity() {
                                 },
                             )
                         } else {
-                            setTokenToCookie(mainViewModel.token)
-
-                            ShowFileChooser()
-
-                            WebView(
-                                url = EURIA_MAIN_URL,
-                                onUrlToQuitReached = {},
-                                urlToQuit = "",
-                                domStorageEnabled = true,
-                                systemBarsColor = LocalCustomColorScheme.current.systemBarsColor,
-                                webViewClient = CustomWebViewClient(),
-                                webChromeClient = getCustomWebChromeClient(),
-                            )
+                            EuriaMainScreen(mainViewModel.token)
                         }
                     }
                 }
             }
             initCrossLogin()
         }
+    }
+
+    @Composable
+    private fun EuriaMainScreen(token: String?) {
+        setTokenToCookie(token)
+
+        ShowFileChooser()
+
+        WebView(
+            url = EURIA_MAIN_URL,
+            domStorageEnabled = true,
+            systemBarsColor = LocalCustomColorScheme.current.systemBarsColor,
+            webViewClient = CustomWebViewClient(),
+            webChromeClient = getCustomWebChromeClient(),
+            callback = { webview ->
+                webview.addJavascriptInterface(jsBridge, JavascriptBridge.NAME)
+            }
+        )
     }
 
     private fun setTokenToCookie(token: String?) {
