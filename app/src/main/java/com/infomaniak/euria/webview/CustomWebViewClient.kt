@@ -17,7 +17,18 @@
  */
 package com.infomaniak.euria.webview
 
+import android.annotation.SuppressLint
+import android.net.http.SslError
+import android.webkit.SslErrorHandler
+import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.infomaniak.euria.BuildConfig
 
 class CustomWebViewClient : WebViewClient() {
+
+    @SuppressLint("WebViewClientOnReceivedSslError")
+    override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
+        // In order to use localhost, we have to ignore all SSL errors and proceed
+        if (BuildConfig.DEBUG) handler?.proceed()
+    }
 }
