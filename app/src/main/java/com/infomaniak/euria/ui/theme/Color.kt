@@ -20,7 +20,7 @@ package com.infomaniak.euria.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val primaryLight = Color(0xFF515B92)
+val primaryLight = Color(0xFF0064f0)
 val onPrimaryLight = Color(0xFFFFFFFF)
 val primaryContainerLight = Color(0xFFDEE0FF)
 val onPrimaryContainerLight = Color(0xFF394379)
@@ -128,7 +128,7 @@ val surfaceContainerLightHighContrast = Color(0xFFE0E2E8)
 val surfaceContainerHighLightHighContrast = Color(0xFFD2D4DA)
 val surfaceContainerHighestLightHighContrast = Color(0xFFC4C6CC)
 
-val primaryDark = Color(0xFFBAC3FF)
+val primaryDark = Color(0xFF5ea9ff)
 val onPrimaryDark = Color(0xFF222C61)
 val primaryContainerDark = Color(0xFF394379)
 val onPrimaryContainerDark = Color(0xFFDEE0FF)

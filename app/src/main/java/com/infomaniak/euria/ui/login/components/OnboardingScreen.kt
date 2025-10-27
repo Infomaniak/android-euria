@@ -140,20 +140,19 @@ private enum class Page(
     @StringRes val descriptionRes: Int,
 ) {
     WhoIsEuria(
-        backgroundRes = R.drawable.vertical_gradient,
         illustrationRes = R.raw.euria,
-        illustrationSize = 150.dp,
+        backgroundRes = R.drawable.radial_gradient_top_right,
         titleRes = R.string.onboardingFirstPageTitle,
         descriptionRes = R.string.onboardingFirstPageDescription,
     ),
     OurValues(
-        backgroundRes = R.drawable.vertical_gradient,
+        backgroundRes = R.drawable.radial_gradient_top_left,
         illustrationRes = R.raw.data_protection,
         titleRes = R.string.onboardingSecondPageTitle,
         descriptionRes = R.string.onboardingSecondPageDescription,
     ),
     BuiltIntoInfomaniakTools(
-        backgroundRes = R.drawable.vertical_gradient,
+        backgroundRes = R.drawable.radial_gradient_top_right,
         illustrationRes = R.raw.tools,
         titleRes = R.string.onboardingThirdPageTitle,
         descriptionRes = R.string.onboardingThirdPageDescription,
