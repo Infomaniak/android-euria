@@ -17,6 +17,12 @@
   -->
 
 <resources>
+    <string name="app_name" translatable="false">Euria</string>
+
+    <string name="anErrorHasOccurred">An error has occurred</string>
+    <string name="serverError">Server Error</string>
+    <string name="connectionError">Internet connection problem</string>
+
     <string name="onboardingEphemeralArgument">your conversations with Euria fade at the end of each session.</string>
     <string name="onboardingEphemeralTemplate">Ephemeral mode enabled:\n%s</string>
     <string name="onboardingEuriaArgument">ethical, sovereign and independent.</string>

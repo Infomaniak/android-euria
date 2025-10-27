@@ -17,6 +17,10 @@
   -->
 
 <resources>
+    <string name="anErrorHasOccurred">Une erreur est survenue</string>
+    <string name="serverError">Erreur serveur</string>
+    <string name="connectionError">Problème de connexion internet</string>
+
     <string name="onboardingEphemeralArgument">vos conversations avec Euria s’effacent à la fin de chaque session.</string>
     <string name="onboardingEphemeralTemplate">Mode éphémère activé :\n%s</string>
     <string name="onboardingEuriaArgument">éthique, souverain et indépendant.</string>
