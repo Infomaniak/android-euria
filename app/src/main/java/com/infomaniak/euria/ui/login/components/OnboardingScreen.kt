@@ -149,8 +149,8 @@ private fun Page.toOnboardingPage(
 private val DEFAULT_ILLUSTRATION_SIZE = 250.dp
 
 private enum class Page(
-    @DrawableRes val backgroundRes: Int,
     @RawRes val illustrationRes: Int,
+    @DrawableRes val backgroundRes: Int,
     val isAnimationLooping: Boolean = true,
     val illustrationSize: Dp = DEFAULT_ILLUSTRATION_SIZE,
     @StringRes val titleRes: Int,
