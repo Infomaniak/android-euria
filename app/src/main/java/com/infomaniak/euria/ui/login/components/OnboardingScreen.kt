@@ -139,10 +139,10 @@ private fun Page.toOnboardingPage(
     }, text = {
         EuriaHighlightedTitleAndDescription(
             isHighlighted = { isHighlighted[this]?.value ?: false },
-            title = stringResource(this.titleRes),
-            subtitleTemplate = this.descriptionTemplateRes?.let { stringResource(it) } ?: "%s",
-            subtitleArgument = stringResource(this.descriptionArgumentRes),
-            highlightedAngleDegree = this.highlightedAngleDegree
+            title = stringResource(titleRes),
+            subtitleTemplate = descriptionTemplateRes?.let { stringResource(it) } ?: "%s",
+            subtitleArgument = stringResource(descriptionArgumentRes),
+            highlightedAngleDegree = highlightedAngleDegree
         )
     })
 
