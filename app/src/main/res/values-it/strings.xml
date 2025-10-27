@@ -17,8 +17,6 @@
   -->
 
 <resources>
-    <string name="appName">Euria</string>
-    <string name="appName">Euria</string>
     <string name="buttonLogin">Accesso</string>
     <string name="connectionError">Problema di connessione a Internet</string>
     <string name="noNetworkDescription">Controlla la tua connessione Internet e riprova per riprendere la conversazione</string>
