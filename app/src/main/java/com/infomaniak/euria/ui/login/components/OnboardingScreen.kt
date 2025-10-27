@@ -37,12 +37,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -114,20 +110,6 @@ fun OnboardingScreen(
         },
     )
 }
-
-val onboardingTitle = TextStyle(
-    fontFamily = FontFamily.Default,
-    fontWeight = FontWeight.Light,
-    fontSize = 22.sp,
-    lineHeight = 28.sp,
-)
-
-val onboardingDescription = TextStyle(
-    fontFamily = FontFamily.Default,
-    fontWeight = FontWeight.Bold,
-    fontSize = 22.sp,
-    lineHeight = 28.sp,
-)
 
 @Composable
 private fun Page.toOnboardingPage(

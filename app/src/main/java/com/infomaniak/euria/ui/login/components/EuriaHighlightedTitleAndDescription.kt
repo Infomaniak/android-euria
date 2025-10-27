@@ -19,9 +19,27 @@
 package com.infomaniak.euria.ui.login.components
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import com.infomaniak.core.onboarding.components.OnboardingComponents
 import com.infomaniak.euria.ui.theme.Dimens
 import com.infomaniak.euria.ui.theme.EuriaTheme
+
+val onboardingTitle = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontWeight = FontWeight.Light,
+    fontSize = 22.sp,
+    lineHeight = 28.sp,
+)
+
+val onboardingDescription = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontWeight = FontWeight.Bold,
+    fontSize = 22.sp,
+    lineHeight = 28.sp,
+)
 
 @Composable
 fun EuriaHighlightedTitleAndDescription(
