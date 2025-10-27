@@ -79,9 +79,7 @@ fun OnboardingScreen(
     OnboardingScaffold(
         pagerState = pagerState,
         onboardingPages = Page.entries.mapIndexed { index, page ->
-            page.toOnboardingPage(
-                isHighlighted, pagerState, index
-            )
+            page.toOnboardingPage(isHighlighted, pagerState, index)
         },
         bottomContent = { paddingValues ->
             OnboardingComponents.CrossLoginBottomContent(

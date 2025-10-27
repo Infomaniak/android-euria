@@ -27,14 +27,14 @@ import com.infomaniak.core.onboarding.components.OnboardingComponents
 import com.infomaniak.euria.ui.theme.Dimens
 import com.infomaniak.euria.ui.theme.EuriaTheme
 
-val onboardingTitle = TextStyle(
+private val onboardingTitle = TextStyle(
     fontFamily = FontFamily.Default,
     fontWeight = FontWeight.Light,
     fontSize = 22.sp,
     lineHeight = 28.sp,
 )
 
-val onboardingDescription = TextStyle(
+private val onboardingDescription = TextStyle(
     fontFamily = FontFamily.Default,
     fontWeight = FontWeight.Bold,
     fontSize = 22.sp,
