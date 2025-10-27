@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,13 +25,10 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.infomaniak.core.compose.basics.Typography
-import com.infomaniak.core.compose.bottomstickybuttonscaffolds.BottomStickyButtonScaffold
 import com.infomaniak.core.compose.margin.Margin
 import com.infomaniak.euria.R
-import com.infomaniak.euria.ui.components.LargeButton
 import com.infomaniak.euria.ui.theme.Dimens
 import com.infomaniak.euria.ui.theme.EuriaTheme
-import com.infomaniak.core.R as RCore
 
 @Composable
 fun NoNetworkScreen(modifier: Modifier = Modifier) {
@@ -44,43 +42,42 @@ fun NoNetworkScreen(modifier: Modifier = Modifier) {
             contentScale = ContentScale.FillBounds,
         )
 
-        BottomStickyButtonScaffold(
+        Scaffold(
             modifier = modifier,
             containerColor = Color.Transparent,
-            topBar = {},
-            bottomButton = {
-                LargeButton(
-                    modifier = it,
-                    title = stringResource(RCore.string.buttonRetry),
-                    onClick = { /*TODO*/ }
-                )
-            }
-        ) {
-            Column(
+        ) { paddingValues ->
+            Box(
                 modifier = Modifier
-                    .widthIn(max = Dimens.DescriptionWidth)
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center,
             ) {
-                Image(ImageVector.vectorResource(R.drawable.circle_cloud_slash), contentDescription = null)
-                Spacer(modifier = Modifier.height(Margin.Huge))
+                Column(
+                    modifier = Modifier
+                        .widthIn(max = Dimens.DescriptionWidth)
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Image(ImageVector.vectorResource(R.drawable.circle_cloud_slash), contentDescription = null)
+                    Spacer(modifier = Modifier.height(Margin.Huge))
 
-                Text(
-                    text = stringResource(R.string.noNetworkTitle),
-                    textAlign = TextAlign.Center,
-                    style = Typography.h1,
-                    color = EuriaTheme.colors.primaryTextColor,
-                )
-                Spacer(modifier = Modifier.height(Margin.Medium))
+                    Text(
+                        text = stringResource(R.string.noNetworkTitle),
+                        textAlign = TextAlign.Center,
+                        style = Typography.h1,
+                        color = EuriaTheme.colors.primaryTextColor,
+                    )
+                    Spacer(modifier = Modifier.height(Margin.Medium))
 
-                Text(
-                    text = stringResource(R.string.noNetworkDescription),
-                    textAlign = TextAlign.Center,
-                    style = Typography.bodyRegular,
-                    color = EuriaTheme.colors.secondaryTextColor,
-                )
+                    Text(
+                        text = stringResource(R.string.noNetworkDescription),
+                        textAlign = TextAlign.Center,
+                        style = Typography.bodyRegular,
+                        color = EuriaTheme.colors.secondaryTextColor,
+                    )
+                }
             }
         }
     }
