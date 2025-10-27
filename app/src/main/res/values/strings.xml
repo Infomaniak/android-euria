@@ -18,11 +18,11 @@
 
 <resources>
     <string name="appName">Euria</string>
+    <string name="appName">Euria</string>
     <string name="buttonLogin">Login</string>
     <string name="connectionError">Internet connection problem</string>
     <string name="noNetworkDescription">Check your Internet connection and try again to resume your conversation</string>
     <string name="noNetworkTitle">No Internet access</string>
-    <string name="onboardingEphemeralArgument">your conversations with Euria fade at the end of each session.</string>
     <string name="onboardingEphemeralDescriptionArguments">are deleted at the end of each session.</string>
     <string name="onboardingEphemeralDescriptionTemplate">your conversations with Euria %s</string>
     <string name="onboardingEphemeralTitle">Ephemeral mode enabled:</string>
