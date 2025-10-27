@@ -88,7 +88,9 @@ android {
 dependencies {
     implementation(project(":Core"))
     implementation(project(":Core:Auth"))
+    implementation(project(":Core:Compose:BasicButton"))
     implementation(project(":Core:Compose:Basics"))
+    implementation(project(":Core:Compose:BottomStickyButtonScaffolds"))
     implementation(project(":Core:Compose:Margin"))
     implementation(project(":Core:CrossAppLogin:Back"))
     implementation(project(":Core:CrossAppLogin:Front"))

@@ -118,7 +118,7 @@ private fun Page.toOnboardingPage(
     OnboardingPage(background = {
         DefaultBackground(
             ImageVector.vectorResource(backgroundRes),
-            modifier = Modifier.padding(bottom = 300.dp)
+            modifier = Modifier.padding(bottom = Dimens.OnboardingGradientPadding)
         )
     }, illustration = {
         val composition by rememberLottieComposition(

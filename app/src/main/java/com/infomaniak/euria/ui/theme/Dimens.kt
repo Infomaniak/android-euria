@@ -17,9 +17,14 @@
  */
 package com.infomaniak.euria.ui.theme
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
 
 object Dimens {
     val DescriptionWidth = 300.dp
     val HighlightedAngleDegree = 1.0
+    val OnboardingGradientPadding = 300.dp
+    val PrimaryButtonHeight = 56.dp
+    val PrimaryButtonShape = RoundedCornerShape(16.dp)
+    val SmallIconSize = 16.dp
 }
