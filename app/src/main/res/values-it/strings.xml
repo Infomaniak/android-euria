@@ -26,8 +26,8 @@
     <string name="onboardingEphemeralTitle">Modalità effimera abilitata:</string>
     <string name="onboardingEuriaDescription">etico, sovrano e indipendente.</string>
     <string name="onboardingEuriaTitle">Euria\nL’assistente IA %s</string>
-    <string name="onboardingLoginArguments">in questo momento.</string>
-    <string name="onboardingLoginTemplate">Chatta con Euria %s</string>
+    <string name="onboardingLoginArguments">Chatta ora</string>
+    <string name="onboardingLoginTemplate">%s con Euria.</string>
     <string name="onboardingLoginTitle">Pronti per iniziare?</string>
     <string name="onboardingPrivacyDescriptionArgument">cifrate, private</string>
     <string name="onboardingPrivacyDescriptionTemplate">%s e rispettati.</string>

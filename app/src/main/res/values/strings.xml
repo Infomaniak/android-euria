@@ -28,8 +28,8 @@
     <string name="onboardingEphemeralTitle">Ephemeral mode enabled:</string>
     <string name="onboardingEuriaDescription">ethical, sovereign and independent.</string>
     <string name="onboardingEuriaTitle">Euria, The IA assistant</string>
-    <string name="onboardingLoginArguments">right now.</string>
-    <string name="onboardingLoginTemplate">Chat with Euria %s</string>
+    <string name="onboardingLoginArguments">Chat now</string>
+    <string name="onboardingLoginTemplate">%s with Euria.</string>
     <string name="onboardingLoginTitle">Ready to start?</string>
     <string name="onboardingPrivacyDescriptionArgument">ciphered, private</string>
     <string name="onboardingPrivacyDescriptionTemplate">%s and respected.</string>

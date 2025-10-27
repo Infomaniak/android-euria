@@ -26,8 +26,8 @@
     <string name="onboardingEphemeralTitle">Modo efímero activado:</string>
     <string name="onboardingEuriaDescription">ético, soberano e independiente.</string>
     <string name="onboardingEuriaTitle">Euria\nEl asistente de AI %s</string>
-    <string name="onboardingLoginArguments">ahora mismo.</string>
-    <string name="onboardingLoginTemplate">Chatea con Euria %s</string>
+    <string name="onboardingLoginArguments">Chatea ahora</string>
+    <string name="onboardingLoginTemplate">%s con Euria.</string>
     <string name="onboardingLoginTitle">¿Listo para empezar?</string>
     <string name="onboardingPrivacyDescriptionArgument">cifradas, son privadas</string>
     <string name="onboardingPrivacyDescriptionTemplate">%s y respetado.</string>
