@@ -29,6 +29,6 @@ class JavascriptBridge(
     }
 
     companion object {
-        const val NAME = "Euria"
+        const val NAME = "euria"
     }
 }

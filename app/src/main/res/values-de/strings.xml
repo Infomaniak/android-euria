@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Infomaniak Euria - Android
+  ~ Copyright (C) 2025 Infomaniak Network SA
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="connectionError">Problem mit der Internetverbindung</string>
+    <string name="noNetworkDescription">Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut, um Ihr Unterhaltung fortzusetzen</string>
+    <string name="noNetworkTitle">Keine Internetverbindung</string>
+    <string name="onboardingEphemeralDescriptionArguments">werden am Ende einer jeden Sitzung gelöscht.</string>
+    <string name="onboardingEphemeralDescriptionTemplate">ihre Unterhaltungen mit Euria %s</string>
+    <string name="onboardingEphemeralTitle">Ephemerer Modus aktiviert:</string>
+    <string name="onboardingEuriaDescription">ethisch, souverän und unabhängig.</string>
+    <string name="onboardingEuriaTitle">Euria\nDer IA-Assistent %s</string>
+    <string name="onboardingLoginArguments">Chatte jetzt</string>
+    <string name="onboardingLoginTemplate">%s mit Euria.</string>
+    <string name="onboardingLoginTitle">Bereit zum Start?</string>
+    <string name="onboardingPrivacyDescriptionArgument">chiffriert, privat</string>
+    <string name="onboardingPrivacyDescriptionTemplate">%s und respektiert.</string>
+    <string name="onboardingPrivacyTitle">Mit Euria,\nsind Ihre Unterhaltungen</string>
+    <string name="serverError">Server-Fehler</string>
+</resources>

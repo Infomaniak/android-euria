@@ -1,0 +1,63 @@
+/*
+ * Infomaniak Euria - Android
+ * Copyright (C) 2025 Infomaniak Network SA
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.infomaniak.euria.ui.login.components
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import com.infomaniak.core.onboarding.components.OnboardingComponents
+import com.infomaniak.euria.ui.theme.Dimens
+import com.infomaniak.euria.ui.theme.EuriaTheme
+
+private val onboardingTitle = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontWeight = FontWeight.Light,
+    fontSize = 22.sp,
+    lineHeight = 28.sp,
+)
+
+private val onboardingDescription = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontWeight = FontWeight.Bold,
+    fontSize = 22.sp,
+    lineHeight = 28.sp,
+)
+
+@Composable
+fun EuriaHighlightedTitleAndDescription(
+    title: String,
+    subtitleTemplate: String,
+    subtitleArgument: String,
+    highlightedAngleDegree: Double,
+    isHighlighted: () -> Boolean
+) {
+    OnboardingComponents.HighlightedTitleAndDescription(
+        title = title,
+        subtitleTemplate = subtitleTemplate,
+        subtitleArgument = subtitleArgument,
+        textStyle = onboardingTitle.copy(color = EuriaTheme.colors.primaryTextColor),
+        descriptionWidth = Dimens.DescriptionWidth,
+        highlightedTextStyle = onboardingDescription.copy(color = EuriaTheme.colors.secondaryTextColor),
+        highlightedColor = EuriaTheme.colors.highlightedColor,
+        highlightedAngleDegree = highlightedAngleDegree,
+        isHighlighted = isHighlighted,
+    )
+}

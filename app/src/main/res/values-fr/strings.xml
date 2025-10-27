@@ -17,14 +17,19 @@
   -->
 
 <resources>
-    <string name="onboardingFirstPageTitle">Qui est Euria ?</string>
-    <string name="onboardingFirstPageDescription" formatted="false">Euria est une IA éthique, responsable et 100% hébergée en Suisse, développée par Infomaniak sur des modèles open source. Elle ne conserve aucune donnée et fonctionne avec de l’énergie renouvelable locale.</string>
-    <string name="onboardingSecondPageTitle">Nos Valeurs</string>
-    <string name="onboardingSecondPageDescription">Euria incarne l’Éthique, l’Universel, la Responsabilité, l’Indépendance et l’Autonomie. Elle protège votre vie privée, soutient l’économie locale et refuse tout compromis écologique ou technologique.</string>
-    <string name="onboardingThirdPageTitle">Intégrée à vos outils Infomaniak</string>
-    <string name="onboardingThirdPageDescription">Euria s’active dans kChat, kMail et kDrive pour vous accompagner au quotidien — sans collecte de données, sans surveillance, et en toute transparence. Votre intelligence artificielle, en Suisse, pour vous.</string>
-
-    <string name="anErrorHasOccurred">Une erreur est survenue</string>
-    <string name="serverError">Erreur serveur</string>
-    <string name="connectionError">Problème de connexion internet</string>
+    <string name="connectionError">Problème de connexion à Internet</string>
+    <string name="noNetworkDescription">Vérifiez votre connexion Internet et réessayez pour reprendre votre conversation</string>
+    <string name="noNetworkTitle">Aucun accès à Internet</string>
+    <string name="onboardingEphemeralDescriptionArguments">s’effacent à la fin de chaque session.</string>
+    <string name="onboardingEphemeralDescriptionTemplate">vos conversations avec Euria %s</string>
+    <string name="onboardingEphemeralTitle">Mode éphémère activé :</string>
+    <string name="onboardingEuriaDescription">éthique, souverain et indépendant.</string>
+    <string name="onboardingEuriaTitle">Euria, L’assistant IA</string>
+    <string name="onboardingLoginArguments">Discutez dès maintenant</string>
+    <string name="onboardingLoginTemplate">%s avec Euria.</string>
+    <string name="onboardingLoginTitle">Prêt à commencer ?</string>
+    <string name="onboardingPrivacyDescriptionArgument">chiffrées, privées</string>
+    <string name="onboardingPrivacyDescriptionTemplate">%s et respectées.</string>
+    <string name="onboardingPrivacyTitle">Avec Euria,\nvos conversations sont</string>
+    <string name="serverError">Erreur du serveur</string>
 </resources>
