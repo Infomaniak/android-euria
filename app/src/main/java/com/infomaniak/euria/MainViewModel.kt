@@ -119,6 +119,7 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
 
     fun logout() {
         context.deleteUserInfo()
+        token = null
     }
 
     companion object {
