@@ -23,7 +23,7 @@
     <string name="noNetworkTitle">Keine Internetverbindung</string>
     <string name="onboardingEphemeralDescriptionArguments">werden am Ende einer jeden Sitzung gelöscht.</string>
     <string name="onboardingEphemeralDescriptionTemplate">ihre Unterhaltungen mit Euria %s</string>
-    <string name="onboardingEphemeralTitle">Ephemerer Modus aktiviert:\n%s</string>
+    <string name="onboardingEphemeralTitle">Ephemerer Modus aktiviert:</string>
     <string name="onboardingEuriaDescription">ethisch, souverän und unabhängig.</string>
     <string name="onboardingEuriaTitle">Euria\nDer IA-Assistent %s</string>
     <string name="onboardingLoginArguments">Chatte jetzt</string>

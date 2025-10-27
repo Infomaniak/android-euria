@@ -23,7 +23,7 @@
     <string name="noNetworkTitle">Sin acceso a Internet</string>
     <string name="onboardingEphemeralDescriptionArguments">se borran al final de cada sesión.</string>
     <string name="onboardingEphemeralDescriptionTemplate">sus conversaciones con Euria %s</string>
-    <string name="onboardingEphemeralTitle">Modo efímero activado:\n%s</string>
+    <string name="onboardingEphemeralTitle">Modo efímero activado:</string>
     <string name="onboardingEuriaDescription">ético, soberano e independiente.</string>
     <string name="onboardingEuriaTitle">Euria\nEl asistente de AI %s</string>
     <string name="onboardingLoginArguments">ahora mismo.</string>

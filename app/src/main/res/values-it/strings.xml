@@ -23,7 +23,7 @@
     <string name="noNetworkTitle">Nessun accesso a Internet</string>
     <string name="onboardingEphemeralDescriptionArguments">vengono cancellati alla fine di ogni sessione.</string>
     <string name="onboardingEphemeralDescriptionTemplate">le vostre conversazioni con Euria %s</string>
-    <string name="onboardingEphemeralTitle">Modalità effimera abilitata:\n%s</string>
+    <string name="onboardingEphemeralTitle">Modalità effimera abilitata:</string>
     <string name="onboardingEuriaDescription">etico, sovrano e indipendente.</string>
     <string name="onboardingEuriaTitle">Euria\nL’assistente IA %s</string>
     <string name="onboardingLoginArguments">in questo momento.</string>
