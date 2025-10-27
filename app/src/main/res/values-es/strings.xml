@@ -17,7 +17,6 @@
   -->
 
 <resources>
-    <string name="buttonLogin">Inicio de sesión</string>
     <string name="connectionError">Problema de conexión a Internet</string>
     <string name="noNetworkDescription">Verifica tu conexión a Internet y vuelve a intentarlo para reanudar tu conversación</string>
     <string name="noNetworkTitle">Sin acceso a Internet</string>

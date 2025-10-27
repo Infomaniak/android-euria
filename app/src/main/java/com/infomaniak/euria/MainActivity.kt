@@ -61,6 +61,7 @@ import com.infomaniak.lib.login.InfomaniakLogin
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import splitties.experimental.ExperimentalSplittiesApi
+import com.infomaniak.core.R as RCore
 
 @OptIn(ExperimentalSplittiesApi::class)
 class MainActivity : ComponentActivity() {
@@ -93,7 +94,7 @@ class MainActivity : ComponentActivity() {
                     when {
                         translatedError?.isNotBlank() == true -> showError(translatedError)
                         authCode?.isNotBlank() == true -> mainViewModel.authenticateUser(authCode) { showError(it) }
-                        else -> showError(getString(R.string.anErrorHasOccurred))
+                        else -> showError(getString(RCore.string.anErrorHasOccurred))
                     }
                 } else {
                     isLoginButtonLoading = false
@@ -280,7 +281,7 @@ class MainActivity : ComponentActivity() {
                 when (error) {
                     InfomaniakLogin.ErrorStatus.SERVER -> R.string.serverError
                     InfomaniakLogin.ErrorStatus.CONNECTION -> R.string.connectionError
-                    else -> R.string.anErrorHasOccurred
+                    else -> RCore.string.anErrorHasOccurred
                 }
             )
         }

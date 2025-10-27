@@ -19,7 +19,6 @@
 <resources>
     <string name="appName" translatable="false">Euria</string>
 
-    <string name="buttonLogin">Login</string>
     <string name="connectionError">Internet connection problem</string>
     <string name="noNetworkDescription">Check your Internet connection and try again to resume your conversation</string>
     <string name="noNetworkTitle">No Internet access</string>
