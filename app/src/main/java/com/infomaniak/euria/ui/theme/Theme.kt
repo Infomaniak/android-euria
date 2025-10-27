@@ -342,13 +342,13 @@ fun EuriaTheme(
     CompositionLocalProvider(
         LocalCustomColorScheme provides customColors
     ) {
-        ProvideBottomSheetTheme {
-            MaterialTheme(
-                colorScheme = colorScheme,
-                typography = AppTypography,
-                shapes = shapes,
-                content = content,
-            )
-        }
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = AppTypography,
+            shapes = shapes,
+            content = {
+                ProvideBottomSheetTheme(content = content)
+            },
+        )
     }
 }
