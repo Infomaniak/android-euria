@@ -17,12 +17,22 @@
   -->
 
 <resources>
+    <string name="appName">Euria</string>
+    <string name="buttonLogin">Anmeldung</string>
+    <string name="connectionError">Problem mit der Internetverbindung</string>
+    <string name="noNetworkDescription">Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut, um Ihr Unterhaltung fortzusetzen</string>
+    <string name="noNetworkTitle">Keine Internetverbindung</string>
     <string name="onboardingEphemeralArgument">ihre Unterhaltung mit Euria verblassen am Ende jeder Sitzung.</string>
-    <string name="onboardingEphemeralTemplate">Ephemerer Modus aktiviert:\n%s</string>
-    <string name="onboardingEuriaArgument">ethisch, souverän und unabhängig.</string>
-    <string name="onboardingEuriaTemplate">Euria\nDer IA-Assistent %s</string>
-    <string name="onboardingLoginArgument">Chatte jetzt mit Euria.</string>
-    <string name="onboardingLoginTemplate">Bereit zum Start?\n%s</string>
-    <string name="onboardingPrivacyArgument">chiffriert, privat und respektiert.</string>
-    <string name="onboardingPrivacyTemplate">Mit Euria,\nsind Ihre Unterhaltungen %s</string>
+    <string name="onboardingEphemeralDescriptionArguments">werden am Ende einer jeden Sitzung gelöscht.</string>
+    <string name="onboardingEphemeralDescriptionTemplate">ihre Unterhaltungen mit Euria %s</string>
+    <string name="onboardingEphemeralTitle">Ephemerer Modus aktiviert:\n%s</string>
+    <string name="onboardingEuriaDescription">ethisch, souverän und unabhängig.</string>
+    <string name="onboardingEuriaTitle">Euria\nDer IA-Assistent %s</string>
+    <string name="onboardingLoginArguments">Chatte jetzt</string>
+    <string name="onboardingLoginTemplate">%s mit Euria.</string>
+    <string name="onboardingLoginTitle">Bereit zum Start?</string>
+    <string name="onboardingPrivacyDescriptionArgument">chiffriert, privat und respektiert.</string>
+    <string name="onboardingPrivacyDescriptionTemplate">%s und respektiert.</string>
+    <string name="onboardingPrivacyTitle">Mit Euria,\nsind Ihre Unterhaltungen %s</string>
+    <string name="serverError">Server-Fehler</string>
 </resources>

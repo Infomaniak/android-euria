@@ -1,6 +1,6 @@
 /*
  * Infomaniak Euria - Android
- * Copyright (C) 2025 Infomaniak Network SA
+ * Copyright (C) 2024-2025 Infomaniak Network SA
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,17 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.infomaniak.euria.ui.theme
 
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
-private val systemBarsColor = Color(0xff0a1b2a)
-private val highlightedColor = Color(0xff2a5178)
-
-val CustomDarkColorScheme = CustomColorScheme(
-    primaryTextColor = Color.White,
-    secondaryTextColor = Color.LightGray,
-    systemBarsColor = systemBarsColor,
-    highlightedColor = highlightedColor,
-)
+object Dimens {
+    val DescriptionWidth = 300.dp
+    val HighlightedAngleDegree = 1.0
+}

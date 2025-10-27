@@ -280,6 +280,7 @@ data class CustomColorScheme(
     val primaryTextColor: Color = Color.Unspecified,
     val secondaryTextColor: Color = Color.Unspecified,
     val systemBarsColor: Color = Color.Unspecified,
+    val highlightedColor: Color = Color.Unspecified,
 )
 
 @Composable

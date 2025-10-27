@@ -28,18 +28,25 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.infomaniak.core.compose.basics.Typography
 import com.infomaniak.core.crossapplogin.back.BaseCrossAppLoginViewModel.Companion.filterSelectedAccounts
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
 import com.infomaniak.core.crossapplogin.front.components.CrossLoginBottomContent
@@ -47,8 +54,8 @@ import com.infomaniak.core.onboarding.OnboardingPage
 import com.infomaniak.core.onboarding.OnboardingScaffold
 import com.infomaniak.core.onboarding.components.OnboardingComponents
 import com.infomaniak.core.onboarding.components.OnboardingComponents.DefaultBackground
-import com.infomaniak.core.onboarding.components.OnboardingComponents.DefaultTitleAndDescription
 import com.infomaniak.euria.R
+import com.infomaniak.euria.ui.theme.Dimens
 import com.infomaniak.euria.ui.theme.EuriaTheme
 
 
@@ -65,11 +72,19 @@ fun OnboardingScreen(
 ) {
     val pagerState = rememberPagerState(pageCount = { Page.entries.size })
 
+    val isHighlighted = Page.entries.associateWith { rememberSaveable { mutableStateOf(false) } }
+
+    // Start the highlighting of the text when the associated page is reached in the HorizontalPager
+    LaunchedEffect(pagerState.currentPage) {
+        val currentPage = Page.entries[pagerState.currentPage]
+        isHighlighted[currentPage]?.value = true
+    }
+
     OnboardingScaffold(
         pagerState = pagerState,
         onboardingPages = Page.entries.mapIndexed { index, page ->
             page.toOnboardingPage(
-                pagerState, index
+                isHighlighted, pagerState, index
             )
         },
         bottomContent = { paddingValues ->
@@ -100,8 +115,26 @@ fun OnboardingScreen(
     )
 }
 
+val onboardingTitle = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontWeight = FontWeight.Light,
+    fontSize = 22.sp,
+    lineHeight = 28.sp,
+)
+
+val onboardingDescription = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontWeight = FontWeight.Bold,
+    fontSize = 22.sp,
+    lineHeight = 28.sp,
+)
+
 @Composable
-private fun Page.toOnboardingPage(pagerState: PagerState, index: Int): OnboardingPage =
+private fun Page.toOnboardingPage(
+    isHighlighted: Map<Page, MutableState<Boolean>>,
+    pagerState: PagerState,
+    index: Int,
+): OnboardingPage =
     OnboardingPage(background = {
         DefaultBackground(
             ImageVector.vectorResource(backgroundRes),
@@ -116,45 +149,63 @@ private fun Page.toOnboardingPage(pagerState: PagerState, index: Int): Onboardin
 
         LottieAnimation(
             composition,
-            restartOnPlay = true,
-            reverseOnRepeat = true,
-            iterations = LottieConstants.IterateForever,
+            restartOnPlay = isAnimationLooping,
+            reverseOnRepeat = isAnimationLooping,
+            iterations = if (isAnimationLooping) LottieConstants.IterateForever else 1,
             isPlaying = pagerState.currentPage == index,
-            modifier = if (illustrationSize != null) Modifier.width(illustrationSize) else Modifier
+            modifier = Modifier.width(illustrationSize),
         )
 
     }, text = {
-        DefaultTitleAndDescription(
-            title = stringResource(titleRes),
-            description = stringResource(descriptionRes),
-            titleStyle = Typography.h2.copy(color = EuriaTheme.colors.primaryTextColor),
-            descriptionStyle = Typography.bodyRegular.copy(color = EuriaTheme.colors.secondaryTextColor),
+        EuriaHighlightedTitleAndDescription(
+            isHighlighted = { isHighlighted[this]?.value ?: false },
+            title = stringResource(this.titleRes),
+            subtitleTemplate = this.descriptionTemplateRes?.let { stringResource(it) } ?: "%s",
+            subtitleArgument = stringResource(this.descriptionArgumentRes),
+            highlightedAngleDegree = this.highlightedAngleDegree
         )
     })
+
+private val DEFAULT_ILLUSTRATION_SIZE = 250.dp
 
 private enum class Page(
     @DrawableRes val backgroundRes: Int,
     @RawRes val illustrationRes: Int,
-    val illustrationSize: Dp? = null,
+    val isAnimationLooping: Boolean = true,
+    val illustrationSize: Dp = DEFAULT_ILLUSTRATION_SIZE,
     @StringRes val titleRes: Int,
-    @StringRes val descriptionRes: Int,
+    @StringRes val descriptionTemplateRes: Int? = null,
+    @StringRes val descriptionArgumentRes: Int,
+    val highlightedAngleDegree: Double = Dimens.HighlightedAngleDegree,
 ) {
-    WhoIsEuria(
-        illustrationRes = R.raw.euria,
+    Euria(
+        illustrationRes = R.raw.euria_blob,
         backgroundRes = R.drawable.radial_gradient_top_right,
-        titleRes = R.string.onboardingFirstPageTitle,
-        descriptionRes = R.string.onboardingFirstPageDescription,
+        titleRes = R.string.onboardingEuriaTitle,
+        descriptionTemplateRes = null,
+        descriptionArgumentRes = R.string.onboardingEuriaDescription,
     ),
-    OurValues(
+    Privacy(
+        illustrationRes = R.raw.euria_bubble,
+        isAnimationLooping = false,
+        illustrationSize = 400.dp,
         backgroundRes = R.drawable.radial_gradient_top_left,
-        illustrationRes = R.raw.data_protection,
-        titleRes = R.string.onboardingSecondPageTitle,
-        descriptionRes = R.string.onboardingSecondPageDescription,
+        titleRes = R.string.onboardingPrivacyTitle,
+        descriptionTemplateRes = R.string.onboardingPrivacyDescriptionTemplate,
+        descriptionArgumentRes = R.string.onboardingPrivacyDescriptionArgument,
     ),
-    BuiltIntoInfomaniakTools(
+    Ephemeral(
+        illustrationRes = R.raw.euria_ghost,
         backgroundRes = R.drawable.radial_gradient_top_right,
-        illustrationRes = R.raw.tools,
-        titleRes = R.string.onboardingThirdPageTitle,
-        descriptionRes = R.string.onboardingThirdPageDescription,
+        titleRes = R.string.onboardingEphemeralTitle,
+        descriptionTemplateRes = R.string.onboardingEphemeralDescriptionTemplate,
+        descriptionArgumentRes = R.string.onboardingEphemeralDescriptionArguments,
+    ),
+    ReadyToStart(
+        illustrationRes = R.raw.euria_blob,
+        backgroundRes = R.drawable.radial_gradient_top_left,
+        titleRes = R.string.onboardingLoginTitle,
+        descriptionTemplateRes = R.string.onboardingLoginTemplate,
+        descriptionArgumentRes = R.string.onboardingLoginArguments,
     ),
 }

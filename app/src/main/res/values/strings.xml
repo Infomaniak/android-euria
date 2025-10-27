@@ -17,18 +17,22 @@
   -->
 
 <resources>
-    <string name="app_name" translatable="false">Euria</string>
-
-    <string name="anErrorHasOccurred">An error has occurred</string>
-    <string name="serverError">Server Error</string>
+    <string name="appName">Euria</string>
+    <string name="buttonLogin">Login</string>
     <string name="connectionError">Internet connection problem</string>
-
+    <string name="noNetworkDescription">Check your Internet connection and try again to resume your conversation</string>
+    <string name="noNetworkTitle">No Internet access</string>
     <string name="onboardingEphemeralArgument">your conversations with Euria fade at the end of each session.</string>
-    <string name="onboardingEphemeralTemplate">Ephemeral mode enabled:\n%s</string>
-    <string name="onboardingEuriaArgument">ethical, sovereign and independent.</string>
-    <string name="onboardingEuriaTemplate">Euria\nThe IA assistant %s</string>
-    <string name="onboardingLoginArgument">Chat with Euria right now.</string>
-    <string name="onboardingLoginTemplate">Ready to start?\n%s</string>
-    <string name="onboardingPrivacyArgument">ciphered, private and respected.</string>
-    <string name="onboardingPrivacyTemplate">With Euria,\nyour conversations are %s</string>
+    <string name="onboardingEphemeralDescriptionArguments">are deleted at the end of each session.</string>
+    <string name="onboardingEphemeralDescriptionTemplate">your conversations with Euria %s</string>
+    <string name="onboardingEphemeralTitle">Ephemeral mode enabled:</string>
+    <string name="onboardingEuriaDescription">ethical, sovereign and independent.</string>
+    <string name="onboardingEuriaTitle">Euria, The IA assistant</string>
+    <string name="onboardingLoginArguments">right now.</string>
+    <string name="onboardingLoginTemplate">Chat with Euria %s</string>
+    <string name="onboardingLoginTitle">Ready to start?</string>
+    <string name="onboardingPrivacyDescriptionArgument">ciphered, private</string>
+    <string name="onboardingPrivacyDescriptionTemplate">%s and respected.</string>
+    <string name="onboardingPrivacyTitle">With Euria,\nyour conversations are</string>
+    <string name="serverError">Server Error</string>
 </resources>

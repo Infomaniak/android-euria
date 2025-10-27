@@ -17,12 +17,22 @@
   -->
 
 <resources>
+    <string name="appName">Euria</string>
+    <string name="buttonLogin">Inicio de sesión</string>
+    <string name="connectionError">Problema de conexión a Internet</string>
+    <string name="noNetworkDescription">Verifica tu conexión a Internet y vuelve a intentarlo para reanudar tu conversación</string>
+    <string name="noNetworkTitle">Sin acceso a Internet</string>
     <string name="onboardingEphemeralArgument">sus conversaciones con Euria se desvanecen al final de cada sesión.</string>
-    <string name="onboardingEphemeralTemplate">Modo efímero activado:\n%s</string>
-    <string name="onboardingEuriaArgument">ético, soberano e independiente.</string>
-    <string name="onboardingEuriaTemplate">Euria\nEl asistente de AI %s</string>
-    <string name="onboardingLoginArgument">Chatea con Euria ahora mismo.</string>
-    <string name="onboardingLoginTemplate">¿Listo para empezar?\n%s</string>
-    <string name="onboardingPrivacyArgument">cifradas, son privadas y respetadas.</string>
-    <string name="onboardingPrivacyTemplate">Con Euria,\ntus conversaciones están %s</string>
+    <string name="onboardingEphemeralDescriptionArguments">se borran al final de cada sesión.</string>
+    <string name="onboardingEphemeralDescriptionTemplate">sus conversaciones con Euria %s</string>
+    <string name="onboardingEphemeralTitle">Modo efímero activado:\n%s</string>
+    <string name="onboardingEuriaDescription">ético, soberano e independiente.</string>
+    <string name="onboardingEuriaTitle">Euria\nEl asistente de AI %s</string>
+    <string name="onboardingLoginArguments">ahora mismo.</string>
+    <string name="onboardingLoginTemplate">Chatea con Euria %s</string>
+    <string name="onboardingLoginTitle">¿Listo para empezar?</string>
+    <string name="onboardingPrivacyDescriptionArgument">cifradas, son privadas y respetadas.</string>
+    <string name="onboardingPrivacyDescriptionTemplate">%s y respetado.</string>
+    <string name="onboardingPrivacyTitle">Con Euria,\ntus conversaciones están %s</string>
+    <string name="serverError">Error del servidor</string>
 </resources>
