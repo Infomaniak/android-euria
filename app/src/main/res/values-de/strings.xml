@@ -29,7 +29,7 @@
     <string name="onboardingLoginArguments">Chatte jetzt</string>
     <string name="onboardingLoginTemplate">%s mit Euria.</string>
     <string name="onboardingLoginTitle">Bereit zum Start?</string>
-    <string name="onboardingPrivacyDescriptionArgument">chiffriert, privat und respektiert.</string>
+    <string name="onboardingPrivacyDescriptionArgument">chiffriert, privat</string>
     <string name="onboardingPrivacyDescriptionTemplate">%s und respektiert.</string>
     <string name="onboardingPrivacyTitle">Mit Euria,\nsind Ihre Unterhaltungen</string>
     <string name="serverError">Server-Fehler</string>
