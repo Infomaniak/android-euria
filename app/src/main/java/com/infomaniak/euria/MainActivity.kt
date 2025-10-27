@@ -136,9 +136,10 @@ class MainActivity : ComponentActivity() {
             EuriaTheme {
                 val accounts by crossAppLoginViewModel.availableAccounts.collectAsStateWithLifecycle()
                 val skippedIds by crossAppLoginViewModel.skippedAccountIds.collectAsStateWithLifecycle()
+                val token by mainViewModel.token.collectAsStateWithLifecycle()
 
                 Surface {
-                    if (mainViewModel.token == null) {
+                    if (token == null) {
                         OnboardingScreen(
                             accounts = { accounts },
                             skippedIds = { skippedIds },
@@ -149,7 +150,7 @@ class MainActivity : ComponentActivity() {
                             onSaveSkippedAccounts = { crossAppLoginViewModel.skippedAccountIds.value = it },
                         )
                     } else {
-                        EuriaMainScreen(mainViewModel.token)
+                        EuriaMainScreen(token)
                     }
                 }
             }

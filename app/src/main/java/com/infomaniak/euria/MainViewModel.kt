@@ -39,12 +39,18 @@ import com.infomaniak.lib.login.ApiToken
 import com.infomaniak.lib.login.InfomaniakLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import splitties.coroutines.repeatWhileActive
 import splitties.experimental.ExperimentalSplittiesApi
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class MainViewModel @Inject constructor(application: Application) : AndroidViewModel(application) {
@@ -54,11 +60,13 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
     private val context by lazy { getApplication<Application>() }
     val infomaniakLogin: InfomaniakLogin by lazy { context.getInfomaniakLogin() }
 
-    var token by mutableStateOf(context.getToken())
+    private var _token = MutableStateFlow<String?>(null)
+    var token = _token.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds), null)
     var launchMediaChooser by mutableStateOf(false)
 
     init {
         viewModelScope.launch {
+            _token.value = withContext(Dispatchers.IO) { context.getToken() }
             delay(DELAY_SPLASHSCREEN)
             showSplashScreen.emit(false)
         }
@@ -98,7 +106,7 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
 
     fun saveUserInfo(apiToken: ApiToken) {
         with(context) {
-            token = apiToken.accessToken
+            _token.update { apiToken.accessToken }
             saveToken(apiToken.accessToken)
             saveUserId(apiToken.userId)
         }
@@ -119,7 +127,7 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
 
     fun logout() {
         context.deleteUserInfo()
-        token = null
+        _token.update { null }
     }
 
     companion object {
