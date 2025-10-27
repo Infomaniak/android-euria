@@ -17,14 +17,12 @@
   -->
 
 <resources>
-    <string name="onboardingFirstPageTitle"></string>
-    <string name="onboardingFirstPageDescription" formatted="false">Euria,\n L\'assistant IA éthique,\n souverain et indépendant.</string>
-    <string name="onboardingSecondPageTitle"></string>
-    <string name="onboardingSecondPageDescription">Avec Euria,\n vos conversations sont chiffrées, privées et\n respectées.</string>
-    <string name="onboardingThirdPageTitle">Intégrée à vos outils Infomaniak</string>
-    <string name="onboardingThirdPageDescription">Euria s’active dans kChat, kMail et kDrive pour vous accompagner au quotidien — sans collecte de données, sans surveillance, et en toute transparence. Votre intelligence artificielle, en Suisse, pour vous.</string>
-
-    <string name="anErrorHasOccurred">Une erreur est survenue</string>
-    <string name="serverError">Erreur serveur</string>
-    <string name="connectionError">Problème de connexion internet</string>
+    <string name="onboardingEphemeralArgument">ihre Unterhaltung mit Euria verblassen am Ende jeder Sitzung.</string>
+    <string name="onboardingEphemeralTemplate">Ephemerer Modus aktiviert:\n%s</string>
+    <string name="onboardingEuriaArgument">ethisch, souverän und unabhängig.</string>
+    <string name="onboardingEuriaTemplate">Euria\nDer IA-Assistent %s</string>
+    <string name="onboardingLoginArgument">Chatte jetzt mit Euria.</string>
+    <string name="onboardingLoginTemplate">Bereit zum Start?\n%s</string>
+    <string name="onboardingPrivacyArgument">chiffriert, privat und respektiert.</string>
+    <string name="onboardingPrivacyTemplate">Mit Euria,\nsind Ihre Unterhaltungen %s</string>
 </resources>

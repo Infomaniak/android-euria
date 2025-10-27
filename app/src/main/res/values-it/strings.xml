@@ -17,12 +17,12 @@
   -->
 
 <resources>
-    <string name="onboardingEphemeralArgument">vos conversations avec Euria s’effacent à la fin de chaque session.</string>
-    <string name="onboardingEphemeralTemplate">Mode éphémère activé :\n%s</string>
-    <string name="onboardingEuriaArgument">éthique, souverain et indépendant.</string>
-    <string name="onboardingEuriaTemplate">Euria\nL’assistant IA %s</string>
-    <string name="onboardingLoginArgument">Discutez dès maintenant avec Euria.</string>
-    <string name="onboardingLoginTemplate">Prêt à commencer ?\n%s</string>
-    <string name="onboardingPrivacyArgument">chiffrées, privées et respectées.</string>
-    <string name="onboardingPrivacyTemplate">Avec Euria,\nvos conversations sont %s</string>
+    <string name="onboardingEphemeralArgument">le tue conversazioni con Euria sfumano alla fine di ogni sessione.</string>
+    <string name="onboardingEphemeralTemplate">Modalità effimera abilitata:\n%s</string>
+    <string name="onboardingEuriaArgument">etico, sovrano e indipendente.</string>
+    <string name="onboardingEuriaTemplate">Euria\nL’assistente IA %s</string>
+    <string name="onboardingLoginArgument">Chatta con Euria in questo momento.</string>
+    <string name="onboardingLoginTemplate">Pronti per iniziare?\n%s</string>
+    <string name="onboardingPrivacyArgument">cifrate, private e rispettate.</string>
+    <string name="onboardingPrivacyTemplate">Con Euria,\nle vostre conversazioni sono %s</string>
 </resources>
