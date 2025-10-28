@@ -111,6 +111,7 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
 
     fun saveUserInfo(apiToken: ApiToken, showError: (String) -> Unit) {
         viewModelScope.launch {
+            // TODO Use the one from CredentialManager when User database is ready
             val okhttpClient = AuthHttpClientProvider.authOkHttpClient.newBuilder().addInterceptor { chain ->
                 val newRequest = changeAccessToken(chain.request(), apiToken.accessToken)
                 chain.proceed(newRequest)
