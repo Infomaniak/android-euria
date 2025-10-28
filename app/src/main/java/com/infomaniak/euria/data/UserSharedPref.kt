@@ -27,6 +27,10 @@ object UserSharedPref {
     private const val NAME = "com.infomaniak.euria.usersharedpref"
     private const val TOKEN_KEY = "com.infomaniak.euria.usersharedpref.token"
     private const val USER_ID_KEY = "com.infomaniak.euria.usersharedpref.user_id"
+    private const val AVATAR_URL_KEY = "com.infomaniak.euria.usersharedpref.avatar_url"
+    private const val FULL_NAME_KEY = "com.infomaniak.euria.usersharedpref.full_name"
+    private const val INITIALS_KEY = "com.infomaniak.euria.usersharedpref.initials"
+    private const val EMAIL_KEY = "com.infomaniak.euria.usersharedpref.email"
 
     fun Context.getToken() = getSharedPref(this).getString(TOKEN_KEY, null)
 
@@ -38,6 +42,30 @@ object UserSharedPref {
 
     fun Context.saveUserId(userId: Int) {
         getSharedPref(this).save(USER_ID_KEY, userId)
+    }
+
+    fun Context.getAvatarUrl() = getSharedPref(this).getString(AVATAR_URL_KEY, null)
+
+    fun Context.saveAvatarUrl(avatarUrl: String?) {
+        getSharedPref(this).save(AVATAR_URL_KEY, avatarUrl)
+    }
+
+    fun Context.getFullName() = getSharedPref(this).getString(FULL_NAME_KEY, null)
+
+    fun Context.saveFullName(fullName: String?) {
+        getSharedPref(this).save(FULL_NAME_KEY, fullName)
+    }
+
+    fun Context.getInitials() = getSharedPref(this).getString(INITIALS_KEY, null)
+
+    fun Context.saveInitials(initials: String) {
+        getSharedPref(this).save(INITIALS_KEY, initials)
+    }
+
+    fun Context.getEmail() = getSharedPref(this).getString(EMAIL_KEY, null)
+
+    fun Context.saveEmail(email: String) {
+        getSharedPref(this).save(EMAIL_KEY, email)
     }
 
     fun Context.deleteUserInfo() {

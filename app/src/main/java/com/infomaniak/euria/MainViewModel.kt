@@ -24,6 +24,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.infomaniak.core.auth.TokenAuthenticator.Companion.changeAccessToken
+import com.infomaniak.core.auth.models.user.User
+import com.infomaniak.core.auth.networking.AuthHttpClientProvider
 import com.infomaniak.core.compose.basics.CallableState
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
 import com.infomaniak.core.network.LOGIN_ENDPOINT_URL
@@ -33,8 +36,13 @@ import com.infomaniak.euria.MainActivity.Companion.TAG
 import com.infomaniak.euria.MainActivity.Companion.getLoginErrorDescription
 import com.infomaniak.euria.data.UserSharedPref.deleteUserInfo
 import com.infomaniak.euria.data.UserSharedPref.getToken
+import com.infomaniak.euria.data.UserSharedPref.saveAvatarUrl
+import com.infomaniak.euria.data.UserSharedPref.saveEmail
+import com.infomaniak.euria.data.UserSharedPref.saveFullName
+import com.infomaniak.euria.data.UserSharedPref.saveInitials
 import com.infomaniak.euria.data.UserSharedPref.saveToken
 import com.infomaniak.euria.data.UserSharedPref.saveUserId
+import com.infomaniak.euria.network.ApiRepository
 import com.infomaniak.lib.login.ApiToken
 import com.infomaniak.lib.login.InfomaniakLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -91,7 +99,13 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
 
                 when (tokenResult) {
                     is InfomaniakLogin.TokenResult.Success -> {
-                        saveUserInfo(tokenResult.apiToken)
+                        val okhttpClient = AuthHttpClientProvider.authOkHttpClient.newBuilder().addInterceptor { chain ->
+                            val newRequest = changeAccessToken(chain.request(), tokenResult.apiToken)
+                            chain.proceed(newRequest)
+                        }.build()
+
+                        val userProfileResponse = ApiRepository.getUserProfile(okhttpClient)
+                        saveUserInfo(tokenResult.apiToken, userProfileResponse.data)
                     }
                     is InfomaniakLogin.TokenResult.Error -> {
                         showError(getLoginErrorDescription(context, tokenResult.errorStatus))
@@ -104,11 +118,17 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
         }
     }
 
-    fun saveUserInfo(apiToken: ApiToken) {
+    fun saveUserInfo(apiToken: ApiToken, user: User?) {
         with(context) {
             _token.update { apiToken.accessToken }
             saveToken(apiToken.accessToken)
             saveUserId(apiToken.userId)
+            saveAvatarUrl(user?.avatar)
+            saveFullName(user?.displayName)
+            user?.let {
+                saveInitials(it.getInitials())
+                saveEmail(it.email)
+            }
         }
     }
 

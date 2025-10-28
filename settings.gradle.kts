@@ -54,6 +54,7 @@ include(
     ":Core:CrossAppLogin:Front",
     ":Core:FragmentNavigation",
     ":Core:Matomo",
+    ":Core:Auth",
     ":Core:Network",
     ":Core:Network:Models",
     ":Core:Onboarding",

@@ -94,6 +94,7 @@ dependencies {
     implementation(project(":Core:CrossAppLogin:Back"))
     implementation(project(":Core:CrossAppLogin:Front"))
     implementation(project(":Core:FragmentNavigation"))
+    implementation(project(":Core:Auth"))
     implementation(project(":Core:Network"))
     implementation(project(":Core:Network:Models"))
     implementation(project(":Core:Onboarding"))
