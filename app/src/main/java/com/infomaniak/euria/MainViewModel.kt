@@ -17,33 +17,34 @@
  */
 package com.infomaniak.euria
 
-import android.app.Application
 import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.infomaniak.core.auth.TokenAuthenticator.Companion.changeAccessToken
 import com.infomaniak.core.auth.models.user.User
-import com.infomaniak.core.auth.networking.AuthHttpClientProvider
 import com.infomaniak.core.compose.basics.CallableState
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
 import com.infomaniak.core.network.LOGIN_ENDPOINT_URL
+import com.infomaniak.core.network.NetworkAvailability
 import com.infomaniak.core.network.networking.DefaultHttpClientProvider
 import com.infomaniak.core.sentry.SentryLog
 import com.infomaniak.euria.MainActivity.Companion.TAG
 import com.infomaniak.euria.MainActivity.Companion.getLoginErrorDescription
 import com.infomaniak.euria.data.UserSharedPref
 import com.infomaniak.euria.network.ApiRepository
+import com.infomaniak.euria.utils.OkHttpClientProvider
 import com.infomaniak.lib.login.ApiToken
 import com.infomaniak.lib.login.InfomaniakLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -54,20 +55,21 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
-class MainViewModel @Inject constructor(application: Application) : AndroidViewModel(application) {
-
-    @Inject
-    lateinit var userSharedPref: UserSharedPref
+class MainViewModel @Inject constructor(
+    @param:ApplicationContext private val context: Context,
+    private val userSharedPref: UserSharedPref,
+) : ViewModel() {
 
     val showSplashScreen = MutableStateFlow(true)
 
-    private val context by lazy { getApplication<Application>() }
-
     val infomaniakLogin: InfomaniakLogin by lazy { context.getInfomaniakLogin() }
+    val isNetworkAvailable = NetworkAvailability(context).isNetworkAvailable.distinctUntilChanged()
+        .stateIn(viewModelScope, SharingStarted.Lazily, true)
 
-    private var _token = MutableStateFlow<String?>(null)
-    var token = _token.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds), null)
+    private var _token = MutableStateFlow<String>("")
+    var token = _token.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds), "")
     var launchMediaChooser by mutableStateOf(false)
+    var hasSeenWebView by mutableStateOf(false)
 
     init {
         viewModelScope.launch {
@@ -111,13 +113,7 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
 
     fun saveUserInfo(apiToken: ApiToken, showError: (String) -> Unit) {
         viewModelScope.launch {
-            // TODO Use the one from CredentialManager when User database is ready
-            val okhttpClient = AuthHttpClientProvider.authOkHttpClient.newBuilder().addInterceptor { chain ->
-                val newRequest = changeAccessToken(chain.request(), apiToken.accessToken)
-                chain.proceed(newRequest)
-            }.build()
-
-            ApiRepository.getUserProfile(okhttpClient).data?.let {
+            ApiRepository.getUserProfile(OkHttpClientProvider.getOkHttpClientProvider(apiToken.accessToken)).data?.let {
                 saveToSharedPref(apiToken, it)
             } ?: run {
                 showError(context.getString(R.string.connectionError))
@@ -128,9 +124,9 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
     private fun saveToSharedPref(apiToken: ApiToken, user: User) {
         with(userSharedPref) {
             _token.update { apiToken.accessToken }
-            token = apiToken.accessToken
+            userSharedPref.token = apiToken.accessToken
             userId = apiToken.userId
-            avatarUrl = user.avatar
+            avatarUrl = user.avatar ?: ""
             fullName = user.displayName ?: "${user.firstname} ${user.lastname}"
             initials = user.getInitials()
             email = user.email
@@ -152,7 +148,7 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
 
     fun logout() {
         userSharedPref.deleteUserInfo()
-        _token.update { null }
+        _token.update { "" }
     }
 
     companion object {

@@ -60,5 +60,7 @@ include(
     ":Core:Onboarding",
     ":Core:Sentry",
     ":Core:SharedValues",
+    ":Core:TwoFactorAuth:Front",
+    ":Core:TwoFactorAuth:Back",
     ":Core:WebView",
 )
