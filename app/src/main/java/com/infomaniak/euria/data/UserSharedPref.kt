@@ -38,9 +38,7 @@ class UserSharedPref @Inject constructor(@ApplicationContext context: Context) :
     var email: String by sharedValue("email", "")
 
     fun deleteUserInfo() {
-        sharedPreferences.transaction {
-            clear()
-        }
+        sharedPreferences.transaction { clear() }
     }
 
     companion object {
