@@ -31,12 +31,12 @@ class UserSharedPref @Inject constructor(@ApplicationContext context: Context) :
 
     override val sharedPreferences = context.applicationContext.getSharedPreferences(NAME, Context.MODE_PRIVATE)!!
 
-    var token: String? by sharedValue(TOKEN_KEY, null)
-    var userId: Int by sharedValue(USER_ID_KEY, -1)
-    var avatarUrl: String? by sharedValue(AVATAR_URL_KEY, null)
-    var fullName: String by sharedValue(FULL_NAME_KEY, "")
-    var initials: String by sharedValue(INITIALS_KEY, "")
-    var email: String by sharedValue(EMAIL_KEY, "")
+    var token: String? by sharedValue("token", null)
+    var userId: Int by sharedValue("userId", -1)
+    var avatarUrl: String? by sharedValue("avatarUrl", null)
+    var fullName: String by sharedValue("fullName", "")
+    var initials: String by sharedValue("initials", "")
+    var email: String by sharedValue("email", "")
 
     fun deleteUserInfo() {
         sharedPreferences.edit {
@@ -46,13 +46,6 @@ class UserSharedPref @Inject constructor(@ApplicationContext context: Context) :
     }
 
     companion object {
-        const val NAME = "com.infomaniak.euria.usersharedpref"
-
-        private const val TOKEN_KEY = "com.infomaniak.euria.usersharedpref.token"
-        private const val USER_ID_KEY = "com.infomaniak.euria.usersharedpref.user_id"
-        private const val AVATAR_URL_KEY = "com.infomaniak.euria.usersharedpref.avatar_url"
-        private const val FULL_NAME_KEY = "com.infomaniak.euria.usersharedpref.full_name"
-        private const val INITIALS_KEY = "com.infomaniak.euria.usersharedpref.initials"
-        private const val EMAIL_KEY = "com.infomaniak.euria.usersharedpref.email"
+        private const val NAME = "com.infomaniak.euria.usersharedpref"
     }
 }

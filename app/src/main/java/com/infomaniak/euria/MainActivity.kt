@@ -65,7 +65,6 @@ import splitties.experimental.ExperimentalSplittiesApi
 import javax.inject.Inject
 import com.infomaniak.core.R as RCore
 
-
 @AndroidEntryPoint
 @OptIn(ExperimentalSplittiesApi::class)
 class MainActivity : ComponentActivity() {
