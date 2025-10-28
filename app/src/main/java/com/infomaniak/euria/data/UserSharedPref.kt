@@ -19,9 +19,8 @@
 package com.infomaniak.euria.data
 
 import android.content.Context
-import androidx.core.content.edit
 import com.infomaniak.core.sharedvalues.SharedValues
-import com.infomaniak.core.sharedvalues.sharedValue
+import com.infomaniak.core.sharedvalues.transaction
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -31,17 +30,16 @@ class UserSharedPref @Inject constructor(@ApplicationContext context: Context) :
 
     override val sharedPreferences = context.applicationContext.getSharedPreferences(NAME, Context.MODE_PRIVATE)!!
 
-    var token: String? by sharedValue("token", null)
+    var token: String by sharedValue("token", "")
     var userId: Int by sharedValue("userId", -1)
-    var avatarUrl: String? by sharedValue("avatarUrl", null)
+    var avatarUrl: String by sharedValue("avatarUrl", "")
     var fullName: String by sharedValue("fullName", "")
     var initials: String by sharedValue("initials", "")
     var email: String by sharedValue("email", "")
 
     fun deleteUserInfo() {
-        sharedPreferences.edit {
+        sharedPreferences.transaction {
             clear()
-            apply()
         }
     }
 

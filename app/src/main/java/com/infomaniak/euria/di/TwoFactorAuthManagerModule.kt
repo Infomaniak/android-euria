@@ -18,11 +18,10 @@
 
 package com.infomaniak.euria.di
 
-import com.infomaniak.core.auth.TokenAuthenticator.Companion.changeAccessToken
-import com.infomaniak.core.auth.networking.AuthHttpClientProvider
 import com.infomaniak.core.twofactorauth.back.ConnectionAttemptInfo
 import com.infomaniak.core.twofactorauth.back.TwoFactorAuthManager
 import com.infomaniak.euria.data.UserSharedPref
+import com.infomaniak.euria.utils.OkHttpClientProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,12 +31,12 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object TwoFactorAuthManagerProvider {
+object TwoFactorAuthManagerModule {
 
     @Singleton
     @Provides
     fun providesTwoFactorAuthManager(
-        userSharedPref: UserSharedPref
+        userSharedPref: UserSharedPref,
     ): TwoFactorAuthManager {
         val targetAccount = with(userSharedPref) {
             ConnectionAttemptInfo.TargetAccount(
@@ -51,13 +50,8 @@ object TwoFactorAuthManagerProvider {
 
         return TwoFactorAuthManager(
             userIds = flowOf(setOf(targetAccount.id.toInt())),
-            getAccountInfo = { targetAccount }) { _ ->
-            userSharedPref.token?.let { token ->
-                AuthHttpClientProvider.authOkHttpClient.newBuilder().addInterceptor { chain ->
-                    val newRequest = changeAccessToken(chain.request(), token)
-                    chain.proceed(newRequest)
-                }.build()
-            } ?: AuthHttpClientProvider.authOkHttpClient
-        }
+            getAccountInfo = { targetAccount },
+            getConnectedHttpClient = { OkHttpClientProvider.getOkHttpClientProvider(userSharedPref.token) }
+        )
     }
 }
