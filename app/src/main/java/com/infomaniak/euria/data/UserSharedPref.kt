@@ -18,72 +18,73 @@
 
 package com.infomaniak.euria.data
 
-import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import javax.inject.Inject
 
-object UserSharedPref {
+class UserSharedPref @Inject constructor(private val sharedPref: SharedPreferences) {
 
-    private const val NAME = "com.infomaniak.euria.usersharedpref"
-    private const val TOKEN_KEY = "com.infomaniak.euria.usersharedpref.token"
-    private const val USER_ID_KEY = "com.infomaniak.euria.usersharedpref.user_id"
-    private const val AVATAR_URL_KEY = "com.infomaniak.euria.usersharedpref.avatar_url"
-    private const val FULL_NAME_KEY = "com.infomaniak.euria.usersharedpref.full_name"
-    private const val INITIALS_KEY = "com.infomaniak.euria.usersharedpref.initials"
-    private const val EMAIL_KEY = "com.infomaniak.euria.usersharedpref.email"
+    fun getToken() = sharedPref.getString(TOKEN_KEY, null)
 
-    fun Context.getToken() = getSharedPref(this).getString(TOKEN_KEY, null)
-
-    fun Context.saveToken(token: String) {
-        getSharedPref(this).save(TOKEN_KEY, token)
+    fun saveToken(token: String) {
+        sharedPref.save(TOKEN_KEY, token)
     }
 
-    fun Context.getUserId() = getSharedPref(this).getInt(USER_ID_KEY, -1)
+    fun getUserId() = sharedPref.getInt(USER_ID_KEY, -1)
 
-    fun Context.saveUserId(userId: Int) {
-        getSharedPref(this).save(USER_ID_KEY, userId)
+    fun saveUserId(userId: Int) {
+        sharedPref.save(USER_ID_KEY, userId)
     }
 
-    fun Context.getAvatarUrl() = getSharedPref(this).getString(AVATAR_URL_KEY, null)
+    fun getAvatarUrl() = sharedPref.getString(AVATAR_URL_KEY, null)
 
-    fun Context.saveAvatarUrl(avatarUrl: String?) {
-        getSharedPref(this).save(AVATAR_URL_KEY, avatarUrl)
+    fun saveAvatarUrl(avatarUrl: String) {
+        sharedPref.save(AVATAR_URL_KEY, avatarUrl)
     }
 
-    fun Context.getFullName() = getSharedPref(this).getString(FULL_NAME_KEY, null)
+    fun getFullName() = sharedPref.getString(FULL_NAME_KEY, null) ?: ""
 
-    fun Context.saveFullName(fullName: String?) {
-        getSharedPref(this).save(FULL_NAME_KEY, fullName)
+    fun saveFullName(fullName: String?) {
+        sharedPref.save(FULL_NAME_KEY, fullName)
     }
 
-    fun Context.getInitials() = getSharedPref(this).getString(INITIALS_KEY, null)
+    fun getInitials() = sharedPref.getString(INITIALS_KEY, null) ?: ""
 
-    fun Context.saveInitials(initials: String) {
-        getSharedPref(this).save(INITIALS_KEY, initials)
+    fun saveInitials(initials: String) {
+        sharedPref.save(INITIALS_KEY, initials)
     }
 
-    fun Context.getEmail() = getSharedPref(this).getString(EMAIL_KEY, null)
+    fun getEmail() = sharedPref.getString(EMAIL_KEY, null) ?: ""
 
-    fun Context.saveEmail(email: String) {
-        getSharedPref(this).save(EMAIL_KEY, email)
+    fun saveEmail(email: String) {
+        sharedPref.save(EMAIL_KEY, email)
     }
 
-    fun Context.deleteUserInfo() {
-        getSharedPref(this).edit {
+    fun deleteUserInfo() {
+        sharedPref.edit {
             clear()
             apply()
         }
     }
 
-    private fun getSharedPref(context: Context) = context.getSharedPreferences(NAME, Context.MODE_PRIVATE)
-
     private fun <T> SharedPreferences.save(key: String, value: T) {
         edit {
             when (value) {
-                is String? -> putString(key, value as String?)
+                is String -> putString(key, value as String)
                 is Int -> putInt(key, value as Int)
                 else -> throw IllegalArgumentException("Type not supported")
             }
         }
+    }
+
+    companion object {
+        const val NAME = "com.infomaniak.euria.usersharedpref"
+
+        private const val TOKEN_KEY = "com.infomaniak.euria.usersharedpref.token"
+        private const val USER_ID_KEY = "com.infomaniak.euria.usersharedpref.user_id"
+        private const val AVATAR_URL_KEY = "com.infomaniak.euria.usersharedpref.avatar_url"
+        private const val FULL_NAME_KEY = "com.infomaniak.euria.usersharedpref.full_name"
+        private const val INITIALS_KEY = "com.infomaniak.euria.usersharedpref.initials"
+        private const val EMAIL_KEY = "com.infomaniak.euria.usersharedpref.email"
     }
 }

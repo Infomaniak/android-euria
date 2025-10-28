@@ -49,7 +49,7 @@ import com.infomaniak.core.network.ApiEnvironment
 import com.infomaniak.core.network.NetworkConfiguration
 import com.infomaniak.core.observe
 import com.infomaniak.core.webview.ui.components.WebView
-import com.infomaniak.euria.data.UserSharedPref.getUserId
+import com.infomaniak.euria.data.UserSharedPref
 import com.infomaniak.euria.ui.login.CrossAppLoginViewModel
 import com.infomaniak.euria.ui.login.components.OnboardingScreen
 import com.infomaniak.euria.ui.theme.EuriaTheme
@@ -58,13 +58,20 @@ import com.infomaniak.euria.webview.CustomWebChromeClient
 import com.infomaniak.euria.webview.CustomWebViewClient
 import com.infomaniak.euria.webview.JavascriptBridge
 import com.infomaniak.lib.login.InfomaniakLogin
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import splitties.experimental.ExperimentalSplittiesApi
+import javax.inject.Inject
 import com.infomaniak.core.R as RCore
 
+
+@AndroidEntryPoint
 @OptIn(ExperimentalSplittiesApi::class)
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var userSharedPref: UserSharedPref
 
     private val mainViewModel: MainViewModel by viewModels()
     private val crossAppLoginViewModel: CrossAppLoginViewModel by viewModels()
@@ -208,7 +215,7 @@ class MainActivity : ComponentActivity() {
 
     fun startCrossAppLoginService() {
         val intent = Intent(this, CrossAppLoginService::class.java).apply {
-            putExtra(CrossAppLoginService.EXTRA_USER_ID, getUserId())
+            putExtra(CrossAppLoginService.EXTRA_USER_ID, userSharedPref.getUserId())
         }
 
         startService(intent)

@@ -34,14 +34,7 @@ import com.infomaniak.core.network.networking.DefaultHttpClientProvider
 import com.infomaniak.core.sentry.SentryLog
 import com.infomaniak.euria.MainActivity.Companion.TAG
 import com.infomaniak.euria.MainActivity.Companion.getLoginErrorDescription
-import com.infomaniak.euria.data.UserSharedPref.deleteUserInfo
-import com.infomaniak.euria.data.UserSharedPref.getToken
-import com.infomaniak.euria.data.UserSharedPref.saveAvatarUrl
-import com.infomaniak.euria.data.UserSharedPref.saveEmail
-import com.infomaniak.euria.data.UserSharedPref.saveFullName
-import com.infomaniak.euria.data.UserSharedPref.saveInitials
-import com.infomaniak.euria.data.UserSharedPref.saveToken
-import com.infomaniak.euria.data.UserSharedPref.saveUserId
+import com.infomaniak.euria.data.UserSharedPref
 import com.infomaniak.euria.network.ApiRepository
 import com.infomaniak.lib.login.ApiToken
 import com.infomaniak.lib.login.InfomaniakLogin
@@ -63,9 +56,13 @@ import kotlin.time.Duration.Companion.seconds
 @HiltViewModel
 class MainViewModel @Inject constructor(application: Application) : AndroidViewModel(application) {
 
+    @Inject
+    lateinit var userSharedPref: UserSharedPref
+
     val showSplashScreen = MutableStateFlow(true)
 
     private val context by lazy { getApplication<Application>() }
+
     val infomaniakLogin: InfomaniakLogin by lazy { context.getInfomaniakLogin() }
 
     private var _token = MutableStateFlow<String?>(null)
@@ -74,7 +71,7 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
 
     init {
         viewModelScope.launch {
-            _token.value = withContext(Dispatchers.IO) { context.getToken() }
+            _token.value = withContext(Dispatchers.IO) { userSharedPref.getToken() }
             delay(DELAY_SPLASHSCREEN)
             showSplashScreen.emit(false)
         }
@@ -125,12 +122,12 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
     }
 
     private fun saveToSharedPref(apiToken: ApiToken, user: User?) {
-        with(context) {
+        with(userSharedPref) {
             _token.update { apiToken.accessToken }
             saveToken(apiToken.accessToken)
             saveUserId(apiToken.userId)
-            saveAvatarUrl(user?.avatar)
-            saveFullName(user?.displayName)
+            user?.avatar?.let { saveAvatarUrl(it) }
+            saveFullName(user?.displayName ?: "${user?.firstname} ${user?.lastname}")
             user?.let {
                 saveInitials(it.getInitials())
                 saveEmail(it.email)
@@ -152,7 +149,7 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
     }
 
     fun logout() {
-        context.deleteUserInfo()
+        userSharedPref.deleteUserInfo()
         _token.update { null }
     }
 

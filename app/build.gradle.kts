@@ -23,6 +23,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.serialization)
     alias(core.plugins.kapt)
     alias(libs.plugins.navigation.safeargs)
+    alias(libs.plugins.dagger.hilt)
 }
 
 val appCompileSdk: Int by rootProject.extra
