@@ -21,6 +21,7 @@ navigation-safeargs = { module = "androidx.navigation:navigation-safe-args-gradl
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin" }

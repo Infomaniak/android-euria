@@ -19,43 +19,33 @@
 package com.infomaniak.euria.data
 
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.core.content.edit
+import com.infomaniak.core.sharedvalues.SharedValues
+import com.infomaniak.core.sharedvalues.sharedValue
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object UserSharedPref {
+@Singleton
+class UserSharedPref @Inject constructor(@ApplicationContext context: Context) : SharedValues {
 
-    private const val NAME = "com.infomaniak.euria.usersharedpref"
-    private const val TOKEN_KEY = "com.infomaniak.euria.usersharedpref.token"
-    private const val USER_ID_KEY = "com.infomaniak.euria.usersharedpref.user_id"
+    override val sharedPreferences = context.applicationContext.getSharedPreferences(NAME, Context.MODE_PRIVATE)!!
 
-    fun Context.getToken() = getSharedPref(this).getString(TOKEN_KEY, null)
+    var token: String? by sharedValue("token", null)
+    var userId: Int by sharedValue("userId", -1)
+    var avatarUrl: String? by sharedValue("avatarUrl", null)
+    var fullName: String by sharedValue("fullName", "")
+    var initials: String by sharedValue("initials", "")
+    var email: String by sharedValue("email", "")
 
-    fun Context.saveToken(token: String) {
-        getSharedPref(this).save(TOKEN_KEY, token)
-    }
-
-    fun Context.getUserId() = getSharedPref(this).getInt(USER_ID_KEY, -1)
-
-    fun Context.saveUserId(userId: Int) {
-        getSharedPref(this).save(USER_ID_KEY, userId)
-    }
-
-    fun Context.deleteUserInfo() {
-        getSharedPref(this).edit {
+    fun deleteUserInfo() {
+        sharedPreferences.edit {
             clear()
             apply()
         }
     }
 
-    private fun getSharedPref(context: Context) = context.getSharedPreferences(NAME, Context.MODE_PRIVATE)
-
-    private fun <T> SharedPreferences.save(key: String, value: T) {
-        edit {
-            when (value) {
-                is String -> putString(key, value as String)
-                is Int -> putInt(key, value as Int)
-                else -> throw IllegalArgumentException("Type not supported")
-            }
-        }
+    companion object {
+        private const val NAME = "com.infomaniak.euria.usersharedpref"
     }
 }

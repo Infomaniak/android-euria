@@ -23,6 +23,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.serialization)
     alias(core.plugins.kapt)
     alias(libs.plugins.navigation.safeargs)
+    alias(libs.plugins.dagger.hilt)
 }
 
 val appCompileSdk: Int by rootProject.extra
@@ -94,9 +95,11 @@ dependencies {
     implementation(project(":Core:CrossAppLogin:Back"))
     implementation(project(":Core:CrossAppLogin:Front"))
     implementation(project(":Core:FragmentNavigation"))
+    implementation(project(":Core:Auth"))
     implementation(project(":Core:Network"))
     implementation(project(":Core:Network:Models"))
     implementation(project(":Core:Onboarding"))
+    implementation(project(":Core:SharedValues"))
     implementation(project(":Core:Sentry"))
     implementation(project(":Core:WebView"))
 
