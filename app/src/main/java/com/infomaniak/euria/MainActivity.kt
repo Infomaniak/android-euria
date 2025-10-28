@@ -48,6 +48,8 @@ import com.infomaniak.core.crossapplogin.back.ExternalAccount
 import com.infomaniak.core.network.ApiEnvironment
 import com.infomaniak.core.network.NetworkConfiguration
 import com.infomaniak.core.observe
+import com.infomaniak.core.twofactorauth.back.TwoFactorAuthManager
+import com.infomaniak.core.twofactorauth.front.TwoFactorAuthApprovalAutoManagedBottomSheet
 import com.infomaniak.core.webview.ui.components.WebView
 import com.infomaniak.euria.data.UserSharedPref
 import com.infomaniak.euria.ui.login.CrossAppLoginViewModel
@@ -148,7 +150,7 @@ class MainActivity : ComponentActivity() {
                 val token by mainViewModel.token.collectAsStateWithLifecycle()
 
                 Surface {
-                    if (token == null) {
+                    if (token.isEmpty()) {
                         OnboardingScreen(
                             accounts = { accounts },
                             skippedIds = { skippedIds },
