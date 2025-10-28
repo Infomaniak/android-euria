@@ -109,29 +109,32 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
         }
     }
 
-    fun saveUserInfo(apiToken: ApiToken) {
+    fun saveUserInfo(apiToken: ApiToken, showError: (String) -> Unit) {
         viewModelScope.launch {
             val okhttpClient = AuthHttpClientProvider.authOkHttpClient.newBuilder().addInterceptor { chain ->
-                val newRequest = changeAccessToken(chain.request(), apiToken)
+                val newRequest = changeAccessToken(chain.request(), apiToken.accessToken)
                 chain.proceed(newRequest)
             }.build()
 
             val userProfileResponse = ApiRepository.getUserProfile(okhttpClient)
-            saveToSharedPref(apiToken, userProfileResponse.data)
+
+            userProfileResponse.data?.let {
+                saveToSharedPref(apiToken, it)
+            } ?: run {
+                showError(context.getString(R.string.connectionError))
+            }
         }
     }
 
-    private fun saveToSharedPref(apiToken: ApiToken, user: User?) {
+    private fun saveToSharedPref(apiToken: ApiToken, user: User) {
         with(userSharedPref) {
             _token.update { apiToken.accessToken }
             token = apiToken.accessToken
             userId = apiToken.userId
-            user?.let {
-                avatarUrl = it.avatar
-                fullName = it.displayName ?: "${it.firstname} ${it.lastname}"
-                initials = it.getInitials()
-                email = it.email
-            }
+            avatarUrl = user.avatar
+            fullName = user.displayName ?: "${user.firstname} ${user.lastname}"
+            initials = user.getInitials()
+            email = user.email
         }
     }
 
