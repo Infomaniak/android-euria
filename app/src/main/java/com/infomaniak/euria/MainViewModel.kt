@@ -66,7 +66,7 @@ class MainViewModel @Inject constructor(
     val isNetworkAvailable = NetworkAvailability(context).isNetworkAvailable.distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.Lazily, true)
 
-    private var _token = MutableStateFlow<String>("")
+    private var _token = MutableStateFlow("")
     var token = _token.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds), "")
     var launchMediaChooser by mutableStateOf(false)
     var hasSeenWebView by mutableStateOf(false)
