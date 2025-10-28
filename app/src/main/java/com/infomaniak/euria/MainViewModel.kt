@@ -99,13 +99,7 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
 
                 when (tokenResult) {
                     is InfomaniakLogin.TokenResult.Success -> {
-                        val okhttpClient = AuthHttpClientProvider.authOkHttpClient.newBuilder().addInterceptor { chain ->
-                            val newRequest = changeAccessToken(chain.request(), tokenResult.apiToken)
-                            chain.proceed(newRequest)
-                        }.build()
-
-                        val userProfileResponse = ApiRepository.getUserProfile(okhttpClient)
-                        saveUserInfo(tokenResult.apiToken, userProfileResponse.data)
+                        saveUserInfo(tokenResult.apiToken)
                     }
                     is InfomaniakLogin.TokenResult.Error -> {
                         showError(getLoginErrorDescription(context, tokenResult.errorStatus))
@@ -118,7 +112,19 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
         }
     }
 
-    fun saveUserInfo(apiToken: ApiToken, user: User?) {
+    fun saveUserInfo(apiToken: ApiToken) {
+        viewModelScope.launch {
+            val okhttpClient = AuthHttpClientProvider.authOkHttpClient.newBuilder().addInterceptor { chain ->
+                val newRequest = changeAccessToken(chain.request(), apiToken)
+                chain.proceed(newRequest)
+            }.build()
+
+            val userProfileResponse = ApiRepository.getUserProfile(okhttpClient)
+            saveToSharedPref(apiToken, userProfileResponse.data)
+        }
+    }
+
+    private fun saveToSharedPref(apiToken: ApiToken, user: User?) {
         with(context) {
             _token.update { apiToken.accessToken }
             saveToken(apiToken.accessToken)

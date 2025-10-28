@@ -80,7 +80,7 @@ object UserSharedPref {
     private fun <T> SharedPreferences.save(key: String, value: T) {
         edit {
             when (value) {
-                is String -> putString(key, value as String)
+                is String? -> putString(key, value as String?)
                 is Int -> putInt(key, value as Int)
                 else -> throw IllegalArgumentException("Type not supported")
             }
