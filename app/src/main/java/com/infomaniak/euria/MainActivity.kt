@@ -54,6 +54,7 @@ import com.infomaniak.core.webview.ui.components.WebView
 import com.infomaniak.euria.data.UserSharedPref
 import com.infomaniak.euria.ui.login.CrossAppLoginViewModel
 import com.infomaniak.euria.ui.login.components.OnboardingScreen
+import com.infomaniak.euria.ui.noNetwork.NoNetworkScreen
 import com.infomaniak.euria.ui.theme.EuriaTheme
 import com.infomaniak.euria.ui.theme.LocalCustomColorScheme
 import com.infomaniak.euria.webview.CustomWebChromeClient
@@ -148,20 +149,27 @@ class MainActivity : ComponentActivity() {
                 val accounts by crossAppLoginViewModel.availableAccounts.collectAsStateWithLifecycle()
                 val skippedIds by crossAppLoginViewModel.skippedAccountIds.collectAsStateWithLifecycle()
                 val token by mainViewModel.token.collectAsStateWithLifecycle()
+                val isNetworkAvailable by mainViewModel.isNetworkAvailable.collectAsStateWithLifecycle()
 
                 Surface {
-                    if (token.isEmpty()) {
-                        OnboardingScreen(
-                            accounts = { accounts },
-                            skippedIds = { skippedIds },
-                            isLoginButtonLoading = { loginRequest.isAwaitingCall.not() || isLoginButtonLoading },
-                            isSignUpButtonLoading = { isSignUpButtonLoading },
-                            onLoginRequest = { accounts -> loginRequest(accounts) },
-                            onCreateAccount = { openAccountCreationWebView() },
-                            onSaveSkippedAccounts = { crossAppLoginViewModel.skippedAccountIds.value = it },
-                        )
-                    } else {
-                        EuriaMainScreen(token)
+                    when {
+                        token.isEmpty() -> {
+                            OnboardingScreen(
+                                accounts = { accounts },
+                                skippedIds = { skippedIds },
+                                isLoginButtonLoading = { loginRequest.isAwaitingCall.not() || isLoginButtonLoading },
+                                isSignUpButtonLoading = { isSignUpButtonLoading },
+                                onLoginRequest = { accounts -> loginRequest(accounts) },
+                                onCreateAccount = { openAccountCreationWebView() },
+                                onSaveSkippedAccounts = { crossAppLoginViewModel.skippedAccountIds.value = it },
+                            )
+                        }
+                        isNetworkAvailable || mainViewModel.hasSeenWebView -> {
+                            EuriaMainScreen(token)
+                        }
+                        else -> {
+                            NoNetworkScreen()
+                        }
                     }
 
                     TwoFactorAuthApprovalAutoManagedBottomSheet(twoFactorAuthManager)
@@ -182,7 +190,14 @@ class MainActivity : ComponentActivity() {
             url = EURIA_MAIN_URL,
             domStorageEnabled = true,
             systemBarsColor = LocalCustomColorScheme.current.systemBarsColor,
-            webViewClient = CustomWebViewClient(),
+            webViewClient = CustomWebViewClient(
+                onPageSucessfullyLoaded = {
+                    mainViewModel.hasSeenWebView = true
+                },
+                onPageFailedToLoad = {
+                    mainViewModel.logout()
+                }
+            ),
             webChromeClient = getCustomWebChromeClient(),
             callback = { webview -> webview.addJavascriptInterface(jsBridge, JavascriptBridge.NAME) },
         )

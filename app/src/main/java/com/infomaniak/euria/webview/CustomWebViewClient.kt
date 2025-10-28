@@ -20,15 +20,41 @@ package com.infomaniak.euria.webview
 import android.annotation.SuppressLint
 import android.net.http.SslError
 import android.webkit.SslErrorHandler
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.infomaniak.euria.BuildConfig
 
-class CustomWebViewClient : WebViewClient() {
+class CustomWebViewClient(
+    private val onPageSucessfullyLoaded: () -> Unit,
+    private val onPageFailedToLoad: () -> Unit
+) : WebViewClient() {
+
+    private var hasReceivedError = false
 
     @SuppressLint("WebViewClientOnReceivedSslError")
-    override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
+    override fun onReceivedSslError(view: WebView, handler: SslErrorHandler, error: SslError) {
         // In order to use localhost, we have to ignore all SSL errors and proceed
-        if (BuildConfig.DEBUG) handler?.proceed()
+        if (BuildConfig.DEBUG) handler.proceed()
+    }
+
+    override fun onReceivedHttpError(view: WebView, request: WebResourceRequest, errorResponse: WebResourceResponse) {
+        super.onReceivedHttpError(view, request, errorResponse)
+
+        if (request.url.path?.endsWith("users/me") == true && errorResponse.statusCode >= 401) {
+            onPageFailedToLoad()
+        }
+    }
+
+    override fun onPageFinished(view: WebView, url: String?) {
+        super.onPageFinished(view, url)
+        if (!hasReceivedError) onPageSucessfullyLoaded()
+    }
+
+    override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
+        super.onReceivedError(view, request, error)
+        if (request.isForMainFrame) hasReceivedError = true
     }
 }
