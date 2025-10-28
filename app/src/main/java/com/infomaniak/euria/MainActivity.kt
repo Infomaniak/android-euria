@@ -70,6 +70,9 @@ import com.infomaniak.core.R as RCore
 class MainActivity : ComponentActivity() {
 
     @Inject
+    lateinit var twoFactorAuthManager: TwoFactorAuthManager
+
+    @Inject
     lateinit var userSharedPref: UserSharedPref
 
     private val mainViewModel: MainViewModel by viewModels()
@@ -158,6 +161,8 @@ class MainActivity : ComponentActivity() {
                     } else {
                         EuriaMainScreen(token)
                     }
+
+                    TwoFactorAuthApprovalAutoManagedBottomSheet(twoFactorAuthManager)
                 }
             }
             startCrossAppLoginService()
