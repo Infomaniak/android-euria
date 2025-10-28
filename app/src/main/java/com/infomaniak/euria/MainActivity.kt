@@ -215,7 +215,7 @@ class MainActivity : ComponentActivity() {
 
     fun startCrossAppLoginService() {
         val intent = Intent(this, CrossAppLoginService::class.java).apply {
-            putExtra(CrossAppLoginService.EXTRA_USER_ID, userSharedPref.getUserId())
+            putExtra(CrossAppLoginService.EXTRA_USER_ID, userSharedPref.userId)
         }
 
         startService(intent)

@@ -99,6 +99,7 @@ dependencies {
     implementation(project(":Core:Network"))
     implementation(project(":Core:Network:Models"))
     implementation(project(":Core:Onboarding"))
+    implementation(project(":Core:SharedValues"))
     implementation(project(":Core:Sentry"))
     implementation(project(":Core:WebView"))
 

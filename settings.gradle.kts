@@ -59,5 +59,6 @@ include(
     ":Core:Network:Models",
     ":Core:Onboarding",
     ":Core:Sentry",
+    ":Core:SharedValues",
     ":Core:WebView",
 )

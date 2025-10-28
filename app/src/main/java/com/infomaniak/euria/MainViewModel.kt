@@ -71,7 +71,7 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
 
     init {
         viewModelScope.launch {
-            _token.value = withContext(Dispatchers.IO) { userSharedPref.getToken() }
+            _token.value = withContext(Dispatchers.IO) { userSharedPref.token }
             delay(DELAY_SPLASHSCREEN)
             showSplashScreen.emit(false)
         }
@@ -124,13 +124,13 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
     private fun saveToSharedPref(apiToken: ApiToken, user: User?) {
         with(userSharedPref) {
             _token.update { apiToken.accessToken }
-            saveToken(apiToken.accessToken)
-            saveUserId(apiToken.userId)
-            user?.avatar?.let { saveAvatarUrl(it) }
-            saveFullName(user?.displayName ?: "${user?.firstname} ${user?.lastname}")
+            token = apiToken.accessToken
+            userId = apiToken.userId
             user?.let {
-                saveInitials(it.getInitials())
-                saveEmail(it.email)
+                avatarUrl = it.avatar
+                fullName = it.displayName ?: "${it.firstname} ${it.lastname}"
+                initials = it.getInitials()
+                email = it.email
             }
         }
     }

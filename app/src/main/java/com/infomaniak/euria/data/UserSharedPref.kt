@@ -18,62 +18,30 @@
 
 package com.infomaniak.euria.data
 
-import android.content.SharedPreferences
+import android.content.Context
 import androidx.core.content.edit
+import com.infomaniak.core.sharedvalues.SharedValues
+import com.infomaniak.core.sharedvalues.sharedValue
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class UserSharedPref @Inject constructor(private val sharedPref: SharedPreferences) {
+@Singleton
+class UserSharedPref @Inject constructor(@ApplicationContext context: Context) : SharedValues {
 
-    fun getToken() = sharedPref.getString(TOKEN_KEY, null)
+    override val sharedPreferences = context.applicationContext.getSharedPreferences(NAME, Context.MODE_PRIVATE)!!
 
-    fun saveToken(token: String) {
-        sharedPref.save(TOKEN_KEY, token)
-    }
-
-    fun getUserId() = sharedPref.getInt(USER_ID_KEY, -1)
-
-    fun saveUserId(userId: Int) {
-        sharedPref.save(USER_ID_KEY, userId)
-    }
-
-    fun getAvatarUrl() = sharedPref.getString(AVATAR_URL_KEY, null)
-
-    fun saveAvatarUrl(avatarUrl: String) {
-        sharedPref.save(AVATAR_URL_KEY, avatarUrl)
-    }
-
-    fun getFullName() = sharedPref.getString(FULL_NAME_KEY, null) ?: ""
-
-    fun saveFullName(fullName: String?) {
-        sharedPref.save(FULL_NAME_KEY, fullName)
-    }
-
-    fun getInitials() = sharedPref.getString(INITIALS_KEY, null) ?: ""
-
-    fun saveInitials(initials: String) {
-        sharedPref.save(INITIALS_KEY, initials)
-    }
-
-    fun getEmail() = sharedPref.getString(EMAIL_KEY, null) ?: ""
-
-    fun saveEmail(email: String) {
-        sharedPref.save(EMAIL_KEY, email)
-    }
+    var token: String? by sharedValue(TOKEN_KEY, null)
+    var userId: Int by sharedValue(USER_ID_KEY, -1)
+    var avatarUrl: String? by sharedValue(AVATAR_URL_KEY, null)
+    var fullName: String by sharedValue(FULL_NAME_KEY, "")
+    var initials: String by sharedValue(INITIALS_KEY, "")
+    var email: String by sharedValue(EMAIL_KEY, "")
 
     fun deleteUserInfo() {
-        sharedPref.edit {
+        sharedPreferences.edit {
             clear()
             apply()
-        }
-    }
-
-    private fun <T> SharedPreferences.save(key: String, value: T) {
-        edit {
-            when (value) {
-                is String -> putString(key, value as String)
-                is Int -> putInt(key, value as Int)
-                else -> throw IllegalArgumentException("Type not supported")
-            }
         }
     }
 
