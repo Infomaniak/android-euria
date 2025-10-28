@@ -228,7 +228,9 @@ class MainActivity : ComponentActivity() {
                 openLoginWebView = { openLoginWebView() },
                 attemptLogin = {
                     val apiToken = crossAppLoginViewModel.attemptLogin(it).tokens[0]
-                    mainViewModel.saveUserInfo(apiToken)
+                    mainViewModel.saveUserInfo(apiToken) {
+                        showError(it)
+                    }
                 },
             )
         }

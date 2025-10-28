@@ -96,7 +96,7 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
 
                 when (tokenResult) {
                     is InfomaniakLogin.TokenResult.Success -> {
-                        saveUserInfo(tokenResult.apiToken)
+                        saveUserInfo(tokenResult.apiToken, showError)
                     }
                     is InfomaniakLogin.TokenResult.Error -> {
                         showError(getLoginErrorDescription(context, tokenResult.errorStatus))
@@ -116,9 +116,7 @@ class MainViewModel @Inject constructor(application: Application) : AndroidViewM
                 chain.proceed(newRequest)
             }.build()
 
-            val userProfileResponse = ApiRepository.getUserProfile(okhttpClient)
-
-            userProfileResponse.data?.let {
+            ApiRepository.getUserProfile(okhttpClient).data?.let {
                 saveToSharedPref(apiToken, it)
             } ?: run {
                 showError(context.getString(R.string.connectionError))
