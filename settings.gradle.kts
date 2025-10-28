@@ -47,6 +47,7 @@ include(
     ":Core:Coil",
     ":Core:Compose:BasicButton",
     ":Core:Compose:Basics",
+    ":Core:Compose:Preview",
     ":Core:Compose:Margin",
     ":Core:Compose:MaterialThemeFromXml",
     ":Core:CrossAppLogin:Back",
