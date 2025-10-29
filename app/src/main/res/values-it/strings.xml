@@ -20,16 +20,17 @@
     <string name="connectionError">Problema di connessione a Internet</string>
     <string name="noNetworkDescription">Controlla la tua connessione Internet e riprova per riprendere la conversazione</string>
     <string name="noNetworkTitle">Nessun accesso a Internet</string>
-    <string name="onboardingEphemeralDescriptionArguments">vengono cancellati alla fine di ogni sessione.</string>
-    <string name="onboardingEphemeralDescriptionTemplate">le vostre conversazioni con Euria %s</string>
-    <string name="onboardingEphemeralTitle">Modalità effimera abilitata:</string>
-    <string name="onboardingEuriaDescription">etico, sovrano e indipendente.</string>
-    <string name="onboardingEuriaTitle">Euria\nL’assistente IA %s</string>
+    <string name="onboardingDatacenterDescription" formatted="false">L’energia AI è 100%% rivalutata.</string>
+    <string name="onboardingDatacenterTitle">Euria riscalda le abitazioni.</string>
+    <string name="onboardingEphemeralDescriptionArguments">Euria non lascia traccia</string>
+    <string name="onboardingEphemeralDescriptionTemplate">%s dei tuoi scambi.</string>
+    <string name="onboardingEphemeralTitle">Con la modalità effimera,</string>
+    <string name="onboardingEuriaDescription">Un’intelligenza artificiale sovrana che rispetta i tuoi dati e il pianeta.</string>
+    <string name="onboardingEuriaTitle">Benvenuto in Euria</string>
     <string name="onboardingLoginArguments">Chatta ora</string>
     <string name="onboardingLoginTemplate">%s con Euria.</string>
     <string name="onboardingLoginTitle">Pronti per iniziare?</string>
-    <string name="onboardingPrivacyDescriptionArgument">cifrate, private</string>
-    <string name="onboardingPrivacyDescriptionTemplate">%s e rispettati.</string>
-    <string name="onboardingPrivacyTitle">Con Euria,\nle vostre conversazioni sono</string>
+    <string name="onboardingPrivacyDescription">Non viene raccolto nulla, i vostri dati appartengono a te.</string>
+    <string name="onboardingPrivacyTitle">Euria è ospitata in Svizzera.</string>
     <string name="serverError">Errore del server</string>
 </resources>

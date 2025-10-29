@@ -20,16 +20,17 @@
     <string name="connectionError">Problem mit der Internetverbindung</string>
     <string name="noNetworkDescription">Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut, um Ihr Unterhaltung fortzusetzen</string>
     <string name="noNetworkTitle">Keine Internetverbindung</string>
-    <string name="onboardingEphemeralDescriptionArguments">werden am Ende einer jeden Sitzung gelöscht.</string>
-    <string name="onboardingEphemeralDescriptionTemplate">ihre Unterhaltungen mit Euria %s</string>
-    <string name="onboardingEphemeralTitle">Ephemerer Modus aktiviert:</string>
-    <string name="onboardingEuriaDescription">ethisch, souverän und unabhängig.</string>
-    <string name="onboardingEuriaTitle">Euria\nDer IA-Assistent %s</string>
+    <string name="onboardingDatacenterDescription" formatted="false">AI-Energie wird zu 100%% aufgewertet.</string>
+    <string name="onboardingDatacenterTitle">Euria heizt Häuser.</string>
+    <string name="onboardingEphemeralDescriptionArguments">Euria hinterlässt keine Spuren</string>
+    <string name="onboardingEphemeralDescriptionTemplate">%s Ihrer Vermittlungen.</string>
+    <string name="onboardingEphemeralTitle">Mit dem ephemeren Modus,</string>
+    <string name="onboardingEuriaDescription">Souveräne KI, die Ihre Daten und den Planeten respektiert.</string>
+    <string name="onboardingEuriaTitle">Willkommen bei Euria</string>
     <string name="onboardingLoginArguments">Chatte jetzt</string>
     <string name="onboardingLoginTemplate">%s mit Euria.</string>
     <string name="onboardingLoginTitle">Bereit zum Start?</string>
-    <string name="onboardingPrivacyDescriptionArgument">chiffriert, privat</string>
-    <string name="onboardingPrivacyDescriptionTemplate">%s und respektiert.</string>
-    <string name="onboardingPrivacyTitle">Mit Euria,\nsind Ihre Unterhaltungen</string>
+    <string name="onboardingPrivacyDescription">Es wird nichts gesammelt, Ihre Daten gehören Ihnen.</string>
+    <string name="onboardingPrivacyTitle">Euria ist in der Schweiz beheimatet.</string>
     <string name="serverError">Server-Fehler</string>
 </resources>
