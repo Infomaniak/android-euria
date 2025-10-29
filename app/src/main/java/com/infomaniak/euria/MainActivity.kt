@@ -119,7 +119,7 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
 
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
-
+        
         enableEdgeToEdge()
         if (SDK_INT >= 29) window.isNavigationBarContrastEnforced = false
 
@@ -161,6 +161,16 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun getEuriaUrl() = intent.data?.path?.let { deeplink -> getDeeplinkUrl(deeplink) } ?: EURIA_MAIN_URL
+
+    private fun getDeeplinkUrl(deeplink: String): String {
+        return if (deeplink.startsWith("/all")) {
+            "$EURIA_MAIN_URL/${deeplink.substringAfter("euria/")}"
+        } else {
+            "$EURIA_MAIN_URL/${deeplink.replace("/euria", "")}"
+        }
+    }
+
     @Composable
     private fun EuriaMainScreen(token: String?) {
         setTokenToCookie(token)
@@ -168,7 +178,7 @@ class MainActivity : ComponentActivity() {
         ShowFileChooser()
 
         WebView(
-            url = EURIA_MAIN_URL,
+            url = getEuriaUrl(),
             domStorageEnabled = true,
             webViewClient = CustomWebViewClient(
                 onPageSucessfullyLoaded = {
