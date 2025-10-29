@@ -132,12 +132,13 @@ class MainActivity : ComponentActivity() {
             EuriaTheme {
                 val accounts by crossAppLoginViewModel.availableAccounts.collectAsStateWithLifecycle()
                 val skippedIds by crossAppLoginViewModel.skippedAccountIds.collectAsStateWithLifecycle()
-                val currentUser by mainViewModel.currentUser.collectAsStateWithLifecycle()
+                val userState by mainViewModel.userState.collectAsStateWithLifecycle()
                 val isNetworkAvailable by mainViewModel.isNetworkAvailable.collectAsStateWithLifecycle()
 
                 Surface {
                     when {
-                        currentUser == null -> {
+                        userState is MainViewModel.UserState.Loading -> Unit
+                        userState is MainViewModel.UserState.NotLoggedIn -> {
                             OnboardingScreen(
                                 accounts = { accounts },
                                 skippedIds = { skippedIds },
@@ -149,7 +150,9 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         isNetworkAvailable || mainViewModel.hasSeenWebView -> {
-                            EuriaMainScreen(currentUser?.apiToken?.accessToken)
+                            val userState = userState as MainViewModel.UserState.LoggedIn
+                            startCrossAppLoginService(userState.user.id.toString())
+                            EuriaMainScreen(userState.user.apiToken.accessToken)
                         }
                         else -> {
                             NoNetworkScreen()
@@ -158,7 +161,6 @@ class MainActivity : ComponentActivity() {
 
                     TwoFactorAuthApprovalAutoManagedBottomSheet(twoFactorAuthManager)
                 }
-                currentUser?.id?.toString()?.let { startCrossAppLoginService(it) }
                 initCrossLogin()
             }
         }

@@ -45,6 +45,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import splitties.coroutines.repeatWhileActive
@@ -62,7 +63,16 @@ class MainViewModel @Inject constructor(
     val isNetworkAvailable = NetworkAvailability(context).isNetworkAvailable.distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.Lazily, true)
 
-    var currentUser: StateFlow<User?> = AccountUtils.getCurrentUserFlow().stateIn(viewModelScope, SharingStarted.Lazily, null)
+    var userState: StateFlow<UserState> = AccountUtils.getCurrentUserFlow().map {
+        if (it == null) {
+            UserState.NotLoggedIn
+        } else {
+            UserState.LoggedIn(it)
+        }
+    }.stateIn(
+        viewModelScope, SharingStarted.Lazily,
+        UserState.Loading
+    )
     var launchMediaChooser by mutableStateOf(false)
     var hasSeenWebView by mutableStateOf(false)
 
@@ -134,6 +144,12 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             AccountUtils.removeAllUser()
         }
+    }
+
+    sealed class UserState {
+        object Loading : UserState()
+        data class LoggedIn(val user: User) : UserState()
+        object NotLoggedIn : UserState()
     }
 
     companion object {
