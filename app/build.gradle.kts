@@ -1,3 +1,5 @@
+import java.util.Properties
+
 /*
  * Infomaniak Euria - Android
  * Copyright (C) 2025 Infomaniak Network SA
@@ -24,6 +26,7 @@ plugins {
     alias(core.plugins.kapt)
     alias(libs.plugins.navigation.safeargs)
     alias(libs.plugins.dagger.hilt)
+    alias(core.plugins.sentry.plugin)
 }
 
 val appCompileSdk: Int by rootProject.extra
@@ -84,6 +87,28 @@ android {
         create("fdroid") {
             dimension = "distribution"
         }
+    }
+
+    val isRelease = gradle.startParameter.taskNames.any { it.contains("release", ignoreCase = true) }
+
+    val envProperties = rootProject.file("env.properties")
+        .takeIf { it.exists() }
+        ?.let { file -> Properties().also { it.load(file.reader()) } }
+
+    val sentryAuthToken = envProperties?.getProperty("sentryAuthToken")
+        .takeUnless { it.isNullOrBlank() }
+        ?: if (isRelease) error("The `sentryAuthToken` property in `env.properties` must be specified (see `env.example.properties`).") else ""
+
+    sentry {
+        autoInstallation.sentryVersion.set(core.versions.sentry)
+        org = "sentry"
+        projectName = "euria-android"
+        authToken = sentryAuthToken
+        url = "https://sentry-mobile.infomaniak.com"
+        includeDependenciesReport = false
+        includeSourceContext = isRelease
+        uploadNativeSymbols = isRelease
+        includeNativeSources = isRelease
     }
 }
 
