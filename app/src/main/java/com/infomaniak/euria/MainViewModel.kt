@@ -146,10 +146,10 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    sealed class UserState {
-        object Loading : UserState()
-        data class LoggedIn(val user: User) : UserState()
-        object NotLoggedIn : UserState()
+    sealed interface UserState {
+        object Loading : UserState
+        data class LoggedIn(val user: User) : UserState
+        object NotLoggedIn : UserState
     }
 
     companion object {
