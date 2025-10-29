@@ -18,101 +18,14 @@
 
 <resources>
 
-    <style name="AppThemeLauncher" parent="AppTheme.LauncherBase" />
-
     <style name="AppTheme.LauncherBase" parent="Theme.SplashScreen">
         <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
     </style>
 
+    <style name="AppThemeLauncher" parent="AppTheme.LauncherBase" />
+
+    <style name="AppThemeBase" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+
     <style name="AppTheme" parent="AppThemeBase" />
-
-    <style name="AppThemeBase" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:adjustViewBounds">true</item>
-        <item name="android:colorBackground">@color/background</item>
-        <item name="android:fontFamily">@font/suisseintl_regular</item>
-        <item name="android:includeFontPadding">false</item>
-        <item name="android:lineSpacingMultiplier">1.25</item>
-        <item name="android:textColor">@color/primaryText</item>
-        <item name="android:textColorHint">@color/secondaryText</item>
-        <item name="android:textColorPrimary">@color/title</item>
-        <item name="android:textColorSecondary">@color/secondaryText</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:windowBackground">@color/background</item>
-        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
-        <item name="appBarLayoutStyle">@style/AppTheme.AppBarOverlay</item>
-        <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
-        <item name="colorAccent">@color/accent</item>
-        <item name="colorControlNormal">@color/primary</item>
-        <item name="colorOnSecondary">@android:color/white</item>
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primaryDark</item>
-        <item name="colorSecondary">@color/primary</item>
-        <item name="snackbarButtonStyle">@style/Widget.App.SnackbarButton</item>
-        <item name="snackbarStyle">@style/Widget.App.Snackbar</item>
-        <item name="snackbarTextViewStyle">@style/Widget.App.SnackbarTextView</item>
-        <item name="toolbarStyle">@style/AppTheme.ToolbarTheme</item>
-
-        <!--Material 3 theme-->
-        <item name="colorOnSurface">@color/title</item> <!--Bottom sheet content color-->
-    </style>
-
-    <style name="AppTheme.AppBarOverlay" parent="Widget.Design.AppBarLayout">
-        <item name="android:backgroundTint">@color/background</item>
-        <item name="elevation">0dp</item>
-    </style>
-
-    <style name="AppTheme.ToolbarTheme" parent="Widget.MaterialComponents.Toolbar">
-        <item name="contentInsetEnd">54dp</item>
-        <item name="contentInsetStartWithNavigation">0dp</item>
-        <item name="titleMarginTop">8dp</item>
-    </style>
-
-    <style name="Widget.App.Snackbar" parent="Widget.MaterialComponents.Snackbar">
-        <item name="actionTextColorAlpha">0.8</item>
-        <item name="android:background">@drawable/background_popup</item>
-        <item name="android:backgroundTint">@color/appBar</item>
-        <item name="android:layout_margin">@dimen/marginStandard</item>
-    </style>
-
-    <style name="Widget.App.SnackbarButton" parent="Widget.MaterialComponents.Button.TextButton.Snackbar">
-        <item name="android:textColor">@color/primary</item>
-    </style>
-
-    <style name="Widget.App.SnackbarTextView" parent="Widget.MaterialComponents.Snackbar.TextView">
-        <item name="android:textColor">@color/title</item>
-    </style>
-
-    <style name="BottomSheetStyle" parent="Widget.Material3.BottomSheet">
-        <item name="shapeAppearance">?attr/shapeAppearanceLargeComponent</item>
-        <item name="behavior_hideable">false</item>
-        <item name="behavior_draggable">true</item>
-        <item name="behavior_skipCollapsed">false</item>
-        <item name="behavior_peekHeight">90dp</item>
-        <item name="behavior_fitToContents">false</item>
-        <item name="behavior_halfExpandedRatio">0.5</item>
-        <item name="behavior_expandedOffset">0dp</item>
-    </style>
-
-    <style name="AppTheme.LoginBase" parent="AppThemeBase">
-        <item name="android:windowBackground">@color/appBar</item>
-        <item name="android:windowLightNavigationBar">true</item>
-        <!-- Used for the onboarding horizontal pager indicator and cross app login selected accounts button -->
-        <item name="colorOutlineVariant">@color/border</item>
-        <item name="colorSurface">@color/appBar</item>
-    </style>
-
-    <style name="AppTheme.Login" parent="AppTheme.LoginBase" />
-
-    <style name="WebViewTheme" parent="AppTheme.Login">
-        <item name="colorAccent">@color/accent</item>
-        <item name="colorCloseIcon">@color/title</item>
-        <item name="colorPrimary">@color/background</item>
-        <item name="colorPrimaryDark">@color/background</item>
-    </style>
-
-    <style name="LoginToolbarTheme" parent="Theme.AppCompat">
-        <item name="android:textColorPrimary">@color/title</item>
-        <item name="android:textColorSecondary">@color/title</item>
-    </style>
 
 </resources>
