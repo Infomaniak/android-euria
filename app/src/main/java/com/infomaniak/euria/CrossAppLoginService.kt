@@ -21,7 +21,6 @@ import android.content.Intent
 import com.infomaniak.core.crossapplogin.back.BaseCrossAppLoginService
 import kotlinx.coroutines.flow.MutableStateFlow
 
-//TODO Use real userId
 class CrossAppLoginService : BaseCrossAppLoginService(userIdFlow) {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
