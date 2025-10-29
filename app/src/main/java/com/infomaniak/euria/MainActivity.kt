@@ -56,7 +56,6 @@ import com.infomaniak.euria.ui.login.CrossAppLoginViewModel
 import com.infomaniak.euria.ui.login.components.OnboardingScreen
 import com.infomaniak.euria.ui.noNetwork.NoNetworkScreen
 import com.infomaniak.euria.ui.theme.EuriaTheme
-import com.infomaniak.euria.ui.theme.LocalCustomColorScheme
 import com.infomaniak.euria.webview.CustomWebChromeClient
 import com.infomaniak.euria.webview.CustomWebViewClient
 import com.infomaniak.euria.webview.JavascriptBridge
@@ -189,7 +188,6 @@ class MainActivity : ComponentActivity() {
         WebView(
             url = EURIA_MAIN_URL,
             domStorageEnabled = true,
-            systemBarsColor = LocalCustomColorScheme.current.systemBarsColor,
             webViewClient = CustomWebViewClient(
                 onPageSucessfullyLoaded = {
                     mainViewModel.hasSeenWebView = true
@@ -199,6 +197,7 @@ class MainActivity : ComponentActivity() {
                 }
             ),
             webChromeClient = getCustomWebChromeClient(),
+            withSafeArea = false,
             callback = { webview -> webview.addJavascriptInterface(jsBridge, JavascriptBridge.NAME) },
         )
     }

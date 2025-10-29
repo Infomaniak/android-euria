@@ -22,12 +22,10 @@ import androidx.compose.ui.graphics.Color
 
 private val contentDefaultPrimary = Color(0xFF122334)
 private val contentDefaultSecondary = Color(0xFF376A9E)
-private val systemBarsColor = Color(0xffffffff)
 private val highlightedColor = Color(0xffd7e6f9)
 
 val CustomLightColorScheme = CustomColorScheme(
     primaryTextColor = contentDefaultPrimary,
     secondaryTextColor = contentDefaultSecondary,
-    systemBarsColor = systemBarsColor,
     highlightedColor = highlightedColor,
 )
