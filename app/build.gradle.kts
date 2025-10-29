@@ -101,7 +101,7 @@ dependencies {
     implementation(project(":Core:Onboarding"))
     implementation(project(":Core:SharedValues"))
     implementation(project(":Core:Sentry"))
-    implementation(project(":Core:TwoFactorAuth:Back"))
+    implementation(project(":Core:TwoFactorAuth:Back:WithUserDb"))
     implementation(project(":Core:TwoFactorAuth:Front"))
     implementation(project(":Core:WebView"))
 

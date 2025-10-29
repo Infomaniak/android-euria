@@ -19,7 +19,23 @@
 package com.infomaniak.euria
 
 import android.app.Application
+import com.infomaniak.core.network.ApiEnvironment
+import com.infomaniak.core.network.NetworkConfiguration
+import com.infomaniak.euria.utils.AccountUtils
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class MainApplication : Application()
+class MainApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        AccountUtils.init()
+
+        // New modules configuration
+        NetworkConfiguration.init(
+            appId = BuildConfig.APPLICATION_ID,
+            appVersionCode = BuildConfig.VERSION_CODE,
+            appVersionName = BuildConfig.VERSION_NAME,
+            apiEnvironment = ApiEnvironment.Prod,
+        )
+    }
+}

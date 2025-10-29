@@ -32,32 +32,29 @@ import com.infomaniak.core.network.networking.DefaultHttpClientProvider
 import com.infomaniak.core.sentry.SentryLog
 import com.infomaniak.euria.MainActivity.Companion.TAG
 import com.infomaniak.euria.MainActivity.Companion.getLoginErrorDescription
-import com.infomaniak.euria.data.UserSharedPref
 import com.infomaniak.euria.network.ApiRepository
+import com.infomaniak.euria.utils.AccountUtils
 import com.infomaniak.euria.utils.OkHttpClientProvider
 import com.infomaniak.lib.login.ApiToken
 import com.infomaniak.lib.login.InfomaniakLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import splitties.coroutines.repeatWhileActive
 import splitties.experimental.ExperimentalSplittiesApi
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
-    private val userSharedPref: UserSharedPref,
 ) : ViewModel() {
 
     val showSplashScreen = MutableStateFlow(true)
@@ -66,14 +63,21 @@ class MainViewModel @Inject constructor(
     val isNetworkAvailable = NetworkAvailability(context).isNetworkAvailable.distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.Lazily, true)
 
-    private var _token = MutableStateFlow("")
-    var token = _token.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds), "")
+    var userState: StateFlow<UserState> = AccountUtils.getCurrentUserFlow().map {
+        if (it == null) {
+            UserState.NotLoggedIn
+        } else {
+            UserState.LoggedIn(it)
+        }
+    }.stateIn(
+        viewModelScope, SharingStarted.Lazily,
+        UserState.Loading
+    )
     var launchMediaChooser by mutableStateOf(false)
     var hasSeenWebView by mutableStateOf(false)
 
     init {
         viewModelScope.launch {
-            _token.value = withContext(Dispatchers.IO) { userSharedPref.token }
             delay(DELAY_SPLASHSCREEN)
             showSplashScreen.emit(false)
         }
@@ -114,22 +118,12 @@ class MainViewModel @Inject constructor(
     fun saveUserInfo(apiToken: ApiToken, showError: (String) -> Unit) {
         viewModelScope.launch {
             ApiRepository.getUserProfile(OkHttpClientProvider.getOkHttpClientProvider(apiToken.accessToken)).data?.let {
-                saveToSharedPref(apiToken, it)
+                it.apiToken = apiToken
+                it.organizations = arrayListOf()
+                AccountUtils.addUser(it)
             } ?: run {
                 showError(context.getString(R.string.connectionError))
             }
-        }
-    }
-
-    private fun saveToSharedPref(apiToken: ApiToken, user: User) {
-        with(userSharedPref) {
-            _token.update { apiToken.accessToken }
-            userSharedPref.token = apiToken.accessToken
-            userId = apiToken.userId
-            avatarUrl = user.avatar ?: ""
-            fullName = user.displayName ?: "${user.firstname} ${user.lastname}"
-            initials = user.getInitials()
-            email = user.email
         }
     }
 
@@ -147,8 +141,15 @@ class MainViewModel @Inject constructor(
     }
 
     fun logout() {
-        userSharedPref.deleteUserInfo()
-        _token.update { "" }
+        viewModelScope.launch {
+            AccountUtils.removeAllUser()
+        }
+    }
+
+    sealed interface UserState {
+        object Loading : UserState
+        data class LoggedIn(val user: User) : UserState
+        object NotLoggedIn : UserState
     }
 
     companion object {

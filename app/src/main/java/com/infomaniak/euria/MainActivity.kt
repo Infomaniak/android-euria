@@ -45,17 +45,16 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.infomaniak.core.compose.basics.CallableState
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
-import com.infomaniak.core.network.ApiEnvironment
-import com.infomaniak.core.network.NetworkConfiguration
 import com.infomaniak.core.observe
 import com.infomaniak.core.twofactorauth.back.TwoFactorAuthManager
 import com.infomaniak.core.twofactorauth.front.TwoFactorAuthApprovalAutoManagedBottomSheet
 import com.infomaniak.core.webview.ui.components.WebView
-import com.infomaniak.euria.data.UserSharedPref
+import com.infomaniak.euria.MainViewModel.UserState
 import com.infomaniak.euria.ui.login.CrossAppLoginViewModel
 import com.infomaniak.euria.ui.login.components.OnboardingScreen
 import com.infomaniak.euria.ui.noNetwork.NoNetworkScreen
 import com.infomaniak.euria.ui.theme.EuriaTheme
+import com.infomaniak.euria.utils.AccountUtils
 import com.infomaniak.euria.webview.CustomWebChromeClient
 import com.infomaniak.euria.webview.CustomWebViewClient
 import com.infomaniak.euria.webview.JavascriptBridge
@@ -64,18 +63,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import splitties.experimental.ExperimentalSplittiesApi
-import javax.inject.Inject
 import com.infomaniak.core.R as RCore
+
+val twoFactorAuthManager = TwoFactorAuthManager { userId -> AccountUtils.getHttpClient(userId) }
 
 @AndroidEntryPoint
 @OptIn(ExperimentalSplittiesApi::class)
 class MainActivity : ComponentActivity() {
-
-    @Inject
-    lateinit var twoFactorAuthManager: TwoFactorAuthManager
-
-    @Inject
-    lateinit var userSharedPref: UserSharedPref
 
     private val mainViewModel: MainViewModel by viewModels()
     private val crossAppLoginViewModel: CrossAppLoginViewModel by viewModels()
@@ -132,14 +126,6 @@ class MainActivity : ComponentActivity() {
 
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
 
-        // New modules configuration
-        NetworkConfiguration.init(
-            appId = BuildConfig.APPLICATION_ID,
-            appVersionCode = BuildConfig.VERSION_CODE,
-            appVersionName = BuildConfig.VERSION_NAME,
-            apiEnvironment = ApiEnvironment.Prod,
-        )
-
         enableEdgeToEdge()
         if (SDK_INT >= 29) window.isNavigationBarContrastEnforced = false
 
@@ -147,12 +133,13 @@ class MainActivity : ComponentActivity() {
             EuriaTheme {
                 val accounts by crossAppLoginViewModel.availableAccounts.collectAsStateWithLifecycle()
                 val skippedIds by crossAppLoginViewModel.skippedAccountIds.collectAsStateWithLifecycle()
-                val token by mainViewModel.token.collectAsStateWithLifecycle()
+                val userState by mainViewModel.userState.collectAsStateWithLifecycle()
                 val isNetworkAvailable by mainViewModel.isNetworkAvailable.collectAsStateWithLifecycle()
 
                 Surface {
                     when {
-                        token.isEmpty() -> {
+                        userState is UserState.Loading -> Unit
+                        userState is UserState.NotLoggedIn -> {
                             OnboardingScreen(
                                 accounts = { accounts },
                                 skippedIds = { skippedIds },
@@ -162,9 +149,12 @@ class MainActivity : ComponentActivity() {
                                 onCreateAccount = { openAccountCreationWebView() },
                                 onSaveSkippedAccounts = { crossAppLoginViewModel.skippedAccountIds.value = it },
                             )
+                            initCrossLogin()
                         }
                         isNetworkAvailable || mainViewModel.hasSeenWebView -> {
-                            EuriaMainScreen(token)
+                            val userState = userState as UserState.LoggedIn
+                            startCrossAppLoginService(userState.user.id.toString())
+                            EuriaMainScreen(userState.user.apiToken.accessToken)
                         }
                         else -> {
                             NoNetworkScreen()
@@ -174,8 +164,6 @@ class MainActivity : ComponentActivity() {
                     TwoFactorAuthApprovalAutoManagedBottomSheet(twoFactorAuthManager)
                 }
             }
-            startCrossAppLoginService()
-            initCrossLogin()
         }
     }
 
@@ -233,9 +221,9 @@ class MainActivity : ComponentActivity() {
         )
     }
 
-    fun startCrossAppLoginService() {
+    fun startCrossAppLoginService(currentUserId: String) {
         val intent = Intent(this, CrossAppLoginService::class.java).apply {
-            putExtra(CrossAppLoginService.EXTRA_USER_ID, userSharedPref.userId)
+            putExtra(CrossAppLoginService.EXTRA_USER_ID, currentUserId)
         }
 
         startService(intent)
@@ -248,9 +236,13 @@ class MainActivity : ComponentActivity() {
                 loginRequest,
                 openLoginWebView = { openLoginWebView() },
                 attemptLogin = {
-                    val apiToken = crossAppLoginViewModel.attemptLogin(it).tokens[0]
-                    mainViewModel.saveUserInfo(apiToken) {
-                        showError(it)
+                    val apiTokens = crossAppLoginViewModel.attemptLogin(it).tokens
+                    if (apiTokens.isNotEmpty()) {
+                        mainViewModel.saveUserInfo(apiTokens[0]) { error ->
+                            showError(error)
+                        }
+                    } else {
+                        showError(getString(R.string.connectionError))
                     }
                 },
             )
