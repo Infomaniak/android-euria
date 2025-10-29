@@ -19,3 +19,10 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keep class com.infomaniak.euria.webview.JavascriptBridge {
+    public <methods>;
+}
+-keep class com.infomaniak.core.auth.models.** { *; }
+-keep class com.infomaniak.core.network.models.** { *; }
+-dontwarn okhttp3.internal.Util
