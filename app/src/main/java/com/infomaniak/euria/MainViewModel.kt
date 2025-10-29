@@ -40,8 +40,6 @@ import com.infomaniak.lib.login.InfomaniakLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -57,8 +55,6 @@ class MainViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
 ) : ViewModel() {
 
-    val showSplashScreen = MutableStateFlow(true)
-
     val infomaniakLogin: InfomaniakLogin by lazy { context.getInfomaniakLogin() }
     val isNetworkAvailable = NetworkAvailability(context).isNetworkAvailable.distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.Lazily, true)
@@ -70,16 +66,9 @@ class MainViewModel @Inject constructor(
             UserState.LoggedIn(it)
         }
     }.stateIn(viewModelScope, SharingStarted.Lazily, UserState.Loading)
-    
+
     var launchMediaChooser by mutableStateOf(false)
     var hasSeenWebView by mutableStateOf(false)
-
-    init {
-        viewModelScope.launch {
-            delay(DELAY_SPLASHSCREEN)
-            showSplashScreen.emit(false)
-        }
-    }
 
     fun Context.getInfomaniakLogin() = InfomaniakLogin(
         context = this,
@@ -148,9 +137,5 @@ class MainViewModel @Inject constructor(
         object Loading : UserState
         data class LoggedIn(val user: User) : UserState
         object NotLoggedIn : UserState
-    }
-
-    companion object {
-        private const val DELAY_SPLASHSCREEN = 2_000L
     }
 }
