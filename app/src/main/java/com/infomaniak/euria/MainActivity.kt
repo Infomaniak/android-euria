@@ -189,7 +189,6 @@ class MainActivity : ComponentActivity() {
         WebView(
             url = EURIA_MAIN_URL,
             domStorageEnabled = true,
-            systemBarsColor = LocalCustomColorScheme.current.systemBarsColor,
             webViewClient = CustomWebViewClient(
                 onPageSucessfullyLoaded = {
                     mainViewModel.hasSeenWebView = true
@@ -199,6 +198,7 @@ class MainActivity : ComponentActivity() {
                 }
             ),
             webChromeClient = getCustomWebChromeClient(),
+            withSafeArea = false,
             callback = { webview -> webview.addJavascriptInterface(jsBridge, JavascriptBridge.NAME) },
         )
     }
