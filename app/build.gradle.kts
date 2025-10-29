@@ -84,9 +84,6 @@ android {
             dimension = "distribution"
             isDefault = true
         }
-        create("fdroid") {
-            dimension = "distribution"
-        }
     }
 
     val isRelease = gradle.startParameter.taskNames.any { it.contains("release", ignoreCase = true) }
@@ -100,7 +97,6 @@ android {
         ?: if (isRelease) error("The `sentryAuthToken` property in `env.properties` must be specified (see `env.example.properties`).") else ""
 
     sentry {
-        autoInstallation.sentryVersion.set(core.versions.sentry)
         org = "sentry"
         projectName = "euria-android"
         authToken = sentryAuthToken
