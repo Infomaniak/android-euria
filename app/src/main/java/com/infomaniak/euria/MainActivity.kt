@@ -49,6 +49,7 @@ import com.infomaniak.core.observe
 import com.infomaniak.core.twofactorauth.back.TwoFactorAuthManager
 import com.infomaniak.core.twofactorauth.front.TwoFactorAuthApprovalAutoManagedBottomSheet
 import com.infomaniak.core.webview.ui.components.WebView
+import com.infomaniak.euria.MainViewModel.UserState
 import com.infomaniak.euria.ui.login.CrossAppLoginViewModel
 import com.infomaniak.euria.ui.login.components.OnboardingScreen
 import com.infomaniak.euria.ui.noNetwork.NoNetworkScreen
@@ -137,8 +138,8 @@ class MainActivity : ComponentActivity() {
 
                 Surface {
                     when {
-                        userState is MainViewModel.UserState.Loading -> Unit
-                        userState is MainViewModel.UserState.NotLoggedIn -> {
+                        userState is UserState.Loading -> Unit
+                        userState is UserState.NotLoggedIn -> {
                             OnboardingScreen(
                                 accounts = { accounts },
                                 skippedIds = { skippedIds },
@@ -151,7 +152,7 @@ class MainActivity : ComponentActivity() {
                             initCrossLogin()
                         }
                         isNetworkAvailable || mainViewModel.hasSeenWebView -> {
-                            val userState = userState as MainViewModel.UserState.LoggedIn
+                            val userState = userState as UserState.LoggedIn
                             startCrossAppLoginService(userState.user.id.toString())
                             EuriaMainScreen(userState.user.apiToken.accessToken)
                         }
