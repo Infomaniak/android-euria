@@ -12,12 +12,21 @@ jobs:
     if: github.event.pull_request.draft == false
     runs-on: [ self-hosted, Android ]
 
+    env:
+      SENTRY_AUTH_ENV_PATH: "env.properties"
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
     steps:
       - name: Checkout the code
         uses: actions/checkout@v5.0.0
         with:
           token: ${{ github.token }}
           submodules: recursive
+
+      - name: Create test env
+        run: |
+          touch $SENTRY_AUTH_ENV_PATH
+          echo "sentryAuthToken=$SENTRY_AUTH_TOKEN" > $SENTRY_AUTH_ENV_PATH
 
       - name: Create test env
         run: touch uitest-env.properties
