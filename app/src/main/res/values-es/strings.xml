@@ -20,16 +20,17 @@
     <string name="connectionError">Problema de conexión a Internet</string>
     <string name="noNetworkDescription">Verifica tu conexión a Internet y vuelve a intentarlo para reanudar tu conversación</string>
     <string name="noNetworkTitle">Sin acceso a Internet</string>
-    <string name="onboardingEphemeralDescriptionArguments">se borran al final de cada sesión.</string>
-    <string name="onboardingEphemeralDescriptionTemplate">sus conversaciones con Euria %s</string>
-    <string name="onboardingEphemeralTitle">Modo efímero activado:</string>
-    <string name="onboardingEuriaDescription">ético, soberano e independiente.</string>
-    <string name="onboardingEuriaTitle">Euria\nEl asistente de AI %s</string>
+    <string name="onboardingDatacenterDescription" formatted="false">La energía de la IA se revaloriza al 100%%.</string>
+    <string name="onboardingDatacenterTitle">Euria calienta viviendas.</string>
+    <string name="onboardingEphemeralDescriptionArguments">Euria no deja rastro</string>
+    <string name="onboardingEphemeralDescriptionTemplate">%s de sus intercambios.</string>
+    <string name="onboardingEphemeralTitle">Con el modo efímero,</string>
+    <string name="onboardingEuriaDescription">Una IA soberana que respeta tus datos y el planeta.</string>
+    <string name="onboardingEuriaTitle">Bienvenido a Euria</string>
     <string name="onboardingLoginArguments">Chatea ahora</string>
     <string name="onboardingLoginTemplate">%s con Euria.</string>
     <string name="onboardingLoginTitle">¿Listo para empezar?</string>
-    <string name="onboardingPrivacyDescriptionArgument">cifradas, son privadas</string>
-    <string name="onboardingPrivacyDescriptionTemplate">%s y respetado.</string>
-    <string name="onboardingPrivacyTitle">Con Euria,\ntus conversaciones están</string>
+    <string name="onboardingPrivacyDescription">No se recoge nada, sus datos le pertenecen.</string>
+    <string name="onboardingPrivacyTitle">Euria tiene su sede en Suiza.</string>
     <string name="serverError">Error del servidor</string>
 </resources>

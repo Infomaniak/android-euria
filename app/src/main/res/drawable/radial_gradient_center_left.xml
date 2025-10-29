@@ -25,16 +25,12 @@
     <path android:pathData="M0,0 L100,0 L100,100 L0,100 Z">
         <aapt:attr name="android:fillColor">
             <gradient
-                android:centerX="100"
-                android:centerY="20"
+                android:centerX="0"
+                android:centerY="60"
                 android:gradientRadius="@dimen/gradientRadius"
                 android:type="radial">
-                <item
-                    android:offset="0"
-                    android:color="@color/startGradient" />
-                <item
-                    android:offset="1"
-                    android:color="@color/endGradient" />
+                <item android:offset="0" android:color="@color/startGradient"/>
+                <item android:offset="1" android:color="@color/endGradient"/>
             </gradient>
         </aapt:attr>
     </path>

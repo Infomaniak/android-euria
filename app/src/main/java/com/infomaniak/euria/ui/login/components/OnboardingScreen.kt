@@ -19,30 +19,32 @@
 package com.infomaniak.euria.ui.login.components
 
 import androidx.annotation.DrawableRes
-import androidx.annotation.RawRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.rememberLottieComposition
+import com.infomaniak.core.compose.margin.Margin
 import com.infomaniak.core.crossapplogin.back.BaseCrossAppLoginViewModel.Companion.filterSelectedAccounts
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
 import com.infomaniak.core.crossapplogin.front.components.CrossLoginBottomContent
@@ -76,67 +78,67 @@ fun OnboardingScreen(
         isHighlighted[currentPage]?.value = true
     }
 
-    OnboardingScaffold(
-        pagerState = pagerState,
-        onboardingPages = Page.entries.mapIndexed { index, page ->
-            page.toOnboardingPage(isHighlighted, pagerState, index)
-        },
-        bottomContent = { paddingValues ->
-            OnboardingComponents.CrossLoginBottomContent(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .consumeWindowInsets(paddingValues),
-                pagerState = pagerState,
-                accounts = accounts,
-                skippedIds = skippedIds,
-                singleSelection = true,
-                isLoginButtonLoading = isLoginButtonLoading,
-                isSignUpButtonLoading = isSignUpButtonLoading,
-                titleColor = EuriaTheme.colors.primaryTextColor,
-                descriptionColor = EuriaTheme.colors.secondaryTextColor,
-                onLogin = { onLoginRequest(emptyList()) },
-                onContinueWithSelectedAccounts = {
-                    onLoginRequest(
-                        accounts().filterSelectedAccounts(
-                            skippedIds()
+    Box(modifier = Modifier.fillMaxSize()) {
+
+        OnboardingScaffold(
+            pagerState = pagerState,
+            onboardingPages = Page.entries.mapIndexed { _, page ->
+                page.toOnboardingPage(isHighlighted)
+            },
+            bottomContent = { paddingValues ->
+                OnboardingComponents.CrossLoginBottomContent(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .consumeWindowInsets(paddingValues),
+                    pagerState = pagerState,
+                    accounts = accounts,
+                    skippedIds = skippedIds,
+                    singleSelection = true,
+                    isLoginButtonLoading = isLoginButtonLoading,
+                    isSignUpButtonLoading = isSignUpButtonLoading,
+                    titleColor = EuriaTheme.colors.primaryTextColor,
+                    descriptionColor = EuriaTheme.colors.secondaryTextColor,
+                    onLogin = { onLoginRequest(emptyList()) },
+                    onContinueWithSelectedAccounts = {
+                        onLoginRequest(
+                            accounts().filterSelectedAccounts(
+                                skippedIds()
+                            )
                         )
-                    )
-                },
-                onCreateAccount = onCreateAccount,
-                onUseAnotherAccountClicked = { onLoginRequest(emptyList()) },
-                onSaveSkippedAccounts = onSaveSkippedAccounts,
-            )
-        },
-    )
+                    },
+                    onCreateAccount = onCreateAccount,
+                    onUseAnotherAccountClicked = { onLoginRequest(emptyList()) },
+                    onSaveSkippedAccounts = onSaveSkippedAccounts,
+                )
+            },
+        )
+
+        Image(
+            modifier = Modifier
+                .width(350.dp)
+                .wrapContentHeight()
+                .safeDrawingPadding()
+                .padding(top = Margin.Large)
+                .align(Alignment.TopCenter),
+            painter = painterResource(id = R.drawable.infomaniak_logo),
+            contentDescription = null,
+        )
+    }
 }
 
 @Composable
-private fun Page.toOnboardingPage(
-    isHighlighted: Map<Page, MutableState<Boolean>>,
-    pagerState: PagerState,
-    index: Int,
-): OnboardingPage =
+private fun Page.toOnboardingPage(isHighlighted: Map<Page, MutableState<Boolean>>): OnboardingPage =
     OnboardingPage(background = {
         DefaultBackground(
             ImageVector.vectorResource(backgroundRes),
             modifier = Modifier.padding(bottom = Dimens.OnboardingGradientPadding)
         )
     }, illustration = {
-        val composition by rememberLottieComposition(
-            LottieCompositionSpec.RawRes(
-                illustrationRes
-            )
+        Image(
+            modifier = Modifier.size(illustrationSize),
+            painter = painterResource(id = illustrationRes),
+            contentDescription = null,
         )
-
-        LottieAnimation(
-            composition,
-            restartOnPlay = isAnimationLooping,
-            reverseOnRepeat = isAnimationLooping,
-            iterations = if (isAnimationLooping) LottieConstants.IterateForever else 1,
-            isPlaying = pagerState.currentPage == index,
-            modifier = Modifier.width(illustrationSize),
-        )
-
     }, text = {
         EuriaHighlightedTitleAndDescription(
             isHighlighted = { isHighlighted[this]?.value ?: false },
@@ -147,44 +149,51 @@ private fun Page.toOnboardingPage(
         )
     })
 
-private val DEFAULT_ILLUSTRATION_SIZE = 250.dp
-
 private enum class Page(
-    @RawRes val illustrationRes: Int,
+    @DrawableRes val illustrationRes: Int,
+    val illustrationSize: Dp,
     @DrawableRes val backgroundRes: Int,
-    val isAnimationLooping: Boolean = true,
-    val illustrationSize: Dp = DEFAULT_ILLUSTRATION_SIZE,
     @StringRes val titleRes: Int,
     @StringRes val descriptionTemplateRes: Int? = null,
     @StringRes val descriptionArgumentRes: Int,
     val highlightedAngleDegree: Double = Dimens.HighlightedAngleDegree,
 ) {
     Euria(
-        illustrationRes = R.raw.euria_blob,
-        backgroundRes = R.drawable.radial_gradient_top_right,
+        illustrationRes = R.drawable.euria,
+        illustrationSize = 450.dp,
+        backgroundRes = R.drawable.radial_gradient_center_right,
         titleRes = R.string.onboardingEuriaTitle,
         descriptionTemplateRes = null,
         descriptionArgumentRes = R.string.onboardingEuriaDescription,
     ),
-    Privacy(
-        illustrationRes = R.raw.euria_bubble,
-        isAnimationLooping = false,
-        illustrationSize = 400.dp,
-        backgroundRes = R.drawable.radial_gradient_top_left,
-        titleRes = R.string.onboardingPrivacyTitle,
-        descriptionTemplateRes = R.string.onboardingPrivacyDescriptionTemplate,
-        descriptionArgumentRes = R.string.onboardingPrivacyDescriptionArgument,
+    DataCenter(
+        illustrationRes = R.drawable.data_center,
+        illustrationSize = 350.dp,
+        backgroundRes = R.drawable.radial_gradient_center_left,
+        titleRes = R.string.onboardingDatacenterTitle,
+        descriptionTemplateRes = null,
+        descriptionArgumentRes = R.string.onboardingDatacenterDescription,
     ),
     Ephemeral(
-        illustrationRes = R.raw.euria_ghost,
-        backgroundRes = R.drawable.radial_gradient_top_right,
+        illustrationRes = R.drawable.euria_ghost,
+        illustrationSize = 450.dp,
+        backgroundRes = R.drawable.radial_gradient_center_right,
         titleRes = R.string.onboardingEphemeralTitle,
         descriptionTemplateRes = R.string.onboardingEphemeralDescriptionTemplate,
         descriptionArgumentRes = R.string.onboardingEphemeralDescriptionArguments,
     ),
+    Privacy(
+        illustrationRes = R.drawable.mountain,
+        illustrationSize = 350.dp,
+        backgroundRes = R.drawable.radial_gradient_center_left,
+        titleRes = R.string.onboardingPrivacyTitle,
+        descriptionTemplateRes = null,
+        descriptionArgumentRes = R.string.onboardingPrivacyDescription,
+    ),
     ReadyToStart(
-        illustrationRes = R.raw.euria_blob,
-        backgroundRes = R.drawable.radial_gradient_top_left,
+        illustrationRes = R.drawable.euria,
+        illustrationSize = 450.dp,
+        backgroundRes = R.drawable.radial_gradient_center_right,
         titleRes = R.string.onboardingLoginTitle,
         descriptionTemplateRes = R.string.onboardingLoginTemplate,
         descriptionArgumentRes = R.string.onboardingLoginArguments,

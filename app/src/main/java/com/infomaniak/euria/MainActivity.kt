@@ -45,7 +45,6 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.infomaniak.core.compose.basics.CallableState
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
-import com.infomaniak.core.observe
 import com.infomaniak.core.twofactorauth.back.TwoFactorAuthManager
 import com.infomaniak.core.twofactorauth.front.TwoFactorAuthApprovalAutoManagedBottomSheet
 import com.infomaniak.core.webview.ui.components.WebView
@@ -117,12 +116,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val installSplashScreen = installSplashScreen()
-
-        installSplashScreen.setKeepOnScreenCondition { true }
-        mainViewModel.showSplashScreen.observe(this) { showSplashScreen ->
-            installSplashScreen.setKeepOnScreenCondition { showSplashScreen }
-        }
+        installSplashScreen()
 
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
 
