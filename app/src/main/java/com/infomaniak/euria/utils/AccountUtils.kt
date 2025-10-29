@@ -56,11 +56,10 @@ object AccountUtils : CredentialManager() {
     override var currentUserId: Int = currentUser?.id ?: DEFAULT_USER_ID
 
     suspend fun requestCurrentUser(): User? {
-        return if (currentUserId != DEFAULT_USER_ID) {
-            (getUserById(currentUserId) ?: userDatabase.userDao().getFirst()).also { currentUser = it }
-        } else {
-            null
+        val user = currentUserId.takeIf { it != DEFAULT_USER_ID }?.let {
+            getUserById(currentUserId)
         }
+        return (user ?: userDatabase.userDao().getFirst()).also { currentUser = it }
     }
 
     fun getCurrentUserFlow(): Flow<User?> = userDatabase.userDao().getFirstFlow()
