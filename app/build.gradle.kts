@@ -44,8 +44,8 @@ android {
         applicationId = "com.infomaniak.euria"
         minSdk = appMinSdk
         targetSdk = appTargetSdk
-        versionCode = 2
-        versionName = "0.0.2"
+        versionCode = 3
+        versionName = "0.0.3"
 
         buildConfigField("String", "CLIENT_ID", "\"10476B29-7B98-4D42-B06B-2B7AB0F06FDE\"")
         buildConfigField("String", "EURIA_URL", "\"https://euria.infomaniak.com/\"")
@@ -97,6 +97,7 @@ android {
         ?: if (isRelease) error("The `sentryAuthToken` property in `env.properties` must be specified (see `env.example.properties`).") else ""
 
     sentry {
+        autoInstallation.sentryVersion.set(core.versions.sentry)
         org = "sentry"
         projectName = "euria-android"
         authToken = sentryAuthToken
