@@ -42,7 +42,7 @@
 
         <meta-data
             android:name="io.sentry.dsn"
-            android:value="TOCHANGE" />
+            android:value="https://eeda847c9979c3f5ed178cb6a5ed32a6@sentry-mobile.infomaniak.com/22" />
 
         <activity
             android:name=".MainActivity"
