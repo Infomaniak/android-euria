@@ -89,6 +89,7 @@ fun OnboardingScreen(
                 pagerState = pagerState,
                 accounts = accounts,
                 skippedIds = skippedIds,
+                singleSelection = true,
                 isLoginButtonLoading = isLoginButtonLoading,
                 isSignUpButtonLoading = isSignUpButtonLoading,
                 titleColor = EuriaTheme.colors.primaryTextColor,

@@ -231,7 +231,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun initCrossLogin() = lifecycleScope.launch {
-        launch { crossAppLoginViewModel.activateUpdates(this@MainActivity) }
+        launch { crossAppLoginViewModel.activateUpdates(this@MainActivity, singleSelection = true) }
         launch {
             mainViewModel.handleLogin(
                 loginRequest,
