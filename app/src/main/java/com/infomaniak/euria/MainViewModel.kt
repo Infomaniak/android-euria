@@ -69,10 +69,8 @@ class MainViewModel @Inject constructor(
         } else {
             UserState.LoggedIn(it)
         }
-    }.stateIn(
-        viewModelScope, SharingStarted.Lazily,
-        UserState.Loading
-    )
+    }.stateIn(viewModelScope, SharingStarted.Lazily, UserState.Loading)
+    
     var launchMediaChooser by mutableStateOf(false)
     var hasSeenWebView by mutableStateOf(false)
 
