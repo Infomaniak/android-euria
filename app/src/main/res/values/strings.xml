@@ -22,7 +22,7 @@
     <string name="connectionError">Internet connection problem</string>
     <string name="noNetworkDescription">Check your Internet connection and try again to resume your conversation</string>
     <string name="noNetworkTitle">No Internet access</string>
-    <string name="onboardingDatacenterDescription" formatted="false">AI energy is 100%% revalued.</string>
+    <string name="onboardingDatacenterDescription" formatted="false">AI energy is 100% revalued.</string>
     <string name="onboardingDatacenterTitle">Euria heats homes.</string>
     <string name="onboardingEphemeralDescriptionArguments">Euria keeps no trace</string>
     <string name="onboardingEphemeralDescriptionTemplate">%s of your exchanges.</string>

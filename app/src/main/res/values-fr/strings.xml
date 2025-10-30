@@ -20,7 +20,7 @@
     <string name="connectionError">Problème de connexion à Internet</string>
     <string name="noNetworkDescription">Vérifiez votre connexion Internet et réessayez pour reprendre votre conversation</string>
     <string name="noNetworkTitle">Aucun accès à Internet</string>
-    <string name="onboardingDatacenterDescription" formatted="false">L’énergie de l’IA est 100%% revalorisée.</string>
+    <string name="onboardingDatacenterDescription" formatted="false">L’énergie de l’IA est 100% revalorisée.</string>
     <string name="onboardingDatacenterTitle">Euria chauffe des logements.</string>
     <string name="onboardingEphemeralDescriptionArguments">Euria ne garde aucune trace</string>
     <string name="onboardingEphemeralDescriptionTemplate">%s de vos échanges.</string>
