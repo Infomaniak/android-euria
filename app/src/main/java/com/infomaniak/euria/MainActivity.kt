@@ -143,7 +143,6 @@ class MainActivity : ComponentActivity() {
                                 onCreateAccount = { openAccountCreationWebView() },
                                 onSaveSkippedAccounts = { crossAppLoginViewModel.skippedAccountIds.value = it },
                             )
-                            initCrossLogin()
                         }
                         isNetworkAvailable || mainViewModel.hasSeenWebView -> {
                             val userState = userState as UserState.LoggedIn
@@ -159,6 +158,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        initCrossLogin()
     }
 
     private fun getEuriaUrl() = intent.data?.path?.let { deeplink -> getDeeplinkUrl(deeplink) } ?: EURIA_MAIN_URL
