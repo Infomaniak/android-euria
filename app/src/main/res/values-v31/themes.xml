@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Infomaniak Euria - Android
-  ~ Copyright (C) 2025 Infomaniak Network SA
+<!--
+  ~ Infomaniak SwissTransfer - Android
+  ~ Copyright (C) 2024 Infomaniak Network SA
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
@@ -15,16 +15,14 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-
 <resources>
-    <color name="startGradient">#FF24405b</color>
-    <color name="endGradient">#121318</color>
-    <color name="background">#131415</color>
-    <color name="primaryText">#9E9E9E</color>
-    <color name="title">@android:color/white</color>
 
-    <color name="appBar">#2D2E30</color>
-    <color name="border">#6F7071</color>
+    <style name="AppTheme.LauncherBase31" parent="AppTheme.LauncherBase">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splashscreen_icon</item>
+        <item name="windowSplashScreenBackground">@color/background</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/splashscreen_branding_image</item>
+    </style>
 
-    <color name="splashscreenBrand">#FFFFFF</color>
+    <style name="AppThemeLauncher" parent="AppTheme.LauncherBase31" />
+
 </resources>
