@@ -28,12 +28,7 @@ import dagger.hilt.android.HiltAndroidApp
 @HiltAndroidApp
 class MainApplication : Application() {
 
-    override fun onCreate() {
-        super.onCreate()
-        AccountUtils.init()
-
-        this.configureSentry(isDebug = BuildConfig.DEBUG, isSentryTrackingEnabled = true)
-
+    init {
         // New modules configuration
         NetworkConfiguration.init(
             appId = BuildConfig.APPLICATION_ID,
@@ -41,5 +36,12 @@ class MainApplication : Application() {
             appVersionName = BuildConfig.VERSION_NAME,
             apiEnvironment = ApiEnvironment.Prod,
         )
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        AccountUtils.init()
+
+        this.configureSentry(isDebug = BuildConfig.DEBUG, isSentryTrackingEnabled = true)
     }
 }
