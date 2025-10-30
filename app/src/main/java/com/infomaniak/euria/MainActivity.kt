@@ -119,7 +119,7 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
 
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
-        
+
         enableEdgeToEdge()
         if (SDK_INT >= 29) window.isNavigationBarContrastEnforced = false
 
@@ -162,13 +162,21 @@ class MainActivity : ComponentActivity() {
         initCrossLogin()
     }
 
-    private fun getEuriaUrl() = intent.data?.path?.let { deeplink -> getDeeplinkUrl(deeplink) } ?: EURIA_MAIN_URL
+    private fun getProcessedDeeplinkUrl(): String? {
+        val deeplinkUri = intent.data ?: return null
+        val deeplinkPath = deeplinkUri.path ?: return null
+        fun isEuriaDeeplink() = deeplinkUri.host?.startsWith("euria") == true
+        return when {
+            isEuriaDeeplink() -> deeplinkUri.toString()
+            else -> parseKSuiteDeeplink(deeplinkPath)
+        }
+    }
 
-    private fun getDeeplinkUrl(deeplink: String): String {
-        return if (deeplink.startsWith("/all")) {
-            "$EURIA_MAIN_URL/${deeplink.substringAfter("euria/")}"
-        } else {
-            "$EURIA_MAIN_URL/${deeplink.replace("/euria", "")}"
+    private fun parseKSuiteDeeplink(deeplink: String): String {
+        return when {
+            deeplink.endsWith("euria") -> EURIA_MAIN_URL
+            deeplink.startsWith("/all") -> "$EURIA_MAIN_URL/${deeplink.substringAfter("euria/")}"
+            else -> "$EURIA_MAIN_URL/${deeplink.replace("/euria", "")}"
         }
     }
 
@@ -179,7 +187,7 @@ class MainActivity : ComponentActivity() {
         ShowFileChooser()
 
         WebView(
-            url = getEuriaUrl(),
+            url = getProcessedDeeplinkUrl() ?: EURIA_MAIN_URL,
             domStorageEnabled = true,
             webViewClient = CustomWebViewClient(
                 onPageSucessfullyLoaded = {
