@@ -172,10 +172,10 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun getDeeplinkUrl(deeplink: String): String {
-        return if (deeplink.startsWith("/all")) {
-            "$EURIA_MAIN_URL/${deeplink.substringAfter("euria/")}"
-        } else {
-            "$EURIA_MAIN_URL/${deeplink.replace("/euria", "")}"
+        return when {
+            deeplink.endsWith("euria") -> EURIA_MAIN_URL
+            deeplink.startsWith("/all") -> "$EURIA_MAIN_URL/${deeplink.substringAfter("euria/")}"
+            else -> "$EURIA_MAIN_URL/${deeplink.replace("/euria", "")}"
         }
     }
 
