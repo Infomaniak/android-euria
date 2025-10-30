@@ -21,7 +21,13 @@ import android.webkit.JavascriptInterface
 
 class JavascriptBridge(
     private val onLogout: () -> Unit,
+    private val onDismissApp: () -> Unit,
 ) {
+
+    @JavascriptInterface
+    fun dismissApp() {
+        onDismissApp()
+    }
 
     @JavascriptInterface
     fun logout() {
