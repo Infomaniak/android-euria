@@ -119,7 +119,7 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
 
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
-        
+
         enableEdgeToEdge()
         if (SDK_INT >= 29) window.isNavigationBarContrastEnforced = false
 
@@ -162,7 +162,14 @@ class MainActivity : ComponentActivity() {
         initCrossLogin()
     }
 
-    private fun getEuriaUrl() = intent.data?.path?.let { deeplink -> getDeeplinkUrl(deeplink) } ?: EURIA_MAIN_URL
+    private fun getEuriaUrl(): String {
+        val deeplinkUri = intent.data ?: return EURIA_MAIN_URL
+        val deeplinkPath = deeplinkUri.path ?: return EURIA_MAIN_URL
+        return when {
+            deeplinkUri.host?.startsWith("euria") == true -> deeplinkUri.toString()
+            else -> getDeeplinkUrl(deeplinkPath)
+        }
+    }
 
     private fun getDeeplinkUrl(deeplink: String): String {
         return if (deeplink.startsWith("/all")) {

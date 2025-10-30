@@ -64,6 +64,9 @@
                 <data android:host="ksuite.infomaniak.com" />
 
                 <data android:pathPattern="/.*/euria/.*" />
+
+                <data android:host="euria.infomaniak.com" />
+                <data android:pathPattern="/shared/.*" />
             </intent-filter>
         </activity>
 
