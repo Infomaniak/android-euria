@@ -241,13 +241,17 @@ class MainActivity : ComponentActivity() {
                 loginRequest,
                 openLoginWebView = { openLoginWebView() },
                 attemptLogin = {
-                    val apiTokens = crossAppLoginViewModel.attemptLogin(it).tokens
-                    if (apiTokens.isNotEmpty()) {
-                        mainViewModel.saveUserInfo(apiTokens[0]) { error ->
+                    val result = crossAppLoginViewModel.attemptLogin(it)
+                    // IMPORTANT NOTE: The code below assumes singleSelection.
+                    val token = result.tokens.singleOrNull()
+                    if (token != null) {
+                        mainViewModel.saveUserInfo(token) { error ->
                             showError(error)
                         }
                     } else {
-                        showError(getString(R.string.connectionError))
+                        val errorMessageId = result.errorMessageIds.singleOrNull()
+                            ?: RCore.string.anErrorHasOccurred
+                        showError(getString(errorMessageId))
                     }
                 },
             )
