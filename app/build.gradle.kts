@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 
 /*
@@ -57,7 +58,9 @@ android {
     }
 
     kotlin {
-        jvmToolchain(javaVersion.toString().toInt())
+        compilerOptions {
+            jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
+        }
     }
 
     buildTypes {
