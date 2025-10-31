@@ -59,6 +59,7 @@ class MainViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
 ) : ViewModel() {
 
+    private val cookieManager by lazy { CookieManager.getInstance() }
     val infomaniakLogin: InfomaniakLogin by lazy { context.getInfomaniakLogin() }
     val isNetworkAvailable = NetworkAvailability(context).isNetworkAvailable.distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.Lazily, true)
@@ -133,8 +134,8 @@ class MainViewModel @Inject constructor(
 
     fun logout() {
         viewModelScope.launch {
-            CookieManager.getInstance().removeAllCookies(null)
-            Dispatchers.IO.invoke { CookieManager.getInstance().flush() }
+            cookieManager.removeAllCookies(null)
+            Dispatchers.IO.invoke { cookieManager.flush() }
             WebStorage.getInstance().deleteAllData()
             AccountUtils.removeAllUser()
         }
