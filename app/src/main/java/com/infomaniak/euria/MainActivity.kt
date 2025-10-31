@@ -26,6 +26,7 @@ import android.webkit.CookieManager
 import android.webkit.ValueCallback
 import android.webkit.WebView
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -37,6 +38,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.os.ConfigurationCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -194,7 +196,11 @@ class MainActivity : ComponentActivity() {
     private fun EuriaMainScreen(token: String?) {
         setTokenToCookie(token)
 
+        var currentWebview: WebView? by remember { mutableStateOf(null) }
+
         ShowFileChooser()
+
+        HandleBackHandler(webView = { currentWebview })
 
         WebView(
             url = getProcessedDeeplinkUrl() ?: EURIA_MAIN_URL,
@@ -210,15 +216,22 @@ class MainActivity : ComponentActivity() {
             ),
             webChromeClient = getCustomWebChromeClient(),
             withSafeArea = false,
-            backHandler = { webView ->
-                if (mainViewModel.hasSeenWebView) {
-                    webView?.evaluateJavascript("window.goBack()") {}
-                } else {
-                    finish()
-                }
+            callback = { webview ->
+                webview.addJavascriptInterface(jsBridge, JavascriptBridge.NAME)
+                currentWebview = webview
             },
-            callback = { webview -> webview.addJavascriptInterface(jsBridge, JavascriptBridge.NAME) },
         )
+    }
+
+    @Composable
+    private fun HandleBackHandler(webView: () -> WebView?) {
+        BackHandler {
+            if (mainViewModel.hasSeenWebView) {
+                webView()?.evaluateJavascript("window.goBack()") {}
+            } else {
+                finish()
+            }
+        }
     }
 
     private fun setTokenToCookie(token: String?) {
