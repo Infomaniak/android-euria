@@ -227,7 +227,7 @@ class MainActivity : ComponentActivity() {
     private fun HandleBackHandler(webView: () -> WebView?) {
         BackHandler {
             if (mainViewModel.hasSeenWebView) {
-                webView()?.evaluateJavascript("window.goBack()") {}
+                webView()?.evaluateJavascript("window.goBack()", null)
             } else {
                 finish()
             }
