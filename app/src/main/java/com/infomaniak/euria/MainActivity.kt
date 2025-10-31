@@ -209,7 +209,13 @@ class MainActivity : ComponentActivity() {
             ),
             webChromeClient = getCustomWebChromeClient(),
             withSafeArea = false,
-            backHandler = { webView -> webView.evaluateJavascript("window.goBack()") { } },
+            backHandler = { webView ->
+                if (mainViewModel.hasSeenWebView) {
+                    webView?.evaluateJavascript("window.goBack()") {}
+                } else {
+                    finish()
+                }
+            },
             callback = { webview -> webview.addJavascriptInterface(jsBridge, JavascriptBridge.NAME) },
         )
     }
