@@ -154,6 +154,7 @@ class MainActivity : ComponentActivity() {
                             EuriaMainScreen(userState.user.apiToken.accessToken)
                         }
                         else -> {
+                            keepSplashScreen.update { false }
                             NoNetworkScreen()
                         }
                     }
