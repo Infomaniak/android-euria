@@ -18,6 +18,7 @@
 package com.infomaniak.euria.webview
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.net.http.SslError
 import android.webkit.SslErrorHandler
 import android.webkit.WebResourceError
@@ -46,6 +47,13 @@ class CustomWebViewClient(
         if (request.url.path?.endsWith("users/me") == true && errorResponse.statusCode >= 401) {
             onPageFailedToLoad()
         }
+    }
+
+    override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+        runCatching {
+            view.context.startActivity(Intent(Intent.ACTION_VIEW, request.url))
+        }
+        return true
     }
 
     override fun onPageFinished(view: WebView, url: String?) {
