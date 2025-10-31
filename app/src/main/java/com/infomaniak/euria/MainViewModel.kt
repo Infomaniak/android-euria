@@ -18,6 +18,8 @@
 package com.infomaniak.euria
 
 import android.content.Context
+import android.webkit.CookieManager
+import android.webkit.WebStorage
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -40,11 +42,13 @@ import com.infomaniak.lib.login.InfomaniakLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.invoke
 import kotlinx.coroutines.launch
 import splitties.coroutines.repeatWhileActive
 import splitties.experimental.ExperimentalSplittiesApi
@@ -129,6 +133,9 @@ class MainViewModel @Inject constructor(
 
     fun logout() {
         viewModelScope.launch {
+            CookieManager.getInstance().removeAllCookies(null)
+            Dispatchers.IO.invoke { CookieManager.getInstance().flush() }
+            WebStorage.getInstance().deleteAllData()
             AccountUtils.removeAllUser()
         }
     }

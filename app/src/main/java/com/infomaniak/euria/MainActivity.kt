@@ -77,17 +77,7 @@ class MainActivity : ComponentActivity() {
     private var isSignUpButtonLoading by mutableStateOf(false)
 
     private val cookieManager by lazy { CookieManager.getInstance() }
-    private val jsBridge by lazy {
-        JavascriptBridge(
-            onDismissApp = {
-                finish()
-            },
-            onLogout = {
-                cookieManager.removeAllCookies(null)
-                mainViewModel.logout()
-            },
-        )
-    }
+    private val jsBridge by lazy { getEuriaJavascriptBridge() }
 
     private val loginRequest = CallableState<List<ExternalAccount>>()
 
@@ -164,6 +154,11 @@ class MainActivity : ComponentActivity() {
 
         initCrossLogin()
     }
+
+    private fun getEuriaJavascriptBridge() = JavascriptBridge(
+        onDismissApp = { finish() },
+        onLogout = { mainViewModel.logout() },
+    )
 
     private fun getProcessedDeeplinkUrl(): String? {
         val deeplinkUri = intent.data ?: return null
