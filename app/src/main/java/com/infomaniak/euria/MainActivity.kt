@@ -26,6 +26,7 @@ import android.webkit.CookieManager
 import android.webkit.ValueCallback
 import android.webkit.WebView
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -37,14 +38,17 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.os.ConfigurationCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.infomaniak.core.compose.basics.CallableState
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
+import com.infomaniak.core.observe
 import com.infomaniak.core.twofactorauth.back.TwoFactorAuthManager
 import com.infomaniak.core.twofactorauth.front.TwoFactorAuthApprovalAutoManagedBottomSheet
 import com.infomaniak.core.webview.ui.components.WebView
@@ -59,6 +63,8 @@ import com.infomaniak.euria.webview.CustomWebViewClient
 import com.infomaniak.euria.webview.JavascriptBridge
 import com.infomaniak.lib.login.InfomaniakLogin
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import splitties.experimental.ExperimentalSplittiesApi
@@ -78,6 +84,8 @@ class MainActivity : ComponentActivity() {
 
     private val cookieManager by lazy { CookieManager.getInstance() }
     private val jsBridge by lazy { getEuriaJavascriptBridge() }
+
+    private var keepSplashScreen = MutableStateFlow(true)
 
     private val loginRequest = CallableState<List<ExternalAccount>>()
 
@@ -109,7 +117,11 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen()
+        val splashScreen = installSplashScreen().apply { setKeepOnScreenCondition { true } }
+
+        keepSplashScreen.observe(lifecycleOwner = this, state = Lifecycle.State.CREATED) {
+            splashScreen.setKeepOnScreenCondition { it }
+        }
 
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
 
@@ -127,6 +139,7 @@ class MainActivity : ComponentActivity() {
                     when {
                         userState is UserState.Loading -> Unit
                         userState is UserState.NotLoggedIn -> {
+                            keepSplashScreen.update { false }
                             OnboardingScreen(
                                 accounts = { accounts },
                                 skippedIds = { skippedIds },
@@ -143,6 +156,7 @@ class MainActivity : ComponentActivity() {
                             EuriaMainScreen(userState.user.apiToken.accessToken)
                         }
                         else -> {
+                            keepSplashScreen.update { false }
                             NoNetworkScreen()
                         }
                     }
@@ -182,7 +196,11 @@ class MainActivity : ComponentActivity() {
     private fun EuriaMainScreen(token: String?) {
         setTokenToCookie(token)
 
+        var currentWebview: WebView? by remember { mutableStateOf(null) }
+
         ShowFileChooser()
+
+        HandleBackHandler(webView = { currentWebview })
 
         WebView(
             url = getProcessedDeeplinkUrl() ?: EURIA_MAIN_URL,
@@ -190,6 +208,7 @@ class MainActivity : ComponentActivity() {
             webViewClient = CustomWebViewClient(
                 onPageSucessfullyLoaded = {
                     mainViewModel.hasSeenWebView = true
+                    keepSplashScreen.update { false }
                 },
                 onPageFailedToLoad = {
                     mainViewModel.logout()
@@ -197,9 +216,22 @@ class MainActivity : ComponentActivity() {
             ),
             webChromeClient = getCustomWebChromeClient(),
             withSafeArea = false,
-            backHandler = { webView -> webView.evaluateJavascript("window.goBack()") { } },
-            callback = { webview -> webview.addJavascriptInterface(jsBridge, JavascriptBridge.NAME) },
+            callback = { webview ->
+                webview.addJavascriptInterface(jsBridge, JavascriptBridge.NAME)
+                currentWebview = webview
+            },
         )
+    }
+
+    @Composable
+    private fun HandleBackHandler(webView: () -> WebView?) {
+        BackHandler {
+            if (mainViewModel.hasSeenWebView) {
+                webView()?.evaluateJavascript("window.goBack()") {}
+            } else {
+                finish()
+            }
+        }
     }
 
     private fun setTokenToCookie(token: String?) {
