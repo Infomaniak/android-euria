@@ -35,4 +35,6 @@
 
     <color name="border">#E0E0E0</color>
 
+    <color name="splashscreenBrand">@color/infomaniak</color>
+
 </resources>

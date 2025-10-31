@@ -20,6 +20,7 @@
 
     <style name="AppTheme.LauncherBase" parent="Theme.SplashScreen">
         <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
+        <item name="android:windowBackground">@drawable/splashscreen_legacy</item>
         <item name="postSplashScreenTheme">@style/AppTheme</item>
     </style>
 
