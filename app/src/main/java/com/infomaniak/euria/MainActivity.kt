@@ -307,8 +307,9 @@ class MainActivity : ComponentActivity() {
         )
     }
 
-    private fun hasPermission(permission: String) =
-        ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+    private fun hasPermission(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+    }
 
     private fun startCrossAppLoginService(currentUserId: String) {
         val intent = Intent(this, CrossAppLoginService::class.java).apply {
