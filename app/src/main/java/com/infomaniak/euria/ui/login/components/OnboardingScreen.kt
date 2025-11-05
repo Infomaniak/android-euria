@@ -151,7 +151,7 @@ private fun Page.toOnboardingPage(isHighlighted: Map<Page, MutableState<Boolean>
 
 private enum class Page(
     @DrawableRes val illustrationRes: Int,
-    val illustrationSize: Dp,
+    val illustrationSize: Dp = 350.dp,
     @DrawableRes val backgroundRes: Int,
     @StringRes val titleRes: Int,
     @StringRes val descriptionTemplateRes: Int? = null,
@@ -160,7 +160,6 @@ private enum class Page(
 ) {
     Euria(
         illustrationRes = R.drawable.euria,
-        illustrationSize = 450.dp,
         backgroundRes = R.drawable.radial_gradient_center_right,
         titleRes = R.string.onboardingEuriaTitle,
         descriptionTemplateRes = null,
@@ -168,7 +167,6 @@ private enum class Page(
     ),
     DataCenter(
         illustrationRes = R.drawable.data_center,
-        illustrationSize = 350.dp,
         backgroundRes = R.drawable.radial_gradient_center_left,
         titleRes = R.string.onboardingDatacenterTitle,
         descriptionTemplateRes = null,
@@ -176,7 +174,6 @@ private enum class Page(
     ),
     Ephemeral(
         illustrationRes = R.drawable.euria_ghost,
-        illustrationSize = 450.dp,
         backgroundRes = R.drawable.radial_gradient_center_right,
         titleRes = R.string.onboardingEphemeralTitle,
         descriptionTemplateRes = R.string.onboardingEphemeralDescriptionTemplate,
@@ -184,7 +181,6 @@ private enum class Page(
     ),
     Privacy(
         illustrationRes = R.drawable.mountain,
-        illustrationSize = 350.dp,
         backgroundRes = R.drawable.radial_gradient_center_left,
         titleRes = R.string.onboardingPrivacyTitle,
         descriptionTemplateRes = null,
@@ -192,7 +188,6 @@ private enum class Page(
     ),
     ReadyToStart(
         illustrationRes = R.drawable.euria,
-        illustrationSize = 450.dp,
         backgroundRes = R.drawable.radial_gradient_center_right,
         titleRes = R.string.onboardingLoginTitle,
         descriptionTemplateRes = R.string.onboardingLoginTemplate,
