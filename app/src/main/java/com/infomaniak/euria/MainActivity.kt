@@ -79,7 +79,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import splitties.experimental.ExperimentalSplittiesApi
 import com.infomaniak.core.R as RCore
 
@@ -294,7 +293,7 @@ class MainActivity : ComponentActivity() {
     private fun setTokenToCookie(token: String?) {
         val currentLocale = ConfigurationCompat.getLocales(resources.configuration).get(0)?.toLanguageTag() ?: "en-US"
         val cookieString = "USER-TOKEN=${token}; USER-LANGUAGE=${currentLocale} path=/"
-        cookieManager.setCookie(EURIA_MAIN_URL.toHttpUrl().host, cookieString)
+        cookieManager.setCookie("10.0.2.2", cookieString)
     }
 
     @Composable
