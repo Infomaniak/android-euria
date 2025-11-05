@@ -27,4 +27,6 @@ val CREATE_ACCOUNT_URL = "https://welcome.$host/signup/euria"
 // iOS has a different URL for the success (ksuite.infomaniak.com) but for some reason, we don't have this
 val CREATE_ACCOUNT_SUCCESS_HOST = "euria.$host"
 val CREATE_ACCOUNT_CANCEL_HOST = "welcome.$host"
-val EURIA_MAIN_URL = "https://euria.$host"
+
+// val EURIA_MAIN_URL = "https://euria.$host"
+val EURIA_MAIN_URL = "https://10.0.2.2:5174"
