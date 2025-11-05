@@ -42,7 +42,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.infomaniak.core.compose.margin.Margin
 import com.infomaniak.core.crossapplogin.back.BaseCrossAppLoginViewModel.Companion.filterSelectedAccounts
@@ -55,7 +54,6 @@ import com.infomaniak.core.onboarding.components.OnboardingComponents.DefaultBac
 import com.infomaniak.euria.R
 import com.infomaniak.euria.ui.theme.Dimens
 import com.infomaniak.euria.ui.theme.EuriaTheme
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -135,7 +133,7 @@ private fun Page.toOnboardingPage(isHighlighted: Map<Page, MutableState<Boolean>
         )
     }, illustration = {
         Image(
-            modifier = Modifier.size(illustrationSize),
+            modifier = Modifier.size(350.dp),
             painter = painterResource(id = illustrationRes),
             contentDescription = null,
         )
@@ -151,7 +149,6 @@ private fun Page.toOnboardingPage(isHighlighted: Map<Page, MutableState<Boolean>
 
 private enum class Page(
     @DrawableRes val illustrationRes: Int,
-    val illustrationSize: Dp,
     @DrawableRes val backgroundRes: Int,
     @StringRes val titleRes: Int,
     @StringRes val descriptionTemplateRes: Int? = null,
@@ -160,7 +157,6 @@ private enum class Page(
 ) {
     Euria(
         illustrationRes = R.drawable.euria,
-        illustrationSize = 450.dp,
         backgroundRes = R.drawable.radial_gradient_center_right,
         titleRes = R.string.onboardingEuriaTitle,
         descriptionTemplateRes = null,
@@ -168,7 +164,6 @@ private enum class Page(
     ),
     DataCenter(
         illustrationRes = R.drawable.data_center,
-        illustrationSize = 350.dp,
         backgroundRes = R.drawable.radial_gradient_center_left,
         titleRes = R.string.onboardingDatacenterTitle,
         descriptionTemplateRes = null,
@@ -176,7 +171,6 @@ private enum class Page(
     ),
     Ephemeral(
         illustrationRes = R.drawable.euria_ghost,
-        illustrationSize = 450.dp,
         backgroundRes = R.drawable.radial_gradient_center_right,
         titleRes = R.string.onboardingEphemeralTitle,
         descriptionTemplateRes = R.string.onboardingEphemeralDescriptionTemplate,
@@ -184,7 +178,6 @@ private enum class Page(
     ),
     Privacy(
         illustrationRes = R.drawable.mountain,
-        illustrationSize = 350.dp,
         backgroundRes = R.drawable.radial_gradient_center_left,
         titleRes = R.string.onboardingPrivacyTitle,
         descriptionTemplateRes = null,
@@ -192,7 +185,6 @@ private enum class Page(
     ),
     ReadyToStart(
         illustrationRes = R.drawable.euria,
-        illustrationSize = 450.dp,
         backgroundRes = R.drawable.radial_gradient_center_right,
         titleRes = R.string.onboardingLoginTitle,
         descriptionTemplateRes = R.string.onboardingLoginTemplate,
