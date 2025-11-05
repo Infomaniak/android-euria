@@ -133,6 +133,7 @@ dependencies {
 
     // Compose
     implementation(platform(core.compose.bom))
+    implementation(libs.accompanist.permissions)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.compose.ui.android)

@@ -19,6 +19,7 @@ package com.infomaniak.euria
 
 import android.content.Context
 import android.webkit.CookieManager
+import android.webkit.PermissionRequest
 import android.webkit.WebStorage
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -74,6 +75,7 @@ class MainViewModel @Inject constructor(
 
     var launchMediaChooser by mutableStateOf(false)
     var hasSeenWebView by mutableStateOf(false)
+    var microphonePermissionRequest by mutableStateOf<PermissionRequest?>(null)
 
     fun Context.getInfomaniakLogin() = InfomaniakLogin(
         context = this,

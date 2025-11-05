@@ -17,8 +17,10 @@
  */
 package com.infomaniak.euria
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
@@ -36,15 +38,19 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.activity.viewModels
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.core.content.ContextCompat
 import androidx.core.os.ConfigurationCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.material.snackbar.Snackbar
 import com.infomaniak.core.compose.basics.CallableState
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
@@ -198,6 +204,7 @@ class MainActivity : ComponentActivity() {
 
         var currentWebview: WebView? by remember { mutableStateOf(null) }
 
+        AskMicrophonePermission()
         ShowFileChooser()
 
         HandleBackHandler(webView = { currentWebview })
@@ -255,17 +262,56 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @OptIn(ExperimentalPermissionsApi::class)
+    @Composable
+    private fun AskMicrophonePermission() {
+        val microphonePermissionState = rememberMultiplePermissionsState(
+            permissions = listOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.MODIFY_AUDIO_SETTINGS)
+        )
+
+        LaunchedEffect(mainViewModel.microphonePermissionRequest) {
+            mainViewModel.microphonePermissionRequest?.let {
+                microphonePermissionState.launchMultiplePermissionRequest()
+            }
+        }
+
+        LaunchedEffect(microphonePermissionState.allPermissionsGranted) {
+            mainViewModel.microphonePermissionRequest?.let { microphonePermissionRequest ->
+                if (microphonePermissionState.allPermissionsGranted) {
+                    microphonePermissionRequest.grant(microphonePermissionRequest.resources)
+                } else {
+                    microphonePermissionRequest.deny()
+                }
+            }
+        }
+    }
+
     private fun getCustomWebChromeClient(): CustomWebChromeClient {
         return CustomWebChromeClient(
             onShowFileChooser = { filePathCallback, _ ->
                 this@MainActivity.filePathCallback = filePathCallback
                 mainViewModel.launchMediaChooser = true
                 true
-            }
+            },
+            onRequestMicrophonePermission = { permissionRequest ->
+                val hasRecordAudioPermission = hasPermission(Manifest.permission.RECORD_AUDIO)
+                val hasModifyAudioPermission = hasPermission(Manifest.permission.MODIFY_AUDIO_SETTINGS)
+
+                if (hasRecordAudioPermission && hasModifyAudioPermission) {
+                    permissionRequest.grant(permissionRequest.resources)
+                    mainViewModel.microphonePermissionRequest = null
+                } else {
+                    mainViewModel.microphonePermissionRequest = permissionRequest
+                }
+            },
         )
     }
 
-    fun startCrossAppLoginService(currentUserId: String) {
+    private fun hasPermission(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun startCrossAppLoginService(currentUserId: String) {
         val intent = Intent(this, CrossAppLoginService::class.java).apply {
             putExtra(CrossAppLoginService.EXTRA_USER_ID, currentUserId)
         }

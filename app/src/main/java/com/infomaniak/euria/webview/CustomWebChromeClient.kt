@@ -18,11 +18,13 @@
 package com.infomaniak.euria.webview
 
 import android.net.Uri
+import android.webkit.PermissionRequest
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 
 class CustomWebChromeClient(
+    private val onRequestMicrophonePermission: (PermissionRequest) -> Unit,
     private val onShowFileChooser: (ValueCallback<Array<out Uri>>, FileChooserParams) -> Boolean
 ) : WebChromeClient() {
 
@@ -32,5 +34,15 @@ class CustomWebChromeClient(
         fileChooserParams: FileChooserParams,
     ): Boolean {
         return onShowFileChooser(filePathCallback, fileChooserParams)
+    }
+
+    override fun onPermissionRequest(request: PermissionRequest) {
+        for (resource in request.resources) {
+            if (resource == PermissionRequest.RESOURCE_AUDIO_CAPTURE) {
+                onRequestMicrophonePermission(request)
+            } else {
+                request.deny()
+            }
+        }
     }
 }
