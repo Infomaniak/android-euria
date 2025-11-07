@@ -47,6 +47,7 @@ import com.infomaniak.core.compose.margin.Margin
 import com.infomaniak.core.crossapplogin.back.BaseCrossAppLoginViewModel.Companion.filterSelectedAccounts
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
 import com.infomaniak.core.crossapplogin.front.components.CrossLoginBottomContent
+import com.infomaniak.core.crossapplogin.front.data.CrossLoginDefaults
 import com.infomaniak.core.onboarding.OnboardingPage
 import com.infomaniak.core.onboarding.OnboardingScaffold
 import com.infomaniak.core.onboarding.components.OnboardingComponents
@@ -91,11 +92,15 @@ fun OnboardingScreen(
                     pagerState = pagerState,
                     accounts = accounts,
                     skippedIds = skippedIds,
-                    singleSelection = true,
+                    isSingleSelection = true,
                     isLoginButtonLoading = isLoginButtonLoading,
                     isSignUpButtonLoading = isSignUpButtonLoading,
-                    titleColor = EuriaTheme.colors.primaryTextColor,
-                    descriptionColor = EuriaTheme.colors.secondaryTextColor,
+                    customization = CrossLoginDefaults.customize(
+                        colors = CrossLoginDefaults.colors(
+                            titleColor = EuriaTheme.colors.primaryTextColor,
+                            descriptionColor = EuriaTheme.colors.secondaryTextColor
+                        ),
+                    ),
                     onLogin = { onLoginRequest(emptyList()) },
                     onContinueWithSelectedAccounts = {
                         onLoginRequest(
