@@ -132,6 +132,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val splashScreen = installSplashScreen().apply { setKeepOnScreenCondition { true } }
 
+        intent.clipData?.let {
+            for (i in 0 until it.itemCount) {
+                val item = it.getItemAt(i)
+            }
+        }
+
         keepSplashScreen.observe(lifecycleOwner = this, state = Lifecycle.State.CREATED) {
             splashScreen.setKeepOnScreenCondition { it }
         }
@@ -238,7 +244,7 @@ class MainActivity : ComponentActivity() {
             ),
             webChromeClient = getCustomWebChromeClient(),
             withSafeArea = false,
-            callback = { webview ->
+            getWebView = { webview ->
                 webview.addJavascriptInterface(jsBridge, JavascriptBridge.NAME)
                 currentWebview = webview
             },
@@ -377,7 +383,6 @@ class MainActivity : ComponentActivity() {
                 openLoginWebView = { openLoginWebView() },
                 attemptLogin = {
                     val result = crossAppLoginViewModel.attemptLogin(it)
-                    // IMPORTANT NOTE: The code below assumes singleSelection.
                     val token = result.tokens.singleOrNull()
                     if (token != null) {
                         mainViewModel.saveUserInfo(token) { error ->
