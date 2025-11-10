@@ -30,4 +30,4 @@ val CREATE_ACCOUNT_SUCCESS_HOST = "euria.$host"
 val CREATE_ACCOUNT_CANCEL_HOST = "welcome.$host"
 
 // val EURIA_MAIN_URL = "https://euria.$host"
-val EURIA_MAIN_URL = "https://local.euria.dev.infomaniak.ch:5173"
+val EURIA_MAIN_URL = "https://local.euria.preprod.dev.infomaniak.ch:5173"
