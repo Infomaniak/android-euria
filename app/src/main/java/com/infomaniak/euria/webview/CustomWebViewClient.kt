@@ -29,7 +29,7 @@ import android.webkit.WebViewClient
 import com.infomaniak.euria.BuildConfig
 
 class CustomWebViewClient(
-    private val onPageSucessfullyLoaded: () -> Unit,
+    private val onPageSucessfullyLoaded: (WebView) -> Unit,
     private val onPageFailedToLoad: () -> Unit
 ) : WebViewClient() {
 
@@ -58,7 +58,7 @@ class CustomWebViewClient(
 
     override fun onPageFinished(view: WebView, url: String?) {
         super.onPageFinished(view, url)
-        if (!hasReceivedError) onPageSucessfullyLoaded()
+        if (!hasReceivedError) onPageSucessfullyLoaded(view)
     }
 
     override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
