@@ -36,6 +36,8 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,6 +45,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.content.ContextCompat
 import androidx.core.os.ConfigurationCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -203,6 +210,12 @@ class MainActivity : ComponentActivity() {
         setTokenToCookie(token)
 
         var currentWebview: WebView? by remember { mutableStateOf(null) }
+        val insets = WindowInsets.safeDrawing
+        val density = LocalDensity.current
+        val layoutDirection = LocalLayoutDirection.current
+
+        // Need this to apply the insets to the WebView when these ones changes
+        applySafeAreaInsetsToWebView(currentWebview, insets, density, layoutDirection)
 
         AskMicrophonePermission()
         ShowFileChooser()
@@ -213,7 +226,9 @@ class MainActivity : ComponentActivity() {
             url = getProcessedDeeplinkUrl() ?: EURIA_MAIN_URL,
             domStorageEnabled = true,
             webViewClient = CustomWebViewClient(
-                onPageSucessfullyLoaded = {
+                onPageSucessfullyLoaded = { webView ->
+                    // Waiting to get the WebView to inject CSS
+                    applySafeAreaInsetsToWebView(webView, insets, density, layoutDirection)
                     mainViewModel.hasSeenWebView = true
                     keepSplashScreen.update { false }
                 },
@@ -228,6 +243,41 @@ class MainActivity : ComponentActivity() {
                 currentWebview = webview
             },
         )
+    }
+
+    private fun applySafeAreaInsetsToWebView(
+        webView: WebView?,
+        insets: WindowInsets,
+        density: Density,
+        layoutDirection: LayoutDirection,
+    ) {
+        val top = insets.getTop(density).toDp(density).value
+        val right = insets.getRight(density, layoutDirection).toDp(density).value
+        val bottom = insets.getBottom(density).toDp(density).value
+        val left = insets.getLeft(density, layoutDirection).toDp(density).value
+
+        val script = """
+        (function() {
+            var styleTag = document.getElementById("$CSS_TAG_ID");
+            
+            if (!styleTag) {
+                styleTag = document.createElement("style");
+                styleTag.id = "$CSS_TAG_ID";
+                document.head.appendChild(styleTag);
+            }
+            
+            styleTag.textContent = `
+                :root {
+                    --safe-area-inset-top: ${top}px;
+                    --safe-area-inset-left: ${left}px;
+                    --safe-area-inset-right: ${right}px;
+                    --safe-area-inset-bottom: ${bottom}px;
+                }
+            `;
+        })();
+    """.trimIndent()
+
+        webView?.evaluateJavascript(script, null)
     }
 
     @Composable
@@ -386,8 +436,13 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun Int.toDp(density: Density): Dp = with(density) { this@toDp.toDp() }
+
     companion object {
         const val TAG = "MainActivity"
+
+        // This tag is named like that just to have a unique identifier but the Web page does not rely on it
+        private const val CSS_TAG_ID = "mobile-inset-style"
 
         fun getLoginErrorDescription(
             context: Context,
