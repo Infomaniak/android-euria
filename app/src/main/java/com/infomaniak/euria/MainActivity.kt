@@ -214,6 +214,7 @@ class MainActivity : ComponentActivity() {
         val density = LocalDensity.current
         val layoutDirection = LocalLayoutDirection.current
 
+        // Need this to apply the insets to the WebView when these ones changes
         applySafeAreaInsetsToWebView(currentWebview, insets, density, layoutDirection)
 
         AskMicrophonePermission()
@@ -226,6 +227,7 @@ class MainActivity : ComponentActivity() {
             domStorageEnabled = true,
             webViewClient = CustomWebViewClient(
                 onPageSucessfullyLoaded = { webView ->
+                    // Waiting to get the WebView to inject CSS
                     applySafeAreaInsetsToWebView(webView, insets, density, layoutDirection)
                     mainViewModel.hasSeenWebView = true
                     keepSplashScreen.update { false }
@@ -254,13 +256,13 @@ class MainActivity : ComponentActivity() {
         val bottom = insets.getBottom(density).toDp(density).value
         val left = insets.getLeft(density, layoutDirection).toDp(density).value
 
-        val combinedJS = """
+        val script = """
         (function() {
-            var styleTag = document.getElementById("$CSS_TAG");
+            var styleTag = document.getElementById("$CSS_TAG_ID");
             
             if (!styleTag) {
                 styleTag = document.createElement("style");
-                styleTag.id = "$CSS_TAG";
+                styleTag.id = "$CSS_TAG_ID";
                 document.head.appendChild(styleTag);
             }
             
@@ -275,7 +277,7 @@ class MainActivity : ComponentActivity() {
         })();
     """.trimIndent()
 
-        webView?.evaluateJavascript(combinedJS, null)
+        webView?.evaluateJavascript(script, null)
     }
 
     @Composable
@@ -438,7 +440,9 @@ class MainActivity : ComponentActivity() {
 
     companion object {
         const val TAG = "MainActivity"
-        private const val CSS_TAG = "mobile-inset-style"
+
+        // This tag is named like that just to have a unique identifier but the Web page does not rely on it
+        private const val CSS_TAG_ID = "mobile-inset-style"
 
         fun getLoginErrorDescription(
             context: Context,
