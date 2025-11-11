@@ -99,7 +99,7 @@ private fun ActionButtons() {
             IconWithBackground(
                 drawableRes = widgetButton.iconRes,
                 onClick = widgetButton.action,
-                withEndSpacer = widgetButton != buttons.last(),
+                withSpacer = widgetButton != buttons.last(),
             )
         }
     }
@@ -123,7 +123,9 @@ private fun NewConversationButton(widgetFieldText: String) {
         )
         Text(
             text = widgetFieldText,
-            style = TextStyle(color = ColorProvider(R.color.widgetTextColor))
+            style = TextStyle(
+                color = ColorProvider(R.color.widgetTextColor)
+            ),
         )
     }
 }
@@ -132,7 +134,7 @@ private fun NewConversationButton(widgetFieldText: String) {
 private fun IconWithBackground(
     drawableRes: Int,
     onClick: Action,
-    withEndSpacer: Boolean,
+    withSpacer: Boolean,
 ) {
     Box(
         modifier = GlanceModifier
@@ -152,7 +154,7 @@ private fun IconWithBackground(
         )
     }
 
-    if (withEndSpacer) {
+    if (withSpacer) {
         Spacer(
             modifier = GlanceModifier
                 .width(Dimens.SpaceBetweenWidget),
