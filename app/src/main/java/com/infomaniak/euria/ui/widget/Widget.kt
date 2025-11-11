@@ -68,20 +68,21 @@ class Widget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
-            EuriaWidget()
+            // We have to pass the context because stringResource is not working in a Glance context (Widget)
+            EuriaWidget(context)
         }
     }
 }
 
 @Composable
-fun EuriaWidget() {
+fun EuriaWidget(context: Context) {
     Column(
         modifier = GlanceModifier
             .wrapContentSize()
             .padding(Margin.Small)
             .background(imageProvider = getImage(R.drawable.widget_background)),
     ) {
-        NewConversationButton()
+        NewConversationButton(widgetFieldText = context.getString(R.string.widgetFieldText))
         Spacer(modifier = GlanceModifier.height(Dimens.SpaceBetweenWidget))
         ActionButtons()
     }
@@ -105,7 +106,7 @@ private fun ActionButtons() {
 }
 
 @Composable
-private fun NewConversationButton() {
+private fun NewConversationButton(widgetFieldText: String) {
     Row(
         modifier = GlanceModifier
             .padding(Margin.Small)
@@ -121,7 +122,7 @@ private fun NewConversationButton() {
             contentDescription = "",
         )
         Text(
-            text = "Message...",
+            text = widgetFieldText,
             style = TextStyle(color = ColorProvider(R.color.widgetTextColor))
         )
     }
