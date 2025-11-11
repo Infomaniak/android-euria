@@ -1,34 +1,36 @@
-Ecco Euria, il tuo assistente IA sovrano che rispetta la tua privacy e il pianeta. Finalmente puoi sfruttare la potenza dell'IA senza sacrificare la tua privacy né sprecare energia.
+Euria, l'assistente IA sovrano che rispetta la tua privacy e il pianeta
 
-Euria può essere utilizzata gratuitamente con un account Infomaniak e my kSuite
+Finalmente puoi sfruttare la potenza dell'IA senza sacrificare la tua privacy né sprecare energia. Euria può essere utilizzato gratuitamente con un account my kSuite.
 
 Perché utilizzare Euria?
 
-— Ospitata al 100% in Svizzera da Infomaniak
-— Alimentata al 100% da energia rinnovabile locale
+— Ospitato al 100% in Svizzera da Infomaniak
+— Alimentato al 100% da energia rinnovabile locale
 — Il 100% dell'energia viene riutilizzata per riscaldare gli alloggi
 — Conforme al 100% al RGPD e alla LPD
 — Compensazione del 200% delle emissioni di CO₂
 
 Cosa puoi fare con Euria:
 
+— Formulare richieste all'IA per iscritto o a voce
 — Effettuare ricerche avanzate sul web
-— Scrivere, tradurre, correggere, riassumere e migliorare testi o documenti
-— Trascrivere il testo da immagini o documenti PDF
-— Riassumere o cercare informazioni in documenti, PDF, immagini...
-— Interpretare immagini
+— Redigere, tradurre, correggere, riassumere e migliorare testi o documenti
+— Trascrivere registrazioni audio
+— Trascrivere il testo da immagini o documenti PDF, Word, Excel, ecc.
+— Elaborare le informazioni contenute in documenti, PDF, Word, immagini, ecc.
+— Interpretare le immagini
 — Trovare idee uniche
 
-Euria è sicura e rispetta la tua privacy:
+Euria è sicura e rispetta la privacy:
 
-— Nessun dato raccolto, i tuoi dati appartengono a te
+— Nessun dato di addestramento raccolto, i tuoi dati appartengono a te
 — Ospitato esclusivamente in Svizzera
 — Conversazioni crittografate in transito e sui nostri server
-— Modalità effimera crittografata end-to-end, nessuna traccia!
+— Modalità effimera che non conserva alcuna traccia
 
 E molto altro ancora:
-— Classificate le vostre conversazioni per progetto
-— Accedete alle vostre conversazioni su tutti i vostri dispositivi
-— Condividete le conversazioni che preferite con i vostri contatti
+— Classifica le tue conversazioni per progetto
+— Accedi alle tue conversazioni su tutti i tuoi dispositivi
+— Condividi le conversazioni che desideri con i tuoi contatti
 
-E Euria è in continua evoluzione per offrirvi nuove possibilità.
+E Euria è in continua evoluzione per offrirti nuove possibilità.

@@ -1,6 +1,6 @@
-Voici Euria, votre assistant IA souverain qui respecte votre vie privée et la planète. Utilisez enfin la puissance de l’IA sans sacrifier votre vie privée ni gaspiller d’énergie.
+Euria, l'assistant IA souverain qui respecte votre vie privée et la planète
 
-Euria peut être utilisée gratuitement avec un compte Infomaniak et my kSuite
+Utilisez enfin la puissance de l’IA sans sacrifier votre vie privée ni gaspiller d’énergie. Euria peut être utilisée gratuitement avec un compte my kSuite.
 
 Pourquoi utiliser Euria ?
 
@@ -12,19 +12,21 @@ Pourquoi utiliser Euria ?
 
 Ce que vous pouvez faire avec Euria :
 
+— Formuler ses demandes à l’IA à l’écrit ou à la voix 
 — Faire des recherches avancées sur le Web
 — Rédiger, traduire, corriger, résumer et améliorer des textes ou des documents
-— Transcrire le texte d’images ou de documents PDF
-— Résumer ou rechercher des informations dans des documents, PDF, images...
+— Transcrire des enregistrements audio
+— Transcrire le texte d’images ou de documents PDF, Word, Excel, etc.
+— Traiter les informations dans des documents, PDF, Word, images, etc.
 — Interpréter des images
 — Trouver des idées uniques
 
-Euria est sécurisée et respecte votre vie privée :
+Euria est sécurisée et respecte la vie privée :
 
-— Aucune donnée collectée, vos données vous appartiennent
+— Aucune donnée d'entraînement collectée, vos données vous appartiennent
 — Exclusivement hébergée en Suisse
 — Conversations chiffrées en transit et sur nos serveurs
-— Mode éphémère chiffrée de bout en bout, aucune trace !
+— Mode éphémère qui ne conserve aucune trace
 
 Et bien plus encore :
 — Classez vos conversations par projets
