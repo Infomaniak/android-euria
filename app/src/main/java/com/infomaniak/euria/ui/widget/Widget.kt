@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@file:SuppressLint("RestrictedApi")
+
 package com.infomaniak.euria.ui.widget
 
 import android.annotation.SuppressLint
@@ -71,7 +73,6 @@ class Widget : GlanceAppWidget() {
     }
 }
 
-@SuppressLint("RestrictedApi")
 @Composable
 fun EuriaWidget() {
     Column(
@@ -126,7 +127,6 @@ private fun NewConversationButton() {
     }
 }
 
-@SuppressLint("RestrictedApi")
 @Composable
 private fun IconWithBackground(
     drawableRes: Int,
