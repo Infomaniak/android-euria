@@ -37,4 +37,9 @@
 
     <color name="splashscreenBrand">@color/infomaniak</color>
 
+    <color name="widgetBackground">#e6eff8</color>
+    <color name="widgetButtonBackground">#FFFFFF</color>
+    <color name="widgetButtonImageTint">#000000</color>
+    <color name="widgetTextColor">#000000</color>
+
 </resources>
