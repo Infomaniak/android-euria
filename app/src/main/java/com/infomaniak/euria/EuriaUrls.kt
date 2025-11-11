@@ -26,5 +26,5 @@ val CREATE_ACCOUNT_URL = "https://welcome.$host/signup/myksuite?app=true" //TODO
 val CREATE_ACCOUNT_SUCCESS_HOST = "ksuite.$host"  //TODO Use euria URLs when available
 val CREATE_ACCOUNT_CANCEL_HOST = "welcome.$host"
 val EURIA_MAIN_URL = "https://euria.$host"
-val EURIA_WIDGET_EPHEMERAL = "https://euria.$host?ephemeral=true"
-val EURIA_WIDGET_MICROPHONE = "https://euria.$host?speech=true"
+val EURIA_WIDGET_EPHEMERAL = "$EURIA_MAIN_URL?ephemeral=true"
+val EURIA_WIDGET_MICROPHONE = "$EURIA_MAIN_URL?speech=true"
