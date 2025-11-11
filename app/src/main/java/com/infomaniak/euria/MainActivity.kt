@@ -223,7 +223,7 @@ class MainActivity : ComponentActivity() {
         HandleBackHandler(webView = { currentWebview })
 
         WebView(
-            url = getProcessedDeeplinkUrl() ?: EURIA_MAIN_URL,
+            url = getUrl(),
             domStorageEnabled = true,
             webViewClient = CustomWebViewClient(
                 onPageSucessfullyLoaded = { webView ->
@@ -243,6 +243,11 @@ class MainActivity : ComponentActivity() {
                 currentWebview = webview
             },
         )
+    }
+
+    private fun getUrl(): String {
+        val urlFromWidget = intent.getStringExtra(EXTRA_URL)
+        return urlFromWidget ?: (getProcessedDeeplinkUrl() ?: EURIA_MAIN_URL)
     }
 
     private fun applySafeAreaInsetsToWebView(
@@ -440,6 +445,8 @@ class MainActivity : ComponentActivity() {
 
     companion object {
         const val TAG = "MainActivity"
+
+        const val EXTRA_URL = "EXTRA_URL"
 
         // This tag is named like that just to have a unique identifier but the Web page does not rely on it
         private const val CSS_TAG_ID = "mobile-inset-style"

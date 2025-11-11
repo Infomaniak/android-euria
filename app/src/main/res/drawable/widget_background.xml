@@ -16,21 +16,8 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources>
-    <color name="startGradient">#FF24405b</color>
-    <color name="endGradient">#121318</color>
-    <color name="background">#131415</color>
-    <color name="primaryText">#9E9E9E</color>
-    <color name="title">@android:color/white</color>
-
-    <color name="appBar">#2D2E30</color>
-    <color name="border">#6F7071</color>
-
-    <color name="splashscreenBrand">#FFFFFF</color>
-
-    <color name="widgetBackground">#2a5178</color>
-    <color name="widgetButtonBackground">#133855</color>
-    <color name="widgetButtonImageTint">#FFFFFF</color>
-    <color name="widgetTextColor">#FFFFFF</color>
-
-</resources>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/widgetBackground" />
+    <corners android:radius="30dp" />
+</shape>
