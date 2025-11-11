@@ -78,49 +78,51 @@ fun EuriaWidget() {
         modifier = GlanceModifier
             .wrapContentSize()
             .padding(Margin.Small)
-            .background(imageProvider = AndroidResourceImageProvider(R.drawable.widget_background)),
+            .background(imageProvider = getImage(R.drawable.widget_background)),
     ) {
-        Row(
-            modifier = GlanceModifier
-                .padding(Margin.Small)
-                .fillMaxWidth()
-                .background(imageProvider = AndroidResourceImageProvider(R.drawable.round_corner_background))
-                .clickable(getAction(EURIA_MAIN_URL)),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                modifier = GlanceModifier
-                    .size(Dimens.WidgetIconSize),
-                provider = AndroidResourceImageProvider(R.drawable.euria),
-                contentDescription = "",
-            )
-            Text(
-                text = "Message...",
-                style = TextStyle(color = ColorProvider(R.color.widgetTextColor))
-            )
-        }
-
+        NewConversationButton()
         Spacer(modifier = GlanceModifier.height(Dimens.SpaceBetweenWidget))
+        ActionButtons()
+    }
+}
 
-        Row(
-            horizontalAlignment = Alignment.End,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            val buttons = listOf(WidgetAction.Ephemeral, WidgetAction.Microphone)
-            buttons.forEach { widgetButton ->
-                IconWithBackground(
-                    drawableRes = widgetButton.iconRes,
-                    onClick = widgetButton.action,
-                )
-
-                if (widgetButton != buttons.last()) {
-                    Spacer(
-                        modifier = GlanceModifier
-                            .width(Dimens.SpaceBetweenWidget),
-                    )
-                }
-            }
+@Composable
+private fun ActionButtons() {
+    Row(
+        horizontalAlignment = Alignment.End,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val buttons = listOf(WidgetAction.Ephemeral, WidgetAction.Microphone)
+        buttons.forEach { widgetButton ->
+            IconWithBackground(
+                drawableRes = widgetButton.iconRes,
+                onClick = widgetButton.action,
+                withEndSpacer = widgetButton != buttons.last(),
+            )
         }
+    }
+}
+
+@Composable
+private fun NewConversationButton() {
+    Row(
+        modifier = GlanceModifier
+            .padding(Margin.Small)
+            .fillMaxWidth()
+            .background(imageProvider = getImage(R.drawable.round_corner_background))
+            .clickable(getAction(EURIA_MAIN_URL)),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            modifier = GlanceModifier
+                .size(Dimens.WidgetIconSize),
+            provider = getImage(R.drawable.euria),
+            contentDescription = "",
+        )
+        Text(
+            text = "Message...",
+            style = TextStyle(color = ColorProvider(R.color.widgetTextColor))
+        )
     }
 }
 
@@ -129,10 +131,11 @@ fun EuriaWidget() {
 private fun IconWithBackground(
     drawableRes: Int,
     onClick: Action,
+    withEndSpacer: Boolean,
 ) {
     Box(
         modifier = GlanceModifier
-            .background(imageProvider = AndroidResourceImageProvider(R.drawable.round_corner_background))
+            .background(imageProvider = getImage(R.drawable.round_corner_background))
             .padding(Margin.Small)
             .clickable(onClick)
             .wrapContentSize(),
@@ -142,12 +145,21 @@ private fun IconWithBackground(
             modifier = GlanceModifier
                 .size(Dimens.WidgetIconSize)
                 .padding(Margin.Small),
-            provider = AndroidResourceImageProvider(drawableRes),
+            provider = getImage(drawableRes),
             contentDescription = "",
             colorFilter = ColorFilter.tint(ColorProvider(R.color.widgetButtonImageTint))
         )
     }
+
+    if (withEndSpacer) {
+        Spacer(
+            modifier = GlanceModifier
+                .width(Dimens.SpaceBetweenWidget),
+        )
+    }
 }
+
+private fun getImage(drawableRes: Int) = AndroidResourceImageProvider(drawableRes)
 
 private sealed class WidgetAction(val iconRes: Int, val action: Action) {
     object Ephemeral : WidgetAction(R.drawable.clock, getAction(EURIA_WIDGET_EPHEMERAL))
