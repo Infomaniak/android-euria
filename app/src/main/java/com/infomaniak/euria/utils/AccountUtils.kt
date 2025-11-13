@@ -22,8 +22,8 @@ import com.infomaniak.core.auth.TokenAuthenticator
 import com.infomaniak.core.auth.models.user.User
 import com.infomaniak.core.auth.networking.AuthHttpClientProvider
 import com.infomaniak.core.auth.room.UserDatabase
-import com.infomaniak.core.crossapplogin.back.internal.deviceinfo.DeviceInfoUpdateManager
 import com.infomaniak.core.network.models.ApiResponseStatus
+import com.infomaniak.euria.MainApplication
 import com.infomaniak.euria.network.ApiRepository
 import io.sentry.Sentry
 import kotlinx.coroutines.flow.Flow
@@ -66,7 +66,8 @@ object AccountUtils : CredentialManager() {
 
     suspend fun addUser(user: User) {
         currentUser = user
-        DeviceInfoUpdateManager.sharedInstance.resetInfoKey(user.id.toLong())
+        val userId = user.id.toLong()
+        MainApplication.userDataCleanableList.forEach { it.resetForUser(userId) }
         userDatabase.userDao().insert(user)
     }
 
@@ -78,6 +79,8 @@ object AccountUtils : CredentialManager() {
 
     suspend fun removeAllUser() {
         userDatabase.userDao().getFirst()?.let { user ->
+            val userId = user.id.toLong()
+            MainApplication.userDataCleanableList.forEach { it.resetForUser(userId) }
             userDatabase.userDao().delete(user)
         }
     }
