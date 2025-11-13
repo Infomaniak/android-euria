@@ -22,6 +22,7 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application) // This line should be 1st, or you'll have Gradle sync issue
     alias(core.plugins.compose.compiler)
+    alias(libs.plugins.google.services)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.jetbrains.kotlin.serialization)
     alias(core.plugins.kapt)
@@ -49,7 +50,6 @@ android {
         versionName = "1.0.0"
 
         buildConfigField("String", "CLIENT_ID", "\"10476B29-7B98-4D42-B06B-2B7AB0F06FDE\"")
-        buildConfigField("String", "EURIA_URL", "\"https://euria.infomaniak.com/\"")
     }
 
     compileOptions {
@@ -130,6 +130,10 @@ dependencies {
     implementation(project(":Core:TwoFactorAuth:Back:WithUserDb"))
     implementation(project(":Core:TwoFactorAuth:Front"))
     implementation(project(":Core:WebView"))
+
+    "standardImplementation"(project(":Core:Notifications:Registration"))
+    "standardImplementation"(libs.play.services.base)
+    "standardImplementation"(libs.firebase.messaging.ktx)
 
     // Compose
     implementation(platform(core.compose.bom))

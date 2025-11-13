@@ -238,7 +238,7 @@ class MainActivity : ComponentActivity() {
             ),
             webChromeClient = getCustomWebChromeClient(),
             withSafeArea = false,
-            callback = { webview ->
+            getWebView = { webview ->
                 webview.addJavascriptInterface(jsBridge, JavascriptBridge.NAME)
                 currentWebview = webview
             },
