@@ -33,5 +33,4 @@
     <string name="onboardingPrivacyDescription">Rien n’est collecté, vos données vous appartiennent.</string>
     <string name="onboardingPrivacyTitle">Euria est hébergée en Suisse.</string>
     <string name="serverError">Erreur du serveur</string>
-    <string name="widgetFieldText">Message…</string>
 </resources>

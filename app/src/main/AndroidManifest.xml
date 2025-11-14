@@ -96,7 +96,7 @@
         </service>
 
         <receiver
-            android:name=".ui.widget.EuriaWidgetReceiver"
+            android:name=".ui.widget.EuriaAppWidgetProvider"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

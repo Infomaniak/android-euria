@@ -33,5 +33,4 @@
     <string name="onboardingPrivacyDescription">No se recoge nada, sus datos le pertenecen.</string>
     <string name="onboardingPrivacyTitle">Euria tiene su sede en Suiza.</string>
     <string name="serverError">Error del servidor</string>
-    <string name="widgetFieldText">Mensaje…</string>
 </resources>

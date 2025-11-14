@@ -27,6 +27,4 @@ object Dimens {
     val PrimaryButtonHeight = 56.dp
     val PrimaryButtonShape = RoundedCornerShape(16.dp)
     val SmallIconSize = 16.dp
-    val SpaceBetweenWidget = 12.dp
-    val WidgetIconSize = 52.dp
 }

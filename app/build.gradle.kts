@@ -135,8 +135,6 @@ dependencies {
     "standardImplementation"(core.firebase.messaging.ktx)
 
     // Compose
-    implementation(libs.androidx.glance.appwidget)
-    implementation(libs.androidx.glance.material3)
     implementation(platform(core.compose.bom))
     implementation(libs.accompanist.permissions)
     implementation(libs.androidx.activity.compose)

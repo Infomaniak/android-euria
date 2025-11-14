@@ -42,4 +42,6 @@
     <color name="widgetButtonImageTint">#000000</color>
     <color name="widgetTextColor">#000000</color>
 
+    <color name="widgetRipple">#29000000</color>
+
 </resources>
