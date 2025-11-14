@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Infomaniak Euria - Android
+  ~ Copyright (C) 2025 Infomaniak Network SA
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_root"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/widget_background"
+    android:orientation="vertical"
+    android:padding="@dimen/paddingElementWidget">
+
+    <LinearLayout
+        android:id="@+id/new_conversation_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/widget_button_background"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="@dimen/iconWidgetSize"
+            android:layout_height="@dimen/iconWidgetSize"
+            android:contentDescription="@null"
+            android:src="@drawable/euria" />
+
+        <TextView
+            android:id="@+id/new_conversation_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/appName"
+            android:textColor="@color/widgetTextColor"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/paddingElementWidget"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:id="@+id/ephemeral_button"
+            android:layout_width="@dimen/iconWidgetSize"
+            android:layout_height="@dimen/iconWidgetSize"
+            android:background="@drawable/widget_button_background"
+            android:padding="@dimen/paddingIcon">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                android:src="@drawable/clock"
+                android:tint="@color/widgetButtonImageTint"
+                tools:tint="@color/widgetButtonImageTint" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/microphone_button"
+            android:layout_width="@dimen/iconWidgetSize"
+            android:layout_height="@dimen/iconWidgetSize"
+            android:layout_marginLeft="@dimen/paddingBetweenActions"
+            android:background="@drawable/widget_button_background"
+            android:padding="@dimen/paddingIcon">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                android:src="@drawable/microphone"
+                android:tint="@color/widgetButtonImageTint"
+                tools:tint="@color/widgetButtonImageTint" />
+        </FrameLayout>
+    </LinearLayout>
+</LinearLayout>

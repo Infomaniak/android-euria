@@ -3,7 +3,6 @@ accompanistPermissions = "0.37.3"
 androidGradlePlugin = "8.13.0"
 compose = "1.9.3"
 coreSplashscreen = "1.0.1"
-glanceAppwidget = "1.1.1"
 kotlin = "2.2.0"
 kotlinxSerializationJson = "1.9.0"
 hiltAndroid = "2.57.2"
@@ -14,8 +13,6 @@ navigation = "2.9.5"
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "compose" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
-androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glanceAppwidget" }
-androidx-glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glanceAppwidget" }
 compose-ui-android = { module = "androidx.compose.ui:ui-android", version.ref = "compose" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }

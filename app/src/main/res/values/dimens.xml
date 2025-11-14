@@ -16,7 +16,13 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <resources>
-    <dimen name="marginStandard">24dp</dimen>
     <dimen name="cardViewRadius">6dp</dimen>
     <dimen name="gradientRadius">40</dimen>
+    <dimen name="iconWidgetSize">52dp</dimen>
+    <dimen name="marginStandard">24dp</dimen>
+    <dimen name="paddingBetweenActions">8dp</dimen>
+    <dimen name="paddingElementWidget">16dp</dimen>
+    <dimen name="paddingIcon">8dp</dimen>
+    <dimen name="widgetBackgroundRadius">36dp</dimen>
+    <dimen name="widgetButtonBackgroundRadius">20dp</dimen>
 </resources>
