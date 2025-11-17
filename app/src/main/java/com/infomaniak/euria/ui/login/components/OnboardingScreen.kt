@@ -44,7 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.infomaniak.core.compose.margin.Margin
-import com.infomaniak.core.crossapplogin.back.BaseCrossAppLoginViewModel.Companion.filterSelectedAccounts
+import com.infomaniak.core.crossapplogin.back.BaseCrossAppLoginViewModel.AccountsCheckingState
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
 import com.infomaniak.core.crossapplogin.front.components.CrossLoginBottomContent
 import com.infomaniak.core.crossapplogin.front.data.CrossLoginDefaults
@@ -59,7 +59,7 @@ import com.infomaniak.euria.ui.theme.EuriaTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnboardingScreen(
-    accounts: () -> List<ExternalAccount>,
+    accountsCheckingState: () -> AccountsCheckingState,
     skippedIds: () -> Set<Long>,
     isLoginButtonLoading: () -> Boolean,
     isSignUpButtonLoading: () -> Boolean,
@@ -90,7 +90,7 @@ fun OnboardingScreen(
                         .padding(paddingValues)
                         .consumeWindowInsets(paddingValues),
                     pagerState = pagerState,
-                    accounts = accounts,
+                    accountsCheckingState = accountsCheckingState,
                     skippedIds = skippedIds,
                     isSingleSelection = true,
                     isLoginButtonLoading = isLoginButtonLoading,
@@ -102,13 +102,7 @@ fun OnboardingScreen(
                         ),
                     ),
                     onLogin = { onLoginRequest(emptyList()) },
-                    onContinueWithSelectedAccounts = {
-                        onLoginRequest(
-                            accounts().filterSelectedAccounts(
-                                skippedIds()
-                            )
-                        )
-                    },
+                    onContinueWithSelectedAccounts = { selectedAccounts -> onLoginRequest(selectedAccounts) },
                     onCreateAccount = onCreateAccount,
                     onUseAnotherAccountClicked = { onLoginRequest(emptyList()) },
                     onSaveSkippedAccounts = onSaveSkippedAccounts,
