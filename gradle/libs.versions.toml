@@ -3,6 +3,7 @@ accompanistPermissions = "0.37.3"
 androidGradlePlugin = "8.13.1"
 compose = "1.9.3"
 coreSplashscreen = "1.0.1"
+googleServices = "4.4.4"
 kotlin = "2.2.0"
 kotlinxSerializationJson = "1.9.0"
 hiltAndroid = "2.57.2"
@@ -24,6 +25,7 @@ navigation-safeargs = { module = "androidx.navigation:navigation-safe-args-gradl
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin" }

@@ -19,14 +19,26 @@
 package com.infomaniak.euria
 
 import android.app.Application
+import com.infomaniak.core.AssociatedUserDataCleanable
+import com.infomaniak.core.crossapplogin.back.internal.deviceinfo.DeviceInfoUpdateManager
 import com.infomaniak.core.network.ApiEnvironment
 import com.infomaniak.core.network.NetworkConfiguration
 import com.infomaniak.core.sentry.SentryConfig.configureSentry
 import com.infomaniak.euria.utils.AccountUtils
+import com.infomaniak.euria.utils.NotificationUtils
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import javax.inject.Inject
 
 @HiltAndroidApp
-class MainApplication : Application() {
+open class MainApplication : Application() {
+
+    @Inject
+    lateinit var notificationUtils: NotificationUtils
+
+    val applicationScope = CoroutineScope(Dispatchers.Default + CoroutineName("MainApplication"))
 
     init {
         // New modules configuration
@@ -40,8 +52,18 @@ class MainApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        userDataCleanableList = listOf<AssociatedUserDataCleanable>(DeviceInfoUpdateManager)
+
         AccountUtils.init()
 
         this.configureSentry(isDebug = BuildConfig.DEBUG, isSentryTrackingEnabled = true)
+        notificationUtils.initNotificationChannel()
+    }
+
+    companion object {
+        @JvmStatic
+        var userDataCleanableList: List<AssociatedUserDataCleanable> = emptyList()
+            protected set
     }
 }
