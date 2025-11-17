@@ -144,6 +144,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             EuriaTheme {
+                val accountsCheckingState by crossAppLoginViewModel.accountsCheckingState.collectAsStateWithLifecycle()
                 val accounts by crossAppLoginViewModel.availableAccounts.collectAsStateWithLifecycle()
                 val skippedIds by crossAppLoginViewModel.skippedAccountIds.collectAsStateWithLifecycle()
                 val userState by mainViewModel.userState.collectAsStateWithLifecycle()
@@ -155,7 +156,7 @@ class MainActivity : ComponentActivity() {
                         userState is UserState.NotLoggedIn -> {
                             keepSplashScreen.update { false }
                             OnboardingScreen(
-                                accounts = { accounts },
+                                accountsCheckingState = accountsCheckingState,
                                 skippedIds = { skippedIds },
                                 isLoginButtonLoading = { loginRequest.isAwaitingCall.not() || isLoginButtonLoading },
                                 isSignUpButtonLoading = { isSignUpButtonLoading },
