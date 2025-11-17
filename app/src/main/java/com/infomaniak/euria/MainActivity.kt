@@ -24,6 +24,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
+import android.view.WindowManager
 import android.webkit.CookieManager
 import android.webkit.ValueCallback
 import android.webkit.WebView
@@ -185,6 +186,13 @@ class MainActivity : ComponentActivity() {
     private fun getEuriaJavascriptBridge() = JavascriptBridge(
         onDismissApp = { finish() },
         onLogout = { mainViewModel.logout() },
+        onKeepDeviceAwake = { state ->
+            if (state) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            } else {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            }
+        },
     )
 
     private fun getProcessedDeeplinkUrl(): String? {
