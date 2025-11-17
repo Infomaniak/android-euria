@@ -20,8 +20,9 @@ package com.infomaniak.euria.webview
 import android.webkit.JavascriptInterface
 
 class JavascriptBridge(
-    private val onLogout: () -> Unit,
     private val onDismissApp: () -> Unit,
+    private val onLogout: () -> Unit,
+    private val onKeepDeviceAwake: (Boolean) -> Unit,
 ) {
 
     @JavascriptInterface
@@ -32,6 +33,11 @@ class JavascriptBridge(
     @JavascriptInterface
     fun logout() {
         onLogout()
+    }
+
+    @JavascriptInterface
+    fun keepDeviceAwake(state: Boolean) {
+        onKeepDeviceAwake(state)
     }
 
     companion object {
