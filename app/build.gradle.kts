@@ -132,8 +132,7 @@ dependencies {
     implementation(project(":Core:WebView"))
 
     "standardImplementation"(project(":Core:Notifications:Registration"))
-    "standardImplementation"(libs.play.services.base)
-    "standardImplementation"(libs.firebase.messaging.ktx)
+    "standardImplementation"(core.firebase.messaging.ktx)
 
     // Compose
     implementation(platform(core.compose.bom))
