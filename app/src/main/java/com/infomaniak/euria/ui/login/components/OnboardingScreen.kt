@@ -59,7 +59,7 @@ import com.infomaniak.euria.ui.theme.EuriaTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnboardingScreen(
-    accountsCheckingState: AccountsCheckingState,
+    accountsCheckingState: () -> AccountsCheckingState,
     skippedIds: () -> Set<Long>,
     isLoginButtonLoading: () -> Boolean,
     isSignUpButtonLoading: () -> Boolean,
@@ -90,7 +90,7 @@ fun OnboardingScreen(
                         .padding(paddingValues)
                         .consumeWindowInsets(paddingValues),
                     pagerState = pagerState,
-                    accountsCheckingState = { accountsCheckingState },
+                    accountsCheckingState = accountsCheckingState,
                     skippedIds = skippedIds,
                     isSingleSelection = true,
                     isLoginButtonLoading = isLoginButtonLoading,
