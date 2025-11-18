@@ -17,8 +17,8 @@
   -->
 
 <resources>
-    <color name="startGradient">#5ea9ff</color>
-    <color name="endGradient">#fcf8ff</color>
+    <color name="startGradient">#5EA9FF</color>
+    <color name="endGradient">#FCF8FF</color>
     <color name="background">#F4F6FD</color>
 
     <color name="infomaniak">#0098FF</color>
@@ -26,22 +26,21 @@
     <color name="primary">@color/infomaniak</color>
     <color name="primaryDark">#0079CC</color>
 
-    <color name="title">#333333</color>
-    <color name="primaryText">#666666</color>
-    <color name="secondaryText">#9F9F9F</color>
+    <color name="title">@color/orca</color>
+    <color name="primaryText">@color/elephant</color>
+    <color name="secondaryText">@color/shark</color>
 
-    <color name="appBar">@android:color/white</color>
+    <color name="appBar">@color/white</color>
     <color name="backgroundCardview">@color/appBar</color>
 
     <color name="border">#E0E0E0</color>
 
     <color name="splashscreenBrand">@color/infomaniak</color>
 
-    <color name="widgetBackground">#e6eff8</color>
-    <color name="widgetButtonBackground">#FFFFFF</color>
-    <color name="widgetButtonImageTint">#000000</color>
-    <color name="widgetTextColor">#000000</color>
+    <color name="widgetBackground">#e6EFF8</color>
+    <color name="widgetButtonBackground">@color/white</color>
+    <color name="widgetButtonImageTint">@color/black</color>
+    <color name="widgetTextColor">@color/black</color>
 
     <color name="widgetRipple">#29000000</color>
-
 </resources>

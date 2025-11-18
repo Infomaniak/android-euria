@@ -129,6 +129,7 @@ dependencies {
     implementation(project(":Core:Sentry"))
     implementation(project(":Core:TwoFactorAuth:Back:WithUserDb"))
     implementation(project(":Core:TwoFactorAuth:Front"))
+    implementation(project(":Core:UiView"))
     implementation(project(":Core:WebView"))
 
     "standardImplementation"(project(":Core:Notifications:Registration"))

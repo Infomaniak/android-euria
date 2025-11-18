@@ -21,17 +21,17 @@
     <color name="endGradient">#121318</color>
     <color name="background">#131415</color>
     <color name="primaryText">#9E9E9E</color>
-    <color name="title">@android:color/white</color>
+    <color name="title">@color/white</color>
 
     <color name="appBar">#2D2E30</color>
     <color name="border">#6F7071</color>
 
-    <color name="splashscreenBrand">#FFFFFF</color>
+    <color name="splashscreenBrand">@color/white</color>
 
     <color name="widgetBackground">#2a5178</color>
     <color name="widgetButtonBackground">#133855</color>
-    <color name="widgetButtonImageTint">#FFFFFF</color>
-    <color name="widgetTextColor">#FFFFFF</color>
+    <color name="widgetButtonImageTint">@color/white</color>
+    <color name="widgetTextColor">@color/white</color>
 
     <color name="widgetRipple">#29FFFFFF</color>
 </resources>
