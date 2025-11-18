@@ -24,12 +24,14 @@ import com.infomaniak.core.crossapplogin.back.internal.deviceinfo.DeviceInfoUpda
 import com.infomaniak.core.network.ApiEnvironment
 import com.infomaniak.core.network.NetworkConfiguration
 import com.infomaniak.core.sentry.SentryConfig.configureSentry
+import com.infomaniak.euria.services.DeviceInfoUpdateWorker
 import com.infomaniak.euria.utils.AccountUtils
 import com.infomaniak.euria.utils.NotificationUtils
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -59,6 +61,10 @@ open class MainApplication : Application() {
 
         this.configureSentry(isDebug = BuildConfig.DEBUG, isSentryTrackingEnabled = true)
         notificationUtils.initNotificationChannel()
+
+        applicationScope.launch {
+            DeviceInfoUpdateManager.scheduleWorkerOnDeviceInfoUpdate<DeviceInfoUpdateWorker>()
+        }
     }
 
     companion object {
