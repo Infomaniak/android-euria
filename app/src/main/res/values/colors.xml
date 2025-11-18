@@ -21,14 +21,12 @@
     <color name="endGradient">#FCF8FF</color>
     <color name="background">#F4F6FD</color>
 
+    <color name="title">@color/orca</color>
+
     <color name="infomaniak">#0098FF</color>
     <color name="accent">@color/infomaniak</color>
     <color name="primary">@color/infomaniak</color>
     <color name="primaryDark">#0079CC</color>
-
-    <color name="title">@color/orca</color>
-    <color name="primaryText">@color/elephant</color>
-    <color name="secondaryText">@color/shark</color>
 
     <color name="appBar">@color/white</color>
     <color name="backgroundCardview">@color/appBar</color>
