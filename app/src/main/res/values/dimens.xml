@@ -18,11 +18,12 @@
 <resources>
     <dimen name="cardViewRadius">6dp</dimen>
     <dimen name="gradientRadius">40</dimen>
-    <dimen name="iconWidgetSize">52dp</dimen>
-    <dimen name="marginStandard">24dp</dimen>
-    <dimen name="paddingBetweenActions">8dp</dimen>
-    <dimen name="paddingElementWidget">16dp</dimen>
-    <dimen name="paddingIcon">8dp</dimen>
+
+    <!--  Euria Widget  -->
     <dimen name="widgetBackgroundRadius">36dp</dimen>
     <dimen name="widgetButtonBackgroundRadius">20dp</dimen>
+    <dimen name="widgetIconSize">52dp</dimen>
+    <dimen name="widgetPaddingBetweenActions">8dp</dimen>
+    <dimen name="widgetPaddingElement">16dp</dimen>
+    <dimen name="widgetPaddingIcon">8dp</dimen>
 </resources>
