@@ -34,7 +34,7 @@
         <ImageView
             android:layout_width="@dimen/widgetIconSize"
             android:layout_height="@dimen/widgetIconSize"
-            android:contentDescription="@null"
+            android:contentDescription="@string/contentDescriptionChat"
             android:src="@drawable/euria" />
 
         <TextView
@@ -65,7 +65,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:contentDescription="@null"
+                android:contentDescription="@string/contentDescriptionEphemeralChat"
                 android:src="@drawable/clock" />
         </FrameLayout>
 
@@ -80,7 +80,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:contentDescription="@null"
+                android:contentDescription="@string/contentDescriptionMicrophone"
                 android:src="@drawable/microphone" />
         </FrameLayout>
     </LinearLayout>

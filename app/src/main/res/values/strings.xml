@@ -20,6 +20,9 @@
     <string name="appName" translatable="false">Euria</string>
 
     <string name="connectionError">Internet connection problem</string>
+    <string name="contentDescriptionChat">Chat with Euria</string>
+    <string name="contentDescriptionEphemeralChat">Ephemeral chat</string>
+    <string name="contentDescriptionMicrophone">Voice chat</string>
     <string name="noNetworkDescription">Check your Internet connection and try again to resume your conversation</string>
     <string name="noNetworkTitle">No Internet access</string>
     <string name="onboardingDatacenterDescription" formatted="false">AI energy is 100% revalued.</string>
