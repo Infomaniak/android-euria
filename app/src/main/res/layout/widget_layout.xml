@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:text="@string/appName"
             android:textColor="@color/widgetTextColor"
-            android:textSize="17sp"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
     </LinearLayout>
