@@ -76,7 +76,7 @@
             android:id="@+id/microphone_button"
             android:layout_width="@dimen/iconWidgetSize"
             android:layout_height="@dimen/iconWidgetSize"
-            android:layout_marginLeft="@dimen/paddingBetweenActions"
+            android:layout_marginStart="@dimen/paddingBetweenActions"
             android:background="@drawable/widget_button_background"
             android:padding="@dimen/paddingIcon">
 
