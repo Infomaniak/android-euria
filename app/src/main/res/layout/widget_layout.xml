@@ -16,7 +16,6 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/widget_root"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -67,8 +66,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:contentDescription="@null"
-                android:src="@drawable/clock"
-                app:tint="@color/widgetButtonImageTint" />
+                android:src="@drawable/clock" />
         </FrameLayout>
 
         <FrameLayout
@@ -83,8 +81,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:contentDescription="@null"
-                android:src="@drawable/microphone"
-                app:tint="@color/widgetButtonImageTint" />
+                android:src="@drawable/microphone" />
         </FrameLayout>
     </LinearLayout>
 </LinearLayout>
