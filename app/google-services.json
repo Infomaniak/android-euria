@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "214558718295",
-    "project_id": "infomaniak-euria-9e2af",
-    "storage_bucket": "infomaniak-euria-9e2af.firebasestorage.app"
+    "project_number": "504269968835",
+    "project_id": "infomaniak-euria",
+    "storage_bucket": "infomaniak-euria.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:214558718295:android:fdcb3fbab4e47cd39b2612",
+        "mobilesdk_app_id": "1:504269968835:android:c1bd621a9e8c5b2ee2d976",
         "android_client_info": {
           "package_name": "com.infomaniak.euria"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAZA2qyZyJduPFMRyOqqHovuuNdBgWE1Xs"
+          "current_key": "AIzaSyDrKP_11B8OIE9t-I_qA59pO4OPZ44sRSU"
         }
       ],
       "services": {
