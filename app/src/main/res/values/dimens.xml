@@ -20,10 +20,9 @@
     <dimen name="gradientRadius">40</dimen>
 
     <!--  Euria Widget  -->
+    <dimen name="widgetPadding">16dp</dimen>
     <dimen name="widgetBackgroundRadius">36dp</dimen>
     <dimen name="widgetButtonBackgroundRadius">20dp</dimen>
     <dimen name="widgetIconSize">52dp</dimen>
     <dimen name="widgetPaddingBetweenActions">8dp</dimen>
-    <dimen name="widgetPaddingElement">16dp</dimen>
-    <dimen name="widgetPaddingIcon">8dp</dimen>
 </resources>

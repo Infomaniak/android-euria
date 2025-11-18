@@ -34,19 +34,17 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         // We only have on widget so we use the first one
-        with(appWidgetIds[0]) {
-            val views = RemoteViews(context.packageName, R.layout.widget_layout)
+        val views = RemoteViews(context.packageName, R.layout.widget_layout)
 
-            val mainIntent = getIntent(context)
-            val ephemeralIntent = getIntent(context, url = EURIA_WIDGET_EPHEMERAL)
-            val microphoneIntent = getIntent(context, url = EURIA_WIDGET_MICROPHONE)
+        val mainIntent = getIntent(context)
+        val ephemeralIntent = getIntent(context, url = EURIA_WIDGET_EPHEMERAL)
+        val microphoneIntent = getIntent(context, url = EURIA_WIDGET_MICROPHONE)
 
-            views.setOnClickPendingIntent(R.id.new_conversation_button, getPendingIntent(context, mainIntent))
-            views.setOnClickPendingIntent(R.id.ephemeral_button, getPendingIntent(context, ephemeralIntent))
-            views.setOnClickPendingIntent(R.id.microphone_button, getPendingIntent(context, microphoneIntent))
+        views.setOnClickPendingIntent(R.id.newConversationButton, getPendingIntent(context, mainIntent))
+        views.setOnClickPendingIntent(R.id.ephemeralButton, getPendingIntent(context, ephemeralIntent))
+        views.setOnClickPendingIntent(R.id.microphoneButton, getPendingIntent(context, microphoneIntent))
 
-            appWidgetManager.updateAppWidget(this, views)
-        }
+        appWidgetIds.firstOrNull()?.let { appWidgetId -> appWidgetManager.updateAppWidget(appWidgetId, views) }
     }
 
     private fun getIntent(context: Context, url: String? = null): Intent {

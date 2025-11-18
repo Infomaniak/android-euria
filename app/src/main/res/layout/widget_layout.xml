@@ -22,10 +22,10 @@
     android:layout_height="wrap_content"
     android:background="@drawable/widget_background"
     android:orientation="vertical"
-    android:padding="@dimen/widgetPaddingElement">
+    android:padding="@dimen/widgetPadding">
 
     <LinearLayout
-        android:id="@+id/new_conversation_button"
+        android:id="@+id/newConversationButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/widget_button_background"
@@ -39,7 +39,7 @@
             android:src="@drawable/euria" />
 
         <TextView
-            android:id="@+id/new_conversation_text"
+            android:id="@+id/newConversationText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/appName"
@@ -52,16 +52,15 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/widgetPaddingElement"
+        android:layout_marginTop="@dimen/widgetPaddingBetweenActions"
         android:gravity="center"
         android:orientation="horizontal">
 
         <FrameLayout
-            android:id="@+id/ephemeral_button"
+            android:id="@+id/ephemeralButton"
             android:layout_width="@dimen/widgetIconSize"
             android:layout_height="@dimen/widgetIconSize"
-            android:background="@drawable/widget_button_background"
-            android:padding="@dimen/widgetPaddingIcon">
+            android:background="@drawable/widget_button_background">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -73,12 +72,11 @@
         </FrameLayout>
 
         <FrameLayout
-            android:id="@+id/microphone_button"
+            android:id="@+id/microphoneButton"
             android:layout_width="@dimen/widgetIconSize"
             android:layout_height="@dimen/widgetIconSize"
             android:layout_marginStart="@dimen/widgetPaddingBetweenActions"
-            android:background="@drawable/widget_button_background"
-            android:padding="@dimen/widgetPaddingIcon">
+            android:background="@drawable/widget_button_background">
 
             <ImageView
                 android:layout_width="wrap_content"

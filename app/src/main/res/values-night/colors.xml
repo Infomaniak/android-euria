@@ -28,7 +28,7 @@
 
     <color name="splashscreenBrand">@color/white</color>
 
-    <color name="widgetBackground">#2a5178</color>
+    <color name="widgetBackground">#2A5178</color>
     <color name="widgetButtonBackground">#133855</color>
     <color name="widgetButtonImageTint">@color/white</color>
     <color name="widgetTextColor">@color/white</color>
