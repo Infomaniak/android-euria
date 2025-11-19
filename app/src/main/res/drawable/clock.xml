@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<!--
   ~ Infomaniak Euria - Android
   ~ Copyright (C) 2025 Infomaniak Network SA
   ~
@@ -16,22 +16,13 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources>
-    <color name="startGradient">#FF24405b</color>
-    <color name="endGradient">#121318</color>
-    <color name="background">#131415</color>
-
-    <color name="title">@color/white</color>
-
-    <color name="appBar">#2D2E30</color>
-    <color name="border">#6F7071</color>
-
-    <color name="splashscreenBrand">@color/white</color>
-
-    <color name="widgetBackground">#2A5178</color>
-    <color name="widgetButtonBackground">#133855</color>
-    <color name="widgetButtonImageTint">@color/white</color>
-    <color name="widgetTextColor">@color/white</color>
-
-    <color name="widgetRipple">#29FFFFFF</color>
-</resources>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:tint="@color/widgetButtonImageTint"
+    android:viewportWidth="960"
+    android:viewportHeight="960">
+    <path
+        android:fillColor="#e3e3e3"
+        android:pathData="m612,668 l56,-56 -148,-148v-184h-80v216l172,172ZM480,880q-83,0 -156,-31.5T197,763q-54,-54 -85.5,-127T80,480q0,-83 31.5,-156T197,197q54,-54 127,-85.5T480,80q83,0 156,31.5T763,197q54,54 85.5,127T880,480q0,83 -31.5,156T763,763q-54,54 -127,85.5T480,880ZM480,480ZM480,800q133,0 226.5,-93.5T800,480q0,-133 -93.5,-226.5T480,160q-133,0 -226.5,93.5T160,480q0,133 93.5,226.5T480,800Z" />
+</vector>

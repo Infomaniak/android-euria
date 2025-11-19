@@ -16,22 +16,9 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources>
-    <color name="startGradient">#FF24405b</color>
-    <color name="endGradient">#121318</color>
-    <color name="background">#131415</color>
-
-    <color name="title">@color/white</color>
-
-    <color name="appBar">#2D2E30</color>
-    <color name="border">#6F7071</color>
-
-    <color name="splashscreenBrand">@color/white</color>
-
-    <color name="widgetBackground">#2A5178</color>
-    <color name="widgetButtonBackground">#133855</color>
-    <color name="widgetButtonImageTint">@color/white</color>
-    <color name="widgetTextColor">@color/white</color>
-
-    <color name="widgetRipple">#29FFFFFF</color>
-</resources>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:resizeMode="none"
+    android:targetCellWidth="2"
+    android:targetCellHeight="2"
+    android:previewImage="@drawable/widget_preview"
+    android:widgetCategory="home_screen" />

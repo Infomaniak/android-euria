@@ -18,6 +18,9 @@
 
 <resources>
     <string name="connectionError">Problème de connexion à Internet</string>
+    <string name="contentDescriptionChat">Discuter avec Euria</string>
+    <string name="contentDescriptionEphemeralChat">Chat éphémère</string>
+    <string name="contentDescriptionMicrophone">Chat vocal</string>
     <string name="noNetworkDescription">Vérifiez votre connexion Internet et réessayez pour reprendre votre conversation</string>
     <string name="noNetworkTitle">Aucun accès à Internet</string>
     <string name="onboardingDatacenterDescription" formatted="false">L’énergie de l’IA est 100% revalorisée.</string>

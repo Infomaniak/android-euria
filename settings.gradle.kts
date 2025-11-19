@@ -63,5 +63,6 @@ include(
     ":Core:SharedValues",
     ":Core:TwoFactorAuth:Back:WithUserDb",
     ":Core:TwoFactorAuth:Front",
+    ":Core:UiView",
     ":Core:WebView",
 )
