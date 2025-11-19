@@ -19,7 +19,6 @@ package com.infomaniak.euria
 
 import android.Manifest
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
@@ -77,7 +76,9 @@ import com.infomaniak.euria.webview.CustomWebViewClient
 import com.infomaniak.euria.webview.JavascriptBridge
 import com.infomaniak.lib.login.InfomaniakLogin
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -142,6 +143,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         if (SDK_INT >= 29) window.isNavigationBarContrastEnforced = false
 
+        lifecycleScope.launch {
+            mainViewModel.userState.collectLatest {
+                if (it is UserState.NotLoggedIn) runLogin()
+            }
+        }
+
         setContent {
             EuriaTheme {
                 val accountsCheckingState by crossAppLoginViewModel.accountsCheckingState.collectAsStateWithLifecycle()
@@ -166,7 +173,6 @@ class MainActivity : ComponentActivity() {
                         }
                         isNetworkAvailable || mainViewModel.hasSeenWebView -> {
                             val userState = userState as UserState.LoggedIn
-                            startCrossAppLoginService(userState.user.id.toString())
                             EuriaMainScreen(userState.user.apiToken.accessToken)
                         }
                         else -> {
@@ -179,8 +185,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
-        initCrossLogin()
     }
 
     private fun getEuriaJavascriptBridge() = JavascriptBridge(
@@ -374,16 +378,7 @@ class MainActivity : ComponentActivity() {
         return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
     }
 
-    private fun startCrossAppLoginService(currentUserId: String) {
-        val intent = Intent(this, CrossAppLoginService::class.java).apply {
-            putExtra(CrossAppLoginService.EXTRA_USER_ID, currentUserId)
-        }
-
-        startService(intent)
-    }
-
-    private fun initCrossLogin() = lifecycleScope.launch {
-        launch { crossAppLoginViewModel.activateUpdates(this@MainActivity, singleSelection = true) }
+    private suspend fun runLogin(): Nothing = coroutineScope {
         launch {
             mainViewModel.handleLogin(
                 loginRequest,
@@ -404,6 +399,7 @@ class MainActivity : ComponentActivity() {
                 },
             )
         }
+        crossAppLoginViewModel.activateUpdates(this@MainActivity, singleSelection = true)
     }
 
     private fun openLoginWebView() {

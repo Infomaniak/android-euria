@@ -17,22 +17,10 @@
  */
 package com.infomaniak.euria
 
-import android.content.Intent
 import com.infomaniak.core.crossapplogin.back.BaseCrossAppLoginService
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.infomaniak.euria.utils.AccountUtils
+import kotlinx.coroutines.flow.map
 
-class CrossAppLoginService : BaseCrossAppLoginService(userIdFlow) {
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val userId = intent?.getIntExtra(EXTRA_USER_ID, -1)
-        if (userId != null) userIdFlow.value = userId
-
-        return super.onStartCommand(intent, flags, startId)
-    }
-
-    companion object {
-        const val EXTRA_USER_ID = "userId"
-
-        private val userIdFlow = MutableStateFlow<Int?>(null)
-    }
-}
+class CrossAppLoginService : BaseCrossAppLoginService(
+    selectedUserIdFlow = AccountUtils.getCurrentUserFlow().map { it?.id }
+)
