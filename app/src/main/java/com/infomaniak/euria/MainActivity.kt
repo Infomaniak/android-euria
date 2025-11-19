@@ -76,6 +76,7 @@ import com.infomaniak.euria.webview.CustomWebViewClient
 import com.infomaniak.euria.webview.JavascriptBridge
 import com.infomaniak.lib.login.InfomaniakLogin
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
@@ -144,7 +145,7 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             mainViewModel.userState.collectLatest {
-                if (it is UserState.NotLoggedIn) initCrossAppLogin()
+                if (it is UserState.NotLoggedIn) runLogin()
             }
         }
 
@@ -377,8 +378,7 @@ class MainActivity : ComponentActivity() {
         return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
     }
 
-    private fun initCrossAppLogin() = lifecycleScope.launch {
-        launch { crossAppLoginViewModel.activateUpdates(this@MainActivity, singleSelection = true) }
+    private suspend fun runLogin(): Nothing = coroutineScope {
         launch {
             mainViewModel.handleLogin(
                 loginRequest,
@@ -399,6 +399,7 @@ class MainActivity : ComponentActivity() {
                 },
             )
         }
+        crossAppLoginViewModel.activateUpdates(this@MainActivity, singleSelection = true)
     }
 
     private fun openLoginWebView() {
