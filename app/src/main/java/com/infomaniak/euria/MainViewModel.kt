@@ -44,8 +44,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -76,6 +78,10 @@ class MainViewModel @Inject constructor(
     var launchMediaChooser by mutableStateOf(false)
     var hasSeenWebView by mutableStateOf(false)
     var microphonePermissionRequest by mutableStateOf<PermissionRequest?>(null)
+
+    var isWebViewReady by mutableStateOf(false)
+    private val _webViewQuery = MutableSharedFlow<String>(replay = Int.MAX_VALUE)
+    val webViewQuery = _webViewQuery.asSharedFlow()
 
     fun Context.getInfomaniakLogin() = InfomaniakLogin(
         context = this,
@@ -140,6 +146,12 @@ class MainViewModel @Inject constructor(
             Dispatchers.IO.invoke { cookieManager.flush() }
             WebStorage.getInstance().deleteAllData()
             AccountUtils.removeAllUser()
+        }
+    }
+
+    fun updateWebViewQuery(query: String) {
+        viewModelScope.launch {
+            _webViewQuery.emit(query)
         }
     }
 

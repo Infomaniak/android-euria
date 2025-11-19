@@ -19,6 +19,7 @@ package com.infomaniak.euria
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
@@ -48,7 +49,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.content.ContextCompat
 import androidx.core.os.ConfigurationCompat
@@ -188,19 +188,20 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun getEuriaJavascriptBridge() = JavascriptBridge(
-        onDismissApp = { finish() },
-        onLogout = { mainViewModel.logout() },
-        onKeepDeviceAwake = { state ->
-            if (state) {
-                window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-            } else {
-                window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-            }
-        },
-    )
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        updateWebViewQueryFrom(intent)
+    }
 
-    private fun getProcessedDeeplinkUrl(): String? {
+    private fun updateWebViewQueryFrom(intent: Intent) {
+        val query = getProcessedDeeplinkUrl(intent)?.let { deeplinkUrl ->
+            deeplinkUrl.substringAfter(deeplinkUrl.toHttpUrl().host)
+        } ?: intent.getStringExtra(EXTRA_QUERY)
+
+        query?.let { mainViewModel.updateWebViewQuery(it) }
+    }
+
+    private fun getProcessedDeeplinkUrl(intent: Intent): String? {
         val deeplinkUri = intent.data ?: return null
         val deeplinkPath = deeplinkUri.path ?: return null
         fun isEuriaDeeplink() = deeplinkUri.host?.startsWith("euria") == true
@@ -217,6 +218,21 @@ class MainActivity : ComponentActivity() {
             else -> "$EURIA_MAIN_URL/${deeplink.replace("/euria", "")}"
         }
     }
+
+    private fun getEuriaJavascriptBridge() = JavascriptBridge(
+        onDismissApp = { finish() },
+        onLogout = { mainViewModel.logout() },
+        onKeepDeviceAwake = { state ->
+            if (state) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            } else {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            }
+        },
+        onReady = {
+            mainViewModel.isWebViewReady = true
+        }
+    )
 
     @Composable
     private fun EuriaMainScreen(token: String?) {
@@ -235,8 +251,16 @@ class MainActivity : ComponentActivity() {
 
         HandleBackHandler(webView = { currentWebview })
 
+        LaunchedEffect(mainViewModel.isWebViewReady) {
+            if (mainViewModel.isWebViewReady) {
+                mainViewModel.webViewQuery.collect { query ->
+                    currentWebview?.evaluateJavascript("goTo(\"$query\")", null)
+                }
+            }
+        }
+
         WebView(
-            url = getUrl(),
+            url = EURIA_MAIN_URL,
             domStorageEnabled = true,
             webViewClient = CustomWebViewClient(
                 onPageSucessfullyLoaded = { webView ->
@@ -256,11 +280,6 @@ class MainActivity : ComponentActivity() {
                 currentWebview = webview
             },
         )
-    }
-
-    private fun getUrl(): String {
-        val urlFromWidget = intent.getStringExtra(EXTRA_URL)
-        return urlFromWidget ?: (getProcessedDeeplinkUrl() ?: EURIA_MAIN_URL)
     }
 
     private fun applySafeAreaInsetsToWebView(
@@ -446,12 +465,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun Int.toDp(density: Density): Dp = with(density) { this@toDp.toDp() }
 
     companion object {
         const val TAG = "MainActivity"
 
-        const val EXTRA_URL = "EXTRA_URL"
+        const val EXTRA_QUERY = "EXTRA_QUERY"
 
         // This tag is named like that just to have a unique identifier but the Web page does not rely on it
         private const val CSS_TAG_ID = "mobile-inset-style"
