@@ -33,6 +33,9 @@ import com.infomaniak.euria.R
 class EuriaAppWidgetProvider : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
+        // We only have on widget so we use the first one
+        val appWidgetId = appWidgetIds.firstOrNull() ?: return
+
         val views = RemoteViews(context.packageName, R.layout.widget_layout)
 
         val mainIntent = getIntent(context)
@@ -43,8 +46,6 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
         views.setOnClickPendingIntent(R.id.ephemeralButton, getPendingIntent(context, ephemeralIntent))
         views.setOnClickPendingIntent(R.id.microphoneButton, getPendingIntent(context, microphoneIntent))
 
-        // We only have on widget so we use the first one
-        val appWidgetId = appWidgetIds.firstOrNull() ?: return
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 
