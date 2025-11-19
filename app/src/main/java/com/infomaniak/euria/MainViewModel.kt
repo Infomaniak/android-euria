@@ -65,7 +65,7 @@ class MainViewModel @Inject constructor(
     val isNetworkAvailable = NetworkAvailability(context).isNetworkAvailable.distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.Lazily, true)
 
-    var userState: StateFlow<UserState> = AccountUtils.getCurrentUserFlow().map {
+    val userState: StateFlow<UserState> = AccountUtils.getCurrentUserFlow().map {
         if (it == null) {
             UserState.NotLoggedIn
         } else {
