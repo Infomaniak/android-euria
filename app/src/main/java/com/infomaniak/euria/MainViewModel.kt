@@ -27,12 +27,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.infomaniak.core.auth.models.user.User
-import com.infomaniak.core.compose.basics.CallableState
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
 import com.infomaniak.core.network.LOGIN_ENDPOINT_URL
 import com.infomaniak.core.network.NetworkAvailability
 import com.infomaniak.core.network.networking.DefaultHttpClientProvider
 import com.infomaniak.core.sentry.SentryLog
+import com.infomaniak.core.ui.compose.basics.CallableState
 import com.infomaniak.euria.MainActivity.Companion.TAG
 import com.infomaniak.euria.MainActivity.Companion.getLoginErrorDescription
 import com.infomaniak.euria.network.ApiRepository

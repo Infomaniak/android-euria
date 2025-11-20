@@ -115,9 +115,6 @@ android {
 dependencies {
     implementation(project(":Core"))
     implementation(project(":Core:Auth"))
-    implementation(project(":Core:Compose:BasicButton"))
-    implementation(project(":Core:Compose:Basics"))
-    implementation(project(":Core:Compose:Margin"))
     implementation(project(":Core:CrossAppLogin:Back"))
     implementation(project(":Core:CrossAppLogin:Front"))
     implementation(project(":Core:FragmentNavigation"))
@@ -129,7 +126,10 @@ dependencies {
     implementation(project(":Core:Sentry"))
     implementation(project(":Core:TwoFactorAuth:Back:WithUserDb"))
     implementation(project(":Core:TwoFactorAuth:Front"))
-    implementation(project(":Core:UiView"))
+    implementation(project(":Core:Ui:Compose:BasicButton"))
+    implementation(project(":Core:Ui:Compose:Basics"))
+    implementation(project(":Core:Ui:Compose:Margin"))
+    implementation(project(":Core:Ui:View"))
     implementation(project(":Core:WebView"))
 
     "standardImplementation"(project(":Core:Notifications:Registration"))

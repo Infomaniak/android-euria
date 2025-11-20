@@ -42,7 +42,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import com.google.android.material.color.ColorContrast.isContrastAvailable
-import com.infomaniak.core.compose.basics.bottomsheet.ProvideBottomSheetTheme
+import com.infomaniak.core.ui.compose.basics.bottomsheet.ProvideBottomSheetTheme
 
 val LocalCustomColorScheme: ProvidableCompositionLocal<CustomColorScheme> =
     staticCompositionLocalOf { CustomColorScheme() }
