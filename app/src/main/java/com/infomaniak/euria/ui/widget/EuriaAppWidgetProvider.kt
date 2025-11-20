@@ -24,10 +24,9 @@ import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
-import com.infomaniak.euria.EURIA_WIDGET_EPHEMERAL
-import com.infomaniak.euria.EURIA_WIDGET_MICROPHONE
 import com.infomaniak.euria.MainActivity
-import com.infomaniak.euria.MainActivity.Companion.EXTRA_URL
+import com.infomaniak.euria.MainActivity.Companion.EXTRA_QUERY
+import com.infomaniak.euria.MainActivity.PendingIntentRequestCodes
 import com.infomaniak.euria.R
 
 class EuriaAppWidgetProvider : AppWidgetProvider() {
@@ -39,28 +38,42 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
         val views = RemoteViews(context.packageName, R.layout.widget_layout)
 
         val mainIntent = getIntent(context)
-        val ephemeralIntent = getIntent(context, url = EURIA_WIDGET_EPHEMERAL)
-        val microphoneIntent = getIntent(context, url = EURIA_WIDGET_MICROPHONE)
+        val ephemeralIntent = getIntent(context, query = EPHEMERAL_QUERY)
+        val microphoneIntent = getIntent(context, query = MICROPHONE_QUERY)
 
-        views.setOnClickPendingIntent(R.id.newConversationButton, getPendingIntent(context, mainIntent))
-        views.setOnClickPendingIntent(R.id.ephemeralButton, getPendingIntent(context, ephemeralIntent))
-        views.setOnClickPendingIntent(R.id.microphoneButton, getPendingIntent(context, microphoneIntent))
+        views.setOnClickPendingIntent(
+            R.id.newConversationButton,
+            getPendingIntent(context, mainIntent, PendingIntentRequestCodes.CHAT)
+        )
+        views.setOnClickPendingIntent(
+            R.id.ephemeralButton,
+            getPendingIntent(context, ephemeralIntent, PendingIntentRequestCodes.EPHEMERAL)
+        )
+        views.setOnClickPendingIntent(
+            R.id.microphoneButton,
+            getPendingIntent(context, microphoneIntent, PendingIntentRequestCodes.SPEECH)
+        )
 
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 
-    private fun getIntent(context: Context, url: String? = null): Intent {
+    private fun getIntent(context: Context, query: String? = null): Intent {
         return Intent(context, MainActivity::class.java).apply {
-            url?.let { putExtra(EXTRA_URL, it) }
+            putExtra(EXTRA_QUERY, query)
         }
     }
 
-    private fun getPendingIntent(context: Context, intent: Intent): PendingIntent {
+    private fun getPendingIntent(context: Context, intent: Intent, requestCode: Int): PendingIntent {
         return PendingIntent.getActivity(
             context,
-            intent.hashCode(),
+            requestCode,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+    }
+
+    companion object {
+        private const val EPHEMERAL_QUERY = "/?ephemeral=true"
+        private const val MICROPHONE_QUERY = "/?speech=true"
     }
 }

@@ -27,6 +27,8 @@ import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.infomaniak.euria.BuildConfig
+import com.infomaniak.euria.EURIA_MAIN_URL
+import okhttp3.HttpUrl.Companion.toHttpUrl
 
 class CustomWebViewClient(
     private val onPageSucessfullyLoaded: (WebView) -> Unit,
@@ -50,10 +52,13 @@ class CustomWebViewClient(
     }
 
     override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-        runCatching {
-            view.context.startActivity(Intent(Intent.ACTION_VIEW, request.url))
+        return when (request.url.host) {
+            EURIA_MAIN_URL.toHttpUrl().host -> false
+            else -> {
+                openExternalBrowser(view, request)
+                true
+            }
         }
-        return true
     }
 
     override fun onPageFinished(view: WebView, url: String?) {
@@ -64,5 +69,11 @@ class CustomWebViewClient(
     override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
         super.onReceivedError(view, request, error)
         if (request.isForMainFrame) hasReceivedError = true
+    }
+
+    private fun openExternalBrowser(view: WebView, request: WebResourceRequest) {
+        runCatching {
+            view.context.startActivity(Intent(Intent.ACTION_VIEW, request.url))
+        }
     }
 }

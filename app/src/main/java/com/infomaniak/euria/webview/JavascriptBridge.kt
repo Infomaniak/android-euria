@@ -23,6 +23,7 @@ class JavascriptBridge(
     private val onDismissApp: () -> Unit,
     private val onLogout: () -> Unit,
     private val onKeepDeviceAwake: (Boolean) -> Unit,
+    private val onReady: () -> Unit,
 ) {
 
     @JavascriptInterface
@@ -38,6 +39,11 @@ class JavascriptBridge(
     @JavascriptInterface
     fun keepDeviceAwake(state: Boolean) {
         onKeepDeviceAwake(state)
+    }
+
+    @JavascriptInterface
+    fun ready() {
+        onReady()
     }
 
     companion object {

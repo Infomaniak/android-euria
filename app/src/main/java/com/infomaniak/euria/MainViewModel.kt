@@ -44,6 +44,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -76,6 +78,11 @@ class MainViewModel @Inject constructor(
     var launchMediaChooser by mutableStateOf(false)
     var hasSeenWebView by mutableStateOf(false)
     var microphonePermissionRequest by mutableStateOf<PermissionRequest?>(null)
+
+    val isWebAppReady = MutableStateFlow(false)
+    val webViewQueries = Channel<String>(capacity = Channel.CONFLATED)
+
+    @OptIn(ExperimentalSplittiesApi::class)
 
     fun Context.getInfomaniakLogin() = InfomaniakLogin(
         context = this,
