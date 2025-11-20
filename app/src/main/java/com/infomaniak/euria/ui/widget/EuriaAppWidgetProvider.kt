@@ -26,6 +26,7 @@ import android.content.Intent
 import android.widget.RemoteViews
 import com.infomaniak.euria.MainActivity
 import com.infomaniak.euria.MainActivity.Companion.EXTRA_QUERY
+import com.infomaniak.euria.MainActivity.PendingIntentRequestCodes
 import com.infomaniak.euria.R
 
 class EuriaAppWidgetProvider : AppWidgetProvider() {
@@ -40,9 +41,18 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
         val ephemeralIntent = getIntent(context, query = EPHEMERAL_QUERY)
         val microphoneIntent = getIntent(context, query = MICROPHONE_QUERY)
 
-        views.setOnClickPendingIntent(R.id.newConversationButton, getPendingIntent(context, mainIntent))
-        views.setOnClickPendingIntent(R.id.ephemeralButton, getPendingIntent(context, ephemeralIntent))
-        views.setOnClickPendingIntent(R.id.microphoneButton, getPendingIntent(context, microphoneIntent))
+        views.setOnClickPendingIntent(
+            R.id.newConversationButton,
+            getPendingIntent(context, mainIntent, PendingIntentRequestCodes.CHAT)
+        )
+        views.setOnClickPendingIntent(
+            R.id.ephemeralButton,
+            getPendingIntent(context, ephemeralIntent, PendingIntentRequestCodes.EPHEMERAL)
+        )
+        views.setOnClickPendingIntent(
+            R.id.microphoneButton,
+            getPendingIntent(context, microphoneIntent, PendingIntentRequestCodes.SPEECH)
+        )
 
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
@@ -53,10 +63,10 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
         }
     }
 
-    private fun getPendingIntent(context: Context, intent: Intent): PendingIntent {
+    private fun getPendingIntent(context: Context, intent: Intent, requestCode: Int): PendingIntent {
         return PendingIntent.getActivity(
             context,
-            intent.hashCode(),
+            requestCode,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )

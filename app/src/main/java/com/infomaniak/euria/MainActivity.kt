@@ -80,6 +80,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -150,6 +151,8 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        updateWebViewQueryFrom(intent)
+
         setContent {
             EuriaTheme {
                 val accountsCheckingState by crossAppLoginViewModel.accountsCheckingState.collectAsStateWithLifecycle()
@@ -194,11 +197,13 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun updateWebViewQueryFrom(intent: Intent) {
-        val query = getProcessedDeeplinkUrl(intent)?.let { deeplinkUrl ->
-            deeplinkUrl.substringAfter(deeplinkUrl.toHttpUrl().host)
-        } ?: intent.getStringExtra(EXTRA_QUERY)
+        val query = intent.getStringExtra(EXTRA_QUERY)
+            ?: getProcessedDeeplinkUrl(intent)?.let { deeplinkUrl ->
+                deeplinkUrl.substringAfter(deeplinkUrl.toHttpUrl().host)
+            }
+            ?: return
 
-        query?.let { mainViewModel.updateWebViewQuery(it) }
+        mainViewModel.webViewQueries.trySend(query)
     }
 
     private fun getProcessedDeeplinkUrl(intent: Intent): String? {
@@ -230,7 +235,7 @@ class MainActivity : ComponentActivity() {
             }
         },
         onReady = {
-            mainViewModel.isWebViewReady = true
+            mainViewModel.isWebAppReady.value = true
         }
     )
 
@@ -251,10 +256,12 @@ class MainActivity : ComponentActivity() {
 
         HandleBackHandler(webView = { currentWebview })
 
-        LaunchedEffect(mainViewModel.isWebViewReady) {
-            if (mainViewModel.isWebViewReady) {
-                mainViewModel.webViewQuery.collect { query ->
-                    currentWebview?.evaluateJavascript("goTo(\"$query\")", null)
+        LaunchedEffect(Unit) {
+            mainViewModel.isWebAppReady.collectLatest { isWebAppReady ->
+                if (isWebAppReady) {
+                    mainViewModel.webViewQueries.receiveAsFlow().collect { query ->
+                        currentWebview?.evaluateJavascript("goTo(\"$query\")", null)
+                    }
                 }
             }
         }
@@ -465,6 +472,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    object PendingIntentRequestCodes {
+        const val CHAT = 0
+        const val EPHEMERAL = 1
+        const val SPEECH = 2
+    }
 
     companion object {
         const val TAG = "MainActivity"

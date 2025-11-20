@@ -44,10 +44,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -79,9 +79,10 @@ class MainViewModel @Inject constructor(
     var hasSeenWebView by mutableStateOf(false)
     var microphonePermissionRequest by mutableStateOf<PermissionRequest?>(null)
 
-    var isWebViewReady by mutableStateOf(false)
-    private val _webViewQuery = MutableSharedFlow<String>(replay = Int.MAX_VALUE)
-    val webViewQuery = _webViewQuery.asSharedFlow()
+    val isWebAppReady = MutableStateFlow(false)
+    val webViewQueries = Channel<String>(capacity = Channel.CONFLATED)
+
+    @OptIn(ExperimentalSplittiesApi::class)
 
     fun Context.getInfomaniakLogin() = InfomaniakLogin(
         context = this,
@@ -146,12 +147,6 @@ class MainViewModel @Inject constructor(
             Dispatchers.IO.invoke { cookieManager.flush() }
             WebStorage.getInstance().deleteAllData()
             AccountUtils.removeAllUser()
-        }
-    }
-
-    fun updateWebViewQuery(query: String) {
-        viewModelScope.launch {
-            _webViewQuery.emit(query)
         }
     }
 
