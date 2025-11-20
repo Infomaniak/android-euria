@@ -118,10 +118,10 @@ class MainActivity : ComponentActivity() {
                         authCode?.isNotBlank() == true -> mainViewModel.authenticateUser(authCode) { showError(it) }
                         else -> showError(getString(RCore.string.anErrorHasOccurred))
                     }
+                } else {
+                    isLoginButtonLoading = false
+                    isSignUpButtonLoading = false
                 }
-
-                isLoginButtonLoading = false
-                isSignUpButtonLoading = false
             }
         }
 
