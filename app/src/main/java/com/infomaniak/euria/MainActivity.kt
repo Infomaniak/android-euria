@@ -59,11 +59,12 @@ import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.material.snackbar.Snackbar
-import com.infomaniak.core.compose.basics.CallableState
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
 import com.infomaniak.core.observe
 import com.infomaniak.core.twofactorauth.back.TwoFactorAuthManager
 import com.infomaniak.core.twofactorauth.front.TwoFactorAuthApprovalAutoManagedBottomSheet
+import com.infomaniak.core.ui.compose.basics.CallableState
+import com.infomaniak.core.ui.view.toDp
 import com.infomaniak.core.webview.ui.components.WebView
 import com.infomaniak.euria.MainViewModel.UserState
 import com.infomaniak.euria.ui.login.CrossAppLoginViewModel
@@ -268,10 +269,10 @@ class MainActivity : ComponentActivity() {
         density: Density,
         layoutDirection: LayoutDirection,
     ) {
-        val top = insets.getTop(density).toDp(density).value
-        val right = insets.getRight(density, layoutDirection).toDp(density).value
-        val bottom = insets.getBottom(density).toDp(density).value
-        val left = insets.getLeft(density, layoutDirection).toDp(density).value
+        val top = insets.getTop(density).toDp(this)
+        val right = insets.getRight(density, layoutDirection).toDp(this)
+        val bottom = insets.getBottom(density).toDp(this)
+        val left = insets.getLeft(density, layoutDirection).toDp(this)
 
         val script = """
         (function() {
