@@ -110,11 +110,6 @@ android {
         uploadNativeSymbols = isRelease
         includeNativeSources = isRelease
     }
-
-    dependenciesInfo {
-        includeInApk = false
-        includeInBundle = false
-    }
 }
 
 dependencies {
