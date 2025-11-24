@@ -94,9 +94,7 @@ fun EuriaMainScreen(
                 mainViewModel.hasSeenWebView = true
                 keepSplashScreen(false)
             },
-            onPageFailedToLoad = {
-                mainViewModel.logout()
-            }
+            onPageFailedToLoad = mainViewModel::logout
         ),
         webChromeClient = webViewUtils.getCustomWebChromeClient(
             filePathCallback = { filePathCallback = it },
@@ -139,9 +137,7 @@ private fun ShowFileChooser(
         }
     )
 
-    if (mainViewModel.launchMediaChooser) {
-        launcher.launch(arrayOf("*/*"))
-    }
+    if (mainViewModel.launchMediaChooser) launcher.launch(arrayOf("*/*"))
 }
 
 @OptIn(ExperimentalPermissionsApi::class)

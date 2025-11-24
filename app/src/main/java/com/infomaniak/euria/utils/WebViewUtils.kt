@@ -111,9 +111,8 @@ class WebViewUtils(
     private fun getProcessedDeeplinkUrl(intent: Intent): String? {
         val deeplinkUri = intent.data ?: return null
         val deeplinkPath = deeplinkUri.path ?: return null
-        fun isEuriaDeeplink() = deeplinkUri.host?.startsWith("euria") == true
         return when {
-            isEuriaDeeplink() -> deeplinkUri.toString()
+            deeplinkUri.host?.startsWith("euria") == true -> deeplinkUri.toString()
             else -> parseKSuiteDeeplink(deeplinkPath)
         }
     }

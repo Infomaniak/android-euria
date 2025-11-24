@@ -76,8 +76,8 @@ class MainActivity : ComponentActivity() {
             javascriptBridgeCallbacks = WebViewUtils.JavascriptBridgeCallbacks(
                 onDismissApp = { finish() },
                 onLogout = { mainViewModel.logout() },
-                onKeepDeviceAwake = { state ->
-                    if (state) {
+                onKeepDeviceAwake = { shouldKeepScreenOn ->
+                    if (shouldKeepScreenOn) {
                         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                     } else {
                         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)

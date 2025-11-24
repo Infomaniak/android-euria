@@ -115,7 +115,6 @@ android {
 dependencies {
     implementation(project(":Core"))
     implementation(project(":Core:Auth"))
-    implementation(project(":Core:Auth"))
     implementation(project(":Core:CrossAppLogin:Back"))
     implementation(project(":Core:CrossAppLogin:Front"))
     implementation(project(":Core:FragmentNavigation"))
