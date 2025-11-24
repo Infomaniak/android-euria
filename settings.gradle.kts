@@ -60,9 +60,10 @@ include(
     ":Core:TwoFactorAuth:Front",
     ":Core:Ui:Compose:BasicButton",
     ":Core:Ui:Compose:Basics",
-    ":Core:Ui:Compose:Preview",
     ":Core:Ui:Compose:Margin",
     ":Core:Ui:Compose:MaterialThemeFromXml",
+    ":Core:Ui:Compose:Preview",
+    ":Core:Ui:Compose:Theme",
     ":Core:Ui:View",
     ":Core:WebView",
 )

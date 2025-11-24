@@ -19,11 +19,8 @@
 package com.infomaniak.euria.ui.theme
 
 import android.app.Activity
-import android.app.UiModeManager
-import android.content.Context
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.shapes
 import androidx.compose.material3.darkColorScheme
@@ -38,11 +35,10 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import com.google.android.material.color.ColorContrast.isContrastAvailable
 import com.infomaniak.core.ui.compose.basics.bottomsheet.ProvideBottomSheetTheme
+import com.infomaniak.core.ui.compose.theme.selectSchemeForContrast
 
 val LocalCustomColorScheme: ProvidableCompositionLocal<CustomColorScheme> =
     staticCompositionLocalOf { CustomColorScheme() }
@@ -282,31 +278,6 @@ data class CustomColorScheme(
     val highlightedColor: Color = Color.Unspecified,
 )
 
-@Composable
-fun selectSchemeForContrast(isDark: Boolean): ColorScheme {
-    val context = LocalContext.current
-    var colorScheme = if (isDark) darkScheme else lightScheme
-    val isPreview = LocalInspectionMode.current
-    if (!isPreview && isContrastAvailable()) {
-        val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
-        val contrastLevel = uiModeManager.contrast
-
-        colorScheme = when (contrastLevel) {
-            in 0.0f..0.33f -> if (isDark)
-                darkScheme else lightScheme
-
-            in 0.34f..0.66f -> if (isDark)
-                mediumContrastDarkColorScheme else mediumContrastLightColorScheme
-
-            in 0.67f..1.0f -> if (isDark)
-                highContrastDarkColorScheme else highContrastLightColorScheme
-
-            else -> if (isDark) darkScheme else lightScheme
-        }
-        return colorScheme
-    } else return colorScheme
-}
-
 object EuriaTheme {
     val colors: CustomColorScheme
         @Composable
@@ -324,8 +295,15 @@ fun EuriaTheme(
             val context = LocalContext.current
             if (isDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
-        else -> selectSchemeForContrast(isDarkTheme)
+        else -> selectSchemeForContrast(
+            isDark = isDarkTheme,
+            darkScheme = darkScheme,
+            lightScheme = lightScheme,
+            mediumContrastDarkColorScheme = mediumContrastDarkColorScheme,
+            mediumContrastLightColorScheme = mediumContrastLightColorScheme,
+            highContrastDarkColorScheme = highContrastDarkColorScheme,
+            highContrastLightColorScheme = highContrastLightColorScheme,
+        )
     }
     val view = LocalView.current
     if (!view.isInEditMode) {

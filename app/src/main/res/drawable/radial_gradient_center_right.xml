@@ -30,11 +30,11 @@
                 android:gradientRadius="@dimen/gradientRadius"
                 android:type="radial">
                 <item
-                    android:offset="0"
-                    android:color="@color/startGradient" />
+                    android:color="@color/startGradient"
+                    android:offset="0" />
                 <item
-                    android:offset="1"
-                    android:color="@color/endGradient" />
+                    android:color="@color/endGradient"
+                    android:offset="1" />
             </gradient>
         </aapt:attr>
     </path>
