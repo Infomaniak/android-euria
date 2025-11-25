@@ -87,6 +87,9 @@ android {
             dimension = "distribution"
             isDefault = true
         }
+        create("fdroid") {
+            dimension = "distribution"
+        }
     }
 
     val isRelease = gradle.startParameter.taskNames.any { it.contains("release", ignoreCase = true) }
