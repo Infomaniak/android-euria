@@ -31,7 +31,6 @@ dependencyResolutionManagement {
         mavenCentral()
         // mavenLocal() // Only used when we want to use a local version of a library (./gradlew publishToMavenLocal)
         maven(url = "https://jitpack.io")
-        maven(url = "https://s3.amazonaws.com/tgl.maven")
     }
     versionCatalogs {
         create("core") { from(files("Core/gradle/core.versions.toml")) }
