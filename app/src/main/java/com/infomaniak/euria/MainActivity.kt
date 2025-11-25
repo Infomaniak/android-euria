@@ -17,73 +17,47 @@
  */
 package com.infomaniak.euria
 
-import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.view.WindowManager
-import android.webkit.CookieManager
-import android.webkit.ValueCallback
 import android.webkit.WebView
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.core.content.ContextCompat
-import androidx.core.os.ConfigurationCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.material.snackbar.Snackbar
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
 import com.infomaniak.core.observe
 import com.infomaniak.core.twofactorauth.back.TwoFactorAuthManager
 import com.infomaniak.core.twofactorauth.front.TwoFactorAuthApprovalAutoManagedBottomSheet
 import com.infomaniak.core.ui.compose.basics.CallableState
-import com.infomaniak.core.ui.view.toDp
-import com.infomaniak.core.webview.ui.components.WebView
 import com.infomaniak.euria.MainViewModel.UserState
+import com.infomaniak.euria.ui.EuriaMainScreen
 import com.infomaniak.euria.ui.login.CrossAppLoginViewModel
 import com.infomaniak.euria.ui.login.components.OnboardingScreen
 import com.infomaniak.euria.ui.noNetwork.NoNetworkScreen
 import com.infomaniak.euria.ui.theme.EuriaTheme
 import com.infomaniak.euria.utils.AccountUtils
-import com.infomaniak.euria.webview.CustomWebChromeClient
-import com.infomaniak.euria.webview.CustomWebViewClient
-import com.infomaniak.euria.webview.JavascriptBridge
+import com.infomaniak.euria.utils.WebViewUtils
 import com.infomaniak.lib.login.InfomaniakLogin
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import splitties.experimental.ExperimentalSplittiesApi
 import com.infomaniak.core.R as RCore
 
@@ -96,13 +70,25 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
     private val crossAppLoginViewModel: CrossAppLoginViewModel by viewModels()
 
-    private var isLoginButtonLoading by mutableStateOf(false)
-    private var isSignUpButtonLoading by mutableStateOf(false)
-
-    private val cookieManager by lazy { CookieManager.getInstance() }
-    private val jsBridge by lazy { getEuriaJavascriptBridge() }
-
-    private var keepSplashScreen = MutableStateFlow(true)
+    private val webViewUtils: WebViewUtils by lazy {
+        WebViewUtils(
+            context = applicationContext,
+            javascriptBridgeCallbacks = WebViewUtils.JavascriptBridgeCallbacks(
+                onDismissApp = { finish() },
+                onLogout = { mainViewModel.logout() },
+                onKeepDeviceAwake = { shouldKeepScreenOn ->
+                    if (shouldKeepScreenOn) {
+                        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                    } else {
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                    }
+                },
+                onReady = {
+                    mainViewModel.isWebAppReady.value = true
+                }
+            )
+        )
+    }
 
     private val loginRequest = CallableState<List<ExternalAccount>>()
 
@@ -124,13 +110,14 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
-    private var filePathCallback: ValueCallback<Array<out Uri>>? = null
-
     private val createAccountResultLauncher =
         registerForActivityResult(StartActivityForResult()) { result ->
             result.handleCreateAccountActivityResult()
         }
+
+    private var isLoginButtonLoading by mutableStateOf(false)
+    private var isSignUpButtonLoading by mutableStateOf(false)
+    private var keepSplashScreen = MutableStateFlow(true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -151,7 +138,9 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        updateWebViewQueryFrom(intent)
+        webViewUtils.updateWebViewQueryFrom(intent, updateWebViewQuery = { query ->
+            mainViewModel.webViewQueries.trySend(query)
+        })
 
         setContent {
             EuriaTheme {
@@ -177,7 +166,15 @@ class MainActivity : ComponentActivity() {
                         }
                         isNetworkAvailable || mainViewModel.hasSeenWebView -> {
                             val userState = userState as UserState.LoggedIn
-                            EuriaMainScreen(userState.user.apiToken.accessToken)
+                            EuriaMainScreen(
+                                mainViewModel = mainViewModel,
+                                webViewUtils = webViewUtils,
+                                token = userState.user.apiToken.accessToken,
+                                keepSplashScreen = { state ->
+                                    keepSplashScreen.update { state }
+                                },
+                                finishApp = { finish() },
+                            )
                         }
                         else -> {
                             keepSplashScreen.update { false }
@@ -193,216 +190,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        updateWebViewQueryFrom(intent)
-    }
-
-    private fun updateWebViewQueryFrom(intent: Intent) {
-        val query = intent.getStringExtra(EXTRA_QUERY)
-            ?: getProcessedDeeplinkUrl(intent)?.let { deeplinkUrl ->
-                deeplinkUrl.substringAfter(deeplinkUrl.toHttpUrl().host)
-            }
-            ?: return
-
-        mainViewModel.webViewQueries.trySend(query)
-    }
-
-    private fun getProcessedDeeplinkUrl(intent: Intent): String? {
-        val deeplinkUri = intent.data ?: return null
-        val deeplinkPath = deeplinkUri.path ?: return null
-        fun isEuriaDeeplink() = deeplinkUri.host?.startsWith("euria") == true
-        return when {
-            isEuriaDeeplink() -> deeplinkUri.toString()
-            else -> parseKSuiteDeeplink(deeplinkPath)
-        }
-    }
-
-    private fun parseKSuiteDeeplink(deeplink: String): String {
-        return when {
-            deeplink.endsWith("euria") -> EURIA_MAIN_URL
-            deeplink.startsWith("/all") -> "$EURIA_MAIN_URL/${deeplink.substringAfter("euria/")}"
-            else -> "$EURIA_MAIN_URL/${deeplink.replace("/euria", "")}"
-        }
-    }
-
-    private fun getEuriaJavascriptBridge() = JavascriptBridge(
-        onDismissApp = { finish() },
-        onLogout = { mainViewModel.logout() },
-        onKeepDeviceAwake = { state ->
-            if (state) {
-                window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-            } else {
-                window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-            }
-        },
-        onReady = {
-            mainViewModel.isWebAppReady.value = true
-        }
-    )
-
-    @Composable
-    private fun EuriaMainScreen(token: String?) {
-        setTokenToCookie(token)
-
-        var currentWebview: WebView? by remember { mutableStateOf(null) }
-        val insets = WindowInsets.safeDrawing
-        val density = LocalDensity.current
-        val layoutDirection = LocalLayoutDirection.current
-
-        // Need this to apply the insets to the WebView when these ones changes
-        applySafeAreaInsetsToWebView(currentWebview, insets, density, layoutDirection)
-
-        AskMicrophonePermission()
-        ShowFileChooser()
-
-        HandleBackHandler(webView = { currentWebview })
-
-        LaunchedEffect(Unit) {
-            mainViewModel.isWebAppReady.collectLatest { isWebAppReady ->
-                if (isWebAppReady) {
-                    mainViewModel.webViewQueries.receiveAsFlow().collect { query ->
-                        currentWebview?.evaluateJavascript("goTo(\"$query\")", null)
-                    }
-                }
-            }
-        }
-
-        WebView(
-            url = EURIA_MAIN_URL,
-            domStorageEnabled = true,
-            webViewClient = CustomWebViewClient(
-                onPageSucessfullyLoaded = { webView ->
-                    // Waiting to get the WebView to inject CSS
-                    applySafeAreaInsetsToWebView(webView, insets, density, layoutDirection)
-                    mainViewModel.hasSeenWebView = true
-                    keepSplashScreen.update { false }
-                },
-                onPageFailedToLoad = {
-                    mainViewModel.logout()
-                }
-            ),
-            webChromeClient = getCustomWebChromeClient(),
-            withSafeArea = false,
-            getWebView = { webview ->
-                webview.addJavascriptInterface(jsBridge, JavascriptBridge.NAME)
-                currentWebview = webview
-            },
-        )
-    }
-
-    private fun applySafeAreaInsetsToWebView(
-        webView: WebView?,
-        insets: WindowInsets,
-        density: Density,
-        layoutDirection: LayoutDirection,
-    ) {
-        val top = insets.getTop(density).toDp(this)
-        val right = insets.getRight(density, layoutDirection).toDp(this)
-        val bottom = insets.getBottom(density).toDp(this)
-        val left = insets.getLeft(density, layoutDirection).toDp(this)
-
-        val script = """
-        (function() {
-            var styleTag = document.getElementById("$CSS_TAG_ID");
-            
-            if (!styleTag) {
-                styleTag = document.createElement("style");
-                styleTag.id = "$CSS_TAG_ID";
-                document.head.appendChild(styleTag);
-            }
-            
-            styleTag.textContent = `
-                :root {
-                    --safe-area-inset-top: ${top}px;
-                    --safe-area-inset-left: ${left}px;
-                    --safe-area-inset-right: ${right}px;
-                    --safe-area-inset-bottom: ${bottom}px;
-                }
-            `;
-        })();
-    """.trimIndent()
-
-        webView?.evaluateJavascript(script, null)
-    }
-
-    @Composable
-    private fun HandleBackHandler(webView: () -> WebView?) {
-        BackHandler {
-            if (mainViewModel.hasSeenWebView) {
-                webView()?.evaluateJavascript("window.goBack()", null)
-            } else {
-                finish()
-            }
-        }
-    }
-
-    private fun setTokenToCookie(token: String?) {
-        val currentLocale = ConfigurationCompat.getLocales(resources.configuration).get(0)?.toLanguageTag() ?: "en-US"
-        val cookieString = "USER-TOKEN=${token}; USER-LANGUAGE=${currentLocale} path=/"
-        cookieManager.setCookie(EURIA_MAIN_URL.toHttpUrl().host, cookieString)
-    }
-
-    @Composable
-    private fun ShowFileChooser() {
-        val launcher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.OpenMultipleDocuments(),
-            onResult = { uris: List<Uri> ->
-                filePathCallback?.onReceiveValue(uris.toTypedArray())
-                mainViewModel.launchMediaChooser = false
-            }
-        )
-
-        if (mainViewModel.launchMediaChooser) {
-            launcher.launch(arrayOf("*/*"))
-        }
-    }
-
-    @OptIn(ExperimentalPermissionsApi::class)
-    @Composable
-    private fun AskMicrophonePermission() {
-        val microphonePermissionState = rememberMultiplePermissionsState(
-            permissions = listOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.MODIFY_AUDIO_SETTINGS)
-        )
-
-        LaunchedEffect(mainViewModel.microphonePermissionRequest) {
-            mainViewModel.microphonePermissionRequest?.let {
-                microphonePermissionState.launchMultiplePermissionRequest()
-            }
-        }
-
-        LaunchedEffect(microphonePermissionState.allPermissionsGranted) {
-            mainViewModel.microphonePermissionRequest?.let { microphonePermissionRequest ->
-                if (microphonePermissionState.allPermissionsGranted) {
-                    microphonePermissionRequest.grant(microphonePermissionRequest.resources)
-                } else {
-                    microphonePermissionRequest.deny()
-                }
-            }
-        }
-    }
-
-    private fun getCustomWebChromeClient(): CustomWebChromeClient {
-        return CustomWebChromeClient(
-            onShowFileChooser = { filePathCallback, _ ->
-                this@MainActivity.filePathCallback = filePathCallback
-                mainViewModel.launchMediaChooser = true
-                true
-            },
-            onRequestMicrophonePermission = { permissionRequest ->
-                val hasRecordAudioPermission = hasPermission(Manifest.permission.RECORD_AUDIO)
-                val hasModifyAudioPermission = hasPermission(Manifest.permission.MODIFY_AUDIO_SETTINGS)
-
-                if (hasRecordAudioPermission && hasModifyAudioPermission) {
-                    permissionRequest.grant(permissionRequest.resources)
-                    mainViewModel.microphonePermissionRequest = null
-                } else {
-                    mainViewModel.microphonePermissionRequest = permissionRequest
-                }
-            },
-        )
-    }
-
-    private fun hasPermission(permission: String): Boolean {
-        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+        webViewUtils.updateWebViewQueryFrom(intent, updateWebViewQuery = { query ->
+            mainViewModel.webViewQueries.trySend(query)
+        })
     }
 
     private suspend fun runLogin(): Nothing = coroutineScope {
@@ -482,9 +272,6 @@ class MainActivity : ComponentActivity() {
         const val TAG = "MainActivity"
 
         const val EXTRA_QUERY = "EXTRA_QUERY"
-
-        // This tag is named like that just to have a unique identifier but the Web page does not rely on it
-        private const val CSS_TAG_ID = "mobile-inset-style"
 
         fun getLoginErrorDescription(
             context: Context,

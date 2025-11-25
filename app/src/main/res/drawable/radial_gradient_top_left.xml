@@ -29,8 +29,12 @@
                 android:centerY="20"
                 android:gradientRadius="@dimen/gradientRadius"
                 android:type="radial">
-                <item android:offset="0" android:color="@color/startGradient"/>
-                <item android:offset="1" android:color="@color/endGradient"/>
+                <item
+                    android:color="@color/startGradient"
+                    android:offset="0" />
+                <item
+                    android:color="@color/endGradient"
+                    android:offset="1" />
             </gradient>
         </aapt:attr>
     </path>
