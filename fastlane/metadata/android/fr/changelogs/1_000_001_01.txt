@@ -1,0 +1,3 @@
+- Garde l'appareil activé quand le mode conversation est activé
+- Ajout de la notification de 2FA
+- Widget

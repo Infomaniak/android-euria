@@ -1,0 +1,3 @@
+- Keep device awake when speech mode is on
+- Add 2FA Notification
+- Widget
