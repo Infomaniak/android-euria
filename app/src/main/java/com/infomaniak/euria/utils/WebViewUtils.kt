@@ -48,6 +48,8 @@ class WebViewUtils(
 
     private val cookieManager by lazy { CookieManager.getInstance() }
 
+    var webView: WebView? = null
+
     fun setTokenToCookie(token: String?) {
         val currentLocale = ConfigurationCompat.getLocales(context.resources.configuration).get(0)?.toLanguageTag() ?: "en-US"
         val cookieString = "USER-TOKEN=${token}; USER-LANGUAGE=${currentLocale} path=/"
@@ -56,10 +58,12 @@ class WebViewUtils(
 
     fun getEuriaJavascriptBridge() = with(javascriptBridgeCallbacks) {
         return@with JavascriptBridge(
-            onDismissApp = { onDismissApp() },
+            onLogin = { onLogin() },
             onLogout = { onLogout() },
+            onSignUp = { onSignUp() },
             onKeepDeviceAwake = { onKeepDeviceAwake(it) },
             onReady = { onReady() },
+            onDismissApp = { onDismissApp() },
         )
     }
 
@@ -155,10 +159,12 @@ class WebViewUtils(
     }
 
     data class JavascriptBridgeCallbacks(
-        val onDismissApp: () -> Unit,
+        val onLogin: () -> Unit,
         val onLogout: () -> Unit,
+        val onSignUp: () -> Unit,
         val onKeepDeviceAwake: (Boolean) -> Unit,
         val onReady: () -> Unit,
+        val onDismissApp: () -> Unit,
     )
 
     companion object {

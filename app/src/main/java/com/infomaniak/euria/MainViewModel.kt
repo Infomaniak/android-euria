@@ -35,6 +35,7 @@ import com.infomaniak.core.sentry.SentryLog
 import com.infomaniak.core.ui.compose.basics.CallableState
 import com.infomaniak.euria.MainActivity.Companion.TAG
 import com.infomaniak.euria.MainActivity.Companion.getLoginErrorDescription
+import com.infomaniak.euria.data.LocalSettings
 import com.infomaniak.euria.network.ApiRepository
 import com.infomaniak.euria.utils.AccountUtils
 import com.infomaniak.euria.utils.OkHttpClientProvider
@@ -60,13 +61,15 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
+    private val localSettings: LocalSettings,
 ) : ViewModel() {
 
-    private val cookieManager by lazy { CookieManager.getInstance() }
     val infomaniakLogin: InfomaniakLogin by lazy { context.getInfomaniakLogin() }
     val isNetworkAvailable = NetworkAvailability(context).isNetworkAvailable.distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.Lazily, true)
 
+    val isWebAppReady = MutableStateFlow(false)
+    val webViewQueries = Channel<String>(capacity = Channel.CONFLATED)
     val userState: StateFlow<UserState> = AccountUtils.getCurrentUserFlow().map {
         if (it == null) {
             UserState.NotLoggedIn
@@ -75,12 +78,12 @@ class MainViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.Lazily, UserState.Loading)
 
+    private val cookieManager by lazy { CookieManager.getInstance() }
+
+    var wantToDiscoverEuria by mutableStateOf(localSettings.wantToDiscoverEuria)
     var launchMediaChooser by mutableStateOf(false)
     var hasSeenWebView by mutableStateOf(false)
     var microphonePermissionRequest by mutableStateOf<PermissionRequest?>(null)
-
-    val isWebAppReady = MutableStateFlow(false)
-    val webViewQueries = Channel<String>(capacity = Channel.CONFLATED)
 
     @OptIn(ExperimentalSplittiesApi::class)
 
@@ -93,7 +96,7 @@ class MainViewModel @Inject constructor(
         sentryCallback = { error -> SentryLog.e(tag = "WebViewLogin", error) },
     )
 
-    fun authenticateUser(authCode: String, showError: (String) -> Unit) {
+    fun authenticateUser(authCode: String, forceRefreshWebView: () -> Unit, showError: (String) -> Unit) {
         viewModelScope.launch {
             runCatching {
                 val tokenResult = infomaniakLogin.getToken(
@@ -104,6 +107,11 @@ class MainViewModel @Inject constructor(
                 when (tokenResult) {
                     is InfomaniakLogin.TokenResult.Success -> {
                         saveUserInfo(tokenResult.apiToken, showError)
+
+                        // We only want to refresh the WebView if we logged in inside the WebView, in Euria Free mode
+                        if (localSettings.wantToDiscoverEuria) forceRefreshWebView()
+
+                        wantToDiscoverEuria(false)
                     }
                     is InfomaniakLogin.TokenResult.Error -> {
                         showError(getLoginErrorDescription(context, tokenResult.errorStatus))
@@ -147,7 +155,13 @@ class MainViewModel @Inject constructor(
             Dispatchers.IO.invoke { cookieManager.flush() }
             WebStorage.getInstance().deleteAllData()
             AccountUtils.removeAllUser()
+            localSettings.removeSettings()
         }
+    }
+
+    fun wantToDiscoverEuria(state: Boolean) {
+        localSettings.wantToDiscoverEuria = state
+        wantToDiscoverEuria = state
     }
 
     sealed interface UserState {

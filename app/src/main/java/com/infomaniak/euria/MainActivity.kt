@@ -31,8 +31,6 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.activity.viewModels
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -74,8 +72,9 @@ class MainActivity : ComponentActivity() {
         WebViewUtils(
             context = applicationContext,
             javascriptBridgeCallbacks = WebViewUtils.JavascriptBridgeCallbacks(
-                onDismissApp = { finish() },
+                onLogin = { openLoginWebView() },
                 onLogout = { mainViewModel.logout() },
+                onSignUp = { startAccountCreation() },
                 onKeepDeviceAwake = { shouldKeepScreenOn ->
                     if (shouldKeepScreenOn) {
                         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -83,9 +82,8 @@ class MainActivity : ComponentActivity() {
                         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                     }
                 },
-                onReady = {
-                    mainViewModel.isWebAppReady.value = true
-                }
+                onReady = { mainViewModel.isWebAppReady.value = true },
+                onDismissApp = { finish() },
             )
         )
     }
@@ -101,12 +99,18 @@ class MainActivity : ComponentActivity() {
                         data?.extras?.getString(InfomaniakLogin.ERROR_TRANSLATED_TAG)
                     when {
                         translatedError?.isNotBlank() == true -> showError(translatedError)
-                        authCode?.isNotBlank() == true -> mainViewModel.authenticateUser(authCode) { showError(it) }
+                        authCode?.isNotBlank() == true -> {
+                            mainViewModel.authenticateUser(
+                                authCode,
+                                forceRefreshWebView = {
+                                    webViewUtils.webView?.reload()
+                                }, showError = {
+                                    showError(it)
+                                }
+                            )
+                        }
                         else -> showError(getString(RCore.string.anErrorHasOccurred))
                     }
-                } else {
-                    isLoginButtonLoading = false
-                    isSignUpButtonLoading = false
                 }
             }
         }
@@ -115,8 +119,6 @@ class MainActivity : ComponentActivity() {
             result.handleCreateAccountActivityResult()
         }
 
-    private var isLoginButtonLoading by mutableStateOf(false)
-    private var isSignUpButtonLoading by mutableStateOf(false)
     private var keepSplashScreen = MutableStateFlow(true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -152,27 +154,25 @@ class MainActivity : ComponentActivity() {
                 Surface {
                     when {
                         userState is UserState.Loading -> Unit
-                        userState is UserState.NotLoggedIn -> {
+                        userState is UserState.NotLoggedIn && !mainViewModel.wantToDiscoverEuria -> {
                             keepSplashScreen.update { false }
                             OnboardingScreen(
                                 accountsCheckingState = { accountsCheckingState },
                                 skippedIds = { skippedIds },
-                                isLoginButtonLoading = { loginRequest.isAwaitingCall.not() || isLoginButtonLoading },
-                                isSignUpButtonLoading = { isSignUpButtonLoading },
+                                isLoginButtonLoading = { loginRequest.isAwaitingCall.not() },
                                 onLoginRequest = { accounts -> loginRequest(accounts) },
-                                onCreateAccount = { openAccountCreationWebView() },
                                 onSaveSkippedAccounts = { crossAppLoginViewModel.skippedAccountIds.value = it },
+                                onStartClicked = { mainViewModel.wantToDiscoverEuria(true) },
                             )
                         }
-                        isNetworkAvailable || mainViewModel.hasSeenWebView -> {
-                            val userState = userState as UserState.LoggedIn
+                        (isNetworkAvailable || mainViewModel.hasSeenWebView) || mainViewModel.wantToDiscoverEuria -> {
+                            // We can arrive here with a UserState.NotLoggedIn state because of Euria free
+                            val userState = userState as? UserState.LoggedIn
                             EuriaMainScreen(
                                 mainViewModel = mainViewModel,
                                 webViewUtils = webViewUtils,
-                                token = userState.user.apiToken.accessToken,
-                                keepSplashScreen = { state ->
-                                    keepSplashScreen.update { state }
-                                },
+                                token = userState?.user?.apiToken?.accessToken,
+                                keepSplashScreen = { state -> keepSplashScreen.update { state } },
                                 finishApp = { finish() },
                             )
                         }
@@ -220,7 +220,6 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun openLoginWebView() {
-        isLoginButtonLoading = true
         mainViewModel.infomaniakLogin.startWebViewLogin(webViewLoginResultLauncher)
     }
 
@@ -230,13 +229,6 @@ class MainActivity : ComponentActivity() {
             error,
             Snackbar.LENGTH_LONG,
         ).show()
-        isLoginButtonLoading = false
-        isSignUpButtonLoading = false
-    }
-
-    private fun openAccountCreationWebView() {
-        isSignUpButtonLoading = true
-        startAccountCreation()
     }
 
     private fun startAccountCreation() {
@@ -257,8 +249,6 @@ class MainActivity : ComponentActivity() {
                 }
                 else -> showError(translatedError)
             }
-        } else {
-            isSignUpButtonLoading = false
         }
     }
 

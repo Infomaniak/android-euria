@@ -45,6 +45,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.infomaniak.core.crossapplogin.back.BaseCrossAppLoginViewModel.AccountsCheckingState
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
+import com.infomaniak.core.crossapplogin.front.components.CrossLoginBottomButton
 import com.infomaniak.core.crossapplogin.front.components.CrossLoginBottomContent
 import com.infomaniak.core.crossapplogin.front.data.CrossLoginDefaults
 import com.infomaniak.core.onboarding.OnboardingPage
@@ -62,10 +63,9 @@ fun OnboardingScreen(
     accountsCheckingState: () -> AccountsCheckingState,
     skippedIds: () -> Set<Long>,
     isLoginButtonLoading: () -> Boolean,
-    isSignUpButtonLoading: () -> Boolean,
     onLoginRequest: (accounts: List<ExternalAccount>) -> Unit,
-    onCreateAccount: () -> Unit,
     onSaveSkippedAccounts: (Set<Long>) -> Unit,
+    onStartClicked: () -> Unit,
 ) {
     val pagerState = rememberPagerState(pageCount = { Page.entries.size })
 
@@ -94,18 +94,16 @@ fun OnboardingScreen(
                     skippedIds = skippedIds,
                     isSingleSelection = true,
                     isLoginButtonLoading = isLoginButtonLoading,
-                    isSignUpButtonLoading = isSignUpButtonLoading,
                     customization = CrossLoginDefaults.customize(
                         colors = CrossLoginDefaults.colors(
                             titleColor = EuriaTheme.colors.primaryTextColor,
                             descriptionColor = EuriaTheme.colors.secondaryTextColor
                         ),
                     ),
-                    onLogin = { onLoginRequest(emptyList()) },
                     onContinueWithSelectedAccounts = { selectedAccounts -> onLoginRequest(selectedAccounts) },
-                    onCreateAccount = onCreateAccount,
                     onUseAnotherAccountClicked = { onLoginRequest(emptyList()) },
                     onSaveSkippedAccounts = onSaveSkippedAccounts,
+                    noAccountsBottomButtons = CrossLoginBottomButton.accountOptional { onStartClicked() }
                 )
             },
         )
