@@ -19,11 +19,13 @@
 package com.infomaniak.euria.ui.login.components
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.RawRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -34,6 +36,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -43,6 +46,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.infomaniak.core.crossapplogin.back.BaseCrossAppLoginViewModel.AccountsCheckingState
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
 import com.infomaniak.core.crossapplogin.front.components.CrossLoginBottomContent
@@ -122,18 +129,15 @@ fun OnboardingScreen(
 }
 
 @Composable
-private fun Page.toOnboardingPage(isHighlighted: Map<Page, MutableState<Boolean>>): OnboardingPage =
-    OnboardingPage(background = {
+private fun Page.toOnboardingPage(
+    isHighlighted: Map<Page, MutableState<Boolean>>
+): OnboardingPage = OnboardingPage(background = {
         DefaultBackground(
             ImageVector.vectorResource(backgroundRes),
             modifier = Modifier.padding(bottom = Dimens.OnboardingGradientPadding)
         )
     }, illustration = {
-        Image(
-            modifier = Modifier.size(350.dp),
-            painter = painterResource(id = illustrationRes),
-            contentDescription = null,
-        )
+        OnboardingPageIllustration()
     }, text = {
         EuriaHighlightedTitleAndDescription(
             isHighlighted = { isHighlighted[this]?.value ?: false },
@@ -144,8 +148,37 @@ private fun Page.toOnboardingPage(isHighlighted: Map<Page, MutableState<Boolean>
         )
     })
 
+@Composable
+private fun Page.OnboardingPageIllustration() {
+    when (illustration) {
+        is IllustrationResource.Static -> {
+            Image(
+                modifier = Modifier.size(350.dp),
+                painter = painterResource(id = illustration.res),
+                contentDescription = null,
+            )
+        }
+        is IllustrationResource.Animated -> {
+            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(illustration.res))
+
+            LottieAnimation(
+                composition,
+                isPlaying = true,
+                reverseOnRepeat = true,
+                iterations = LottieConstants.IterateForever,
+                modifier = Modifier.height(270.dp),
+            )
+        }
+    }
+}
+
+sealed class IllustrationResource {
+    data class Static(@DrawableRes val res: Int) : IllustrationResource()
+    data class Animated(@RawRes val res: Int) : IllustrationResource()
+}
+
 private enum class Page(
-    @DrawableRes val illustrationRes: Int,
+    val illustration: IllustrationResource,
     @DrawableRes val backgroundRes: Int,
     @StringRes val titleRes: Int,
     @StringRes val descriptionTemplateRes: Int? = null,
@@ -153,35 +186,35 @@ private enum class Page(
     val highlightedAngleDegree: Double = Dimens.HighlightedAngleDegree,
 ) {
     Euria(
-        illustrationRes = R.drawable.euria,
+        illustration = IllustrationResource.Animated(R.raw.euria),
         backgroundRes = R.drawable.radial_gradient_center_right,
         titleRes = R.string.onboardingEuriaTitle,
         descriptionTemplateRes = null,
         descriptionArgumentRes = R.string.onboardingEuriaDescription,
     ),
     DataCenter(
-        illustrationRes = R.drawable.data_center,
+        illustration = IllustrationResource.Static(R.drawable.data_center),
         backgroundRes = R.drawable.radial_gradient_center_left,
         titleRes = R.string.onboardingDatacenterTitle,
         descriptionTemplateRes = null,
         descriptionArgumentRes = R.string.onboardingDatacenterDescription,
     ),
     Ephemeral(
-        illustrationRes = R.drawable.euria_ghost,
+        illustration = IllustrationResource.Animated(R.raw.euria_ghost),
         backgroundRes = R.drawable.radial_gradient_center_right,
         titleRes = R.string.onboardingEphemeralTitle,
         descriptionTemplateRes = R.string.onboardingEphemeralDescriptionTemplate,
         descriptionArgumentRes = R.string.onboardingEphemeralDescriptionArguments,
     ),
     Privacy(
-        illustrationRes = R.drawable.mountain,
+        illustration = IllustrationResource.Static(R.drawable.mountain),
         backgroundRes = R.drawable.radial_gradient_center_left,
         titleRes = R.string.onboardingPrivacyTitle,
         descriptionTemplateRes = null,
         descriptionArgumentRes = R.string.onboardingPrivacyDescription,
     ),
     ReadyToStart(
-        illustrationRes = R.drawable.euria,
+        illustration = IllustrationResource.Animated(R.raw.euria),
         backgroundRes = R.drawable.radial_gradient_center_right,
         titleRes = R.string.onboardingLoginTitle,
         descriptionTemplateRes = R.string.onboardingLoginTemplate,
