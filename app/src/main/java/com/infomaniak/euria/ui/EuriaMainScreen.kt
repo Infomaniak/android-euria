@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.infomaniak.core.network.networking.HttpUtils
 import com.infomaniak.core.webview.ui.components.WebView
 import com.infomaniak.euria.EURIA_MAIN_URL
 import com.infomaniak.euria.MainViewModel
@@ -86,6 +87,7 @@ fun EuriaMainScreen(
 
     WebView(
         url = EURIA_MAIN_URL,
+        userAgentString = HttpUtils.getUserAgent,
         domStorageEnabled = true,
         webViewClient = CustomWebViewClient(
             onPageSucessfullyLoaded = { webView ->
@@ -94,7 +96,6 @@ fun EuriaMainScreen(
                 mainViewModel.hasSeenWebView = true
                 keepSplashScreen(false)
             },
-            onPageFailedToLoad = mainViewModel::logout
         ),
         webChromeClient = webViewUtils.getCustomWebChromeClient(
             filePathCallback = { filePathCallback = it },
@@ -102,9 +103,10 @@ fun EuriaMainScreen(
             microphonePermissionRequest = { mainViewModel.microphonePermissionRequest = it }
         ),
         withSafeArea = false,
-        getWebView = { webview ->
-            webview.addJavascriptInterface(webViewUtils.jsBridge, JavascriptBridge.NAME)
-            currentWebview = webview
+        getWebView = { webView ->
+            webView.addJavascriptInterface(webViewUtils.jsBridge, JavascriptBridge.NAME)
+            currentWebview = webView
+            webViewUtils.webView = webView
         },
     )
 }

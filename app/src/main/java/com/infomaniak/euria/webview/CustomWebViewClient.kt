@@ -23,7 +23,6 @@ import android.net.http.SslError
 import android.webkit.SslErrorHandler
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.infomaniak.euria.BuildConfig
@@ -32,7 +31,6 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 
 class CustomWebViewClient(
     private val onPageSucessfullyLoaded: (WebView) -> Unit,
-    private val onPageFailedToLoad: () -> Unit
 ) : WebViewClient() {
 
     private var hasReceivedError = false
@@ -41,14 +39,6 @@ class CustomWebViewClient(
     override fun onReceivedSslError(view: WebView, handler: SslErrorHandler, error: SslError) {
         // In order to use localhost, we have to ignore all SSL errors and proceed
         if (BuildConfig.DEBUG) handler.proceed()
-    }
-
-    override fun onReceivedHttpError(view: WebView, request: WebResourceRequest, errorResponse: WebResourceResponse) {
-        super.onReceivedHttpError(view, request, errorResponse)
-
-        if (request.url.path?.endsWith("users/me") == true && errorResponse.statusCode >= 401) {
-            onPageFailedToLoad()
-        }
     }
 
     override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {

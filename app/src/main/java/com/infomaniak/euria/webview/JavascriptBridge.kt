@@ -20,20 +20,33 @@ package com.infomaniak.euria.webview
 import android.webkit.JavascriptInterface
 
 class JavascriptBridge(
-    private val onDismissApp: () -> Unit,
+    private val onLogin: () -> Unit,
     private val onLogout: () -> Unit,
+    private val onUnauthenticated: () -> Unit,
+    private val onSignUp: () -> Unit,
     private val onKeepDeviceAwake: (Boolean) -> Unit,
     private val onReady: () -> Unit,
+    private val onDismissApp: () -> Unit,
 ) {
 
     @JavascriptInterface
-    fun dismissApp() {
-        onDismissApp()
+    fun logIn() {
+        onLogin()
     }
 
     @JavascriptInterface
     fun logout() {
         onLogout()
+    }
+
+    @JavascriptInterface
+    fun unauthenticated() {
+        onUnauthenticated()
+    }
+
+    @JavascriptInterface
+    fun signUp() {
+        onSignUp()
     }
 
     @JavascriptInterface
@@ -44,6 +57,11 @@ class JavascriptBridge(
     @JavascriptInterface
     fun ready() {
         onReady()
+    }
+
+    @JavascriptInterface
+    fun dismissApp() {
+        onDismissApp()
     }
 
     companion object {
