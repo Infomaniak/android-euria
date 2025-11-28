@@ -45,8 +45,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.infomaniak.core.crossapplogin.back.BaseCrossAppLoginViewModel.AccountsCheckingState
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
-import com.infomaniak.core.crossapplogin.front.components.CrossLoginBottomButton
 import com.infomaniak.core.crossapplogin.front.components.CrossLoginBottomContent
+import com.infomaniak.core.crossapplogin.front.components.NoCrossAppLoginAccountsContent
 import com.infomaniak.core.crossapplogin.front.data.CrossLoginDefaults
 import com.infomaniak.core.onboarding.OnboardingPage
 import com.infomaniak.core.onboarding.OnboardingScaffold
@@ -103,7 +103,7 @@ fun OnboardingScreen(
                     onContinueWithSelectedAccounts = { selectedAccounts -> onLoginRequest(selectedAccounts) },
                     onUseAnotherAccountClicked = { onLoginRequest(emptyList()) },
                     onSaveSkippedAccounts = onSaveSkippedAccounts,
-                    noAccountsBottomButtons = CrossLoginBottomButton.accountOptional { onStartClicked() }
+                    noCrossAppLoginAccountsContent = NoCrossAppLoginAccountsContent.accountOptional { onStartClicked() }
                 )
             },
         )
