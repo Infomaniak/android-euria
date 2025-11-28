@@ -22,6 +22,7 @@ import android.webkit.JavascriptInterface
 class JavascriptBridge(
     private val onLogin: () -> Unit,
     private val onLogout: () -> Unit,
+    private val onUnauthenticated: () -> Unit,
     private val onSignUp: () -> Unit,
     private val onKeepDeviceAwake: (Boolean) -> Unit,
     private val onReady: () -> Unit,
@@ -36,6 +37,11 @@ class JavascriptBridge(
     @JavascriptInterface
     fun logout() {
         onLogout()
+    }
+
+    @JavascriptInterface
+    fun unauthenticated() {
+        onUnauthenticated()
     }
 
     @JavascriptInterface

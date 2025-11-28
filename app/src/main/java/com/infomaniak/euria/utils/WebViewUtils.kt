@@ -60,6 +60,7 @@ class WebViewUtils(
         return@with JavascriptBridge(
             onLogin = { onLogin() },
             onLogout = { onLogout() },
+            onUnauthenticated = { onUnauthenticated() },
             onSignUp = { onSignUp() },
             onKeepDeviceAwake = { onKeepDeviceAwake(it) },
             onReady = { onReady() },
@@ -161,6 +162,7 @@ class WebViewUtils(
     data class JavascriptBridgeCallbacks(
         val onLogin: () -> Unit,
         val onLogout: () -> Unit,
+        val onUnauthenticated: () -> Unit = {},
         val onSignUp: () -> Unit,
         val onKeepDeviceAwake: (Boolean) -> Unit,
         val onReady: () -> Unit,

@@ -96,7 +96,6 @@ fun EuriaMainScreen(
                 mainViewModel.hasSeenWebView = true
                 keepSplashScreen(false)
             },
-            onPageFailedToLoad = mainViewModel::logout
         ),
         webChromeClient = webViewUtils.getCustomWebChromeClient(
             filePathCallback = { filePathCallback = it },

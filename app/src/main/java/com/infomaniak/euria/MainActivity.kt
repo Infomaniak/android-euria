@@ -74,6 +74,7 @@ class MainActivity : ComponentActivity() {
             javascriptBridgeCallbacks = WebViewUtils.JavascriptBridgeCallbacks(
                 onLogin = { openLoginWebView() },
                 onLogout = { mainViewModel.logout() },
+                onUnauthenticated = { mainViewModel.logout() },
                 onSignUp = { startAccountCreation() },
                 onKeepDeviceAwake = { shouldKeepScreenOn ->
                     if (shouldKeepScreenOn) {
