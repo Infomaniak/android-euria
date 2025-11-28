@@ -104,7 +104,7 @@ class MainActivity : ComponentActivity() {
                             mainViewModel.authenticateUser(
                                 authCode,
                                 forceRefreshWebView = { webViewUtils.webView?.reload() },
-                                showError = { showError(it) },
+                                showError = { showError(it) }
                             )
                         }
                         else -> showError(getString(RCore.string.anErrorHasOccurred))
@@ -163,7 +163,11 @@ class MainActivity : ComponentActivity() {
                                 onStartClicked = { mainViewModel.skipOnboarding(true) },
                             )
                         }
-                        (isNetworkAvailable || mainViewModel.hasSeenWebView) || mainViewModel.skipOnboarding -> {
+                        !isNetworkAvailable && !mainViewModel.hasSeenWebView -> {
+                            keepSplashScreen.update { false }
+                            NoNetworkScreen()
+                        }
+                        else -> {
                             // We can arrive here with a UserState.NotLoggedIn state because of Euria free
                             val userState = userState as? UserState.LoggedIn
                             EuriaMainScreen(
@@ -173,10 +177,6 @@ class MainActivity : ComponentActivity() {
                                 keepSplashScreen = { state -> keepSplashScreen.update { state } },
                                 finishApp = { finish() },
                             )
-                        }
-                        else -> {
-                            keepSplashScreen.update { false }
-                            NoNetworkScreen()
                         }
                     }
 
