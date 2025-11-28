@@ -103,11 +103,8 @@ class MainActivity : ComponentActivity() {
                         authCode?.isNotBlank() == true -> {
                             mainViewModel.authenticateUser(
                                 authCode,
-                                forceRefreshWebView = {
-                                    webViewUtils.webView?.reload()
-                                }, showError = {
-                                    showError(it)
-                                }
+                                forceRefreshWebView = { webViewUtils.webView?.reload() },
+                                showError = { showError(it) },
                             )
                         }
                         else -> showError(getString(RCore.string.anErrorHasOccurred))
