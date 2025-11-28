@@ -48,7 +48,7 @@ open class MainApplication : Application() {
             appId = BuildConfig.APPLICATION_ID,
             appVersionCode = BuildConfig.VERSION_CODE,
             appVersionName = BuildConfig.VERSION_NAME,
-            apiEnvironment = ApiEnvironment.PreProd,
+            apiEnvironment = if (BuildConfig.DEBUG) ApiEnvironment.PreProd else ApiEnvironment.Prod,
         )
     }
 
