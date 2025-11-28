@@ -131,8 +131,7 @@ fun OnboardingScreen(
 @Composable
 private fun Page.toOnboardingPage(
     isHighlighted: Map<Page, MutableState<Boolean>>
-): OnboardingPage =
-    OnboardingPage(background = {
+): OnboardingPage = OnboardingPage(background = {
         DefaultBackground(
             ImageVector.vectorResource(backgroundRes),
             modifier = Modifier.padding(bottom = Dimens.OnboardingGradientPadding)
