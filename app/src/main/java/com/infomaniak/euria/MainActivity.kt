@@ -155,7 +155,7 @@ class MainActivity : ComponentActivity() {
                 Surface {
                     when {
                         userState is UserState.Loading -> Unit
-                        userState is UserState.NotLoggedIn && !mainViewModel.wantToDiscoverEuria -> {
+                        userState is UserState.NotLoggedIn && !mainViewModel.skipOnboarding -> {
                             keepSplashScreen.update { false }
                             OnboardingScreen(
                                 accountsCheckingState = { accountsCheckingState },
@@ -163,10 +163,10 @@ class MainActivity : ComponentActivity() {
                                 isLoginButtonLoading = { loginRequest.isAwaitingCall.not() },
                                 onLoginRequest = { accounts -> loginRequest(accounts) },
                                 onSaveSkippedAccounts = { crossAppLoginViewModel.skippedAccountIds.value = it },
-                                onStartClicked = { mainViewModel.wantToDiscoverEuria(true) },
+                                onStartClicked = { mainViewModel.skipOnboarding(true) },
                             )
                         }
-                        (isNetworkAvailable || mainViewModel.hasSeenWebView) || mainViewModel.wantToDiscoverEuria -> {
+                        (isNetworkAvailable || mainViewModel.hasSeenWebView) || mainViewModel.skipOnboarding -> {
                             // We can arrive here with a UserState.NotLoggedIn state because of Euria free
                             val userState = userState as? UserState.LoggedIn
                             EuriaMainScreen(

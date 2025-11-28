@@ -30,7 +30,7 @@ class LocalSettings @Inject constructor(@ApplicationContext context: Context) : 
 
     override val sharedPreferences = context.applicationContext.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE)!!
 
-    var wantToDiscoverEuria by sharedValue("wantToDiscoverEuria", false)
+    var skipOnboarding by sharedValue("skipOnboarding", false)
 
     fun removeSettings() = sharedPreferences.transaction { clear() }
 

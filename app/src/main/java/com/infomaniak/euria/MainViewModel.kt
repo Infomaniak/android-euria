@@ -80,7 +80,7 @@ class MainViewModel @Inject constructor(
 
     private val cookieManager by lazy { CookieManager.getInstance() }
 
-    var wantToDiscoverEuria by mutableStateOf(localSettings.wantToDiscoverEuria)
+    var skipOnboarding by mutableStateOf(localSettings.skipOnboarding)
     var launchMediaChooser by mutableStateOf(false)
     var hasSeenWebView by mutableStateOf(false)
     var microphonePermissionRequest by mutableStateOf<PermissionRequest?>(null)
@@ -109,9 +109,9 @@ class MainViewModel @Inject constructor(
                         saveUserInfo(tokenResult.apiToken, showError)
 
                         // We only want to refresh the WebView if we logged in inside the WebView, in Euria Free mode
-                        if (localSettings.wantToDiscoverEuria) forceRefreshWebView()
+                        if (localSettings.skipOnboarding) forceRefreshWebView()
 
-                        wantToDiscoverEuria(false)
+                        skipOnboarding(false)
                     }
                     is InfomaniakLogin.TokenResult.Error -> {
                         showError(getLoginErrorDescription(context, tokenResult.errorStatus))
@@ -159,9 +159,9 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun wantToDiscoverEuria(state: Boolean) {
-        localSettings.wantToDiscoverEuria = state
-        wantToDiscoverEuria = state
+    fun skipOnboarding(state: Boolean) {
+        localSettings.skipOnboarding = state
+        skipOnboarding = state
     }
 
     sealed interface UserState {

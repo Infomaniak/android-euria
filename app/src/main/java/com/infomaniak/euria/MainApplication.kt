@@ -48,7 +48,7 @@ open class MainApplication : Application() {
             appId = BuildConfig.APPLICATION_ID,
             appVersionCode = BuildConfig.VERSION_CODE,
             appVersionName = BuildConfig.VERSION_NAME,
-            apiEnvironment = ApiEnvironment.Prod,
+            apiEnvironment = ApiEnvironment.PreProd,
         )
     }
 
