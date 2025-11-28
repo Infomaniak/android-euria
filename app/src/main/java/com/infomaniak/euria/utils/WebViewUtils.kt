@@ -52,7 +52,10 @@ class WebViewUtils(
 
     fun setTokenToCookie(token: String?) {
         val currentLocale = ConfigurationCompat.getLocales(context.resources.configuration).get(0)?.toLanguageTag() ?: "en-US"
-        val cookieString = "USER-TOKEN=${token}; USER-LANGUAGE=${currentLocale} path=/"
+        val cookieString = buildString {
+            if (token != null) append("USER-TOKEN=${token}; ")
+            append("USER-LANGUAGE=${currentLocale} path=/")
+        }
         cookieManager.setCookie(EURIA_MAIN_URL.toHttpUrl().host, cookieString)
     }
 
