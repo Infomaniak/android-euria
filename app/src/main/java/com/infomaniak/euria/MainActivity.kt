@@ -19,6 +19,7 @@ package com.infomaniak.euria
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.view.WindowManager
@@ -144,6 +145,8 @@ class MainActivity : ComponentActivity() {
             mainViewModel.webViewQueries.trySend(query)
         })
 
+        extractFilesToShare()
+
         setContent {
             EuriaTheme {
                 val accountsCheckingState by crossAppLoginViewModel.accountsCheckingState.collectAsStateWithLifecycle()
@@ -193,6 +196,19 @@ class MainActivity : ComponentActivity() {
         webViewUtils.updateWebViewQueryFrom(intent, updateWebViewQuery = { query ->
             mainViewModel.webViewQueries.trySend(query)
         })
+
+        extractFilesToShare()
+    }
+
+    private fun extractFilesToShare() {
+        intent.clipData?.let {
+            val items = mutableListOf<Uri>()
+            for (i in 0 until it.itemCount) {
+                items.add(it.getItemAt(i).uri)
+            }
+
+            mainViewModel.filesToShare.value = items
+        }
     }
 
     private suspend fun runLogin(): Nothing = coroutineScope {

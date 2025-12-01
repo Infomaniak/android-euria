@@ -46,6 +46,7 @@ import com.infomaniak.euria.webview.CustomWebViewClient
 import com.infomaniak.euria.webview.JavascriptBridge
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 
 @Composable
 fun EuriaMainScreen(
@@ -78,8 +79,15 @@ fun EuriaMainScreen(
     LaunchedEffect(Unit) {
         mainViewModel.isWebAppReady.collectLatest { isWebAppReady ->
             if (isWebAppReady) {
-                mainViewModel.webViewQueries.receiveAsFlow().collect { query ->
-                    currentWebview?.evaluateJavascript("goTo(\"$query\")", null)
+                launch {
+                    mainViewModel.filesToShare.collect { filesUris ->
+                        if (filesUris.isNotEmpty()) mainViewModel.readFiles(currentWebview, filesUris)
+                    }
+                }
+                launch {
+                    mainViewModel.webViewQueries.receiveAsFlow().collect { query ->
+                        currentWebview?.evaluateJavascript("goTo(\"$query\")", null)
+                    }
                 }
             }
         }
