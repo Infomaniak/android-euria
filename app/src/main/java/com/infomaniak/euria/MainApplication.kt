@@ -32,6 +32,7 @@ import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import splitties.init.injectAsAppCtx
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -43,6 +44,8 @@ open class MainApplication : Application() {
     val applicationScope = CoroutineScope(Dispatchers.Default + CoroutineName("MainApplication"))
 
     init {
+        injectAsAppCtx()
+        
         // New modules configuration
         NetworkConfiguration.init(
             appId = BuildConfig.APPLICATION_ID,
