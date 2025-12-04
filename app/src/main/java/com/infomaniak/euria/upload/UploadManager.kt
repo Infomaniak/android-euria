@@ -1,0 +1,307 @@
+/*
+ * Infomaniak Euria - Android
+ * Copyright (C) 2025 Infomaniak Network SA
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.infomaniak.euria.upload
+
+import android.content.Context
+import android.net.Uri
+import android.provider.OpenableColumns
+import android.webkit.WebView
+import com.infomaniak.core.network.utils.await
+import com.infomaniak.core.network.utils.bodyAsStringOrNull
+import com.infomaniak.euria.data.api.ApiRoutes
+import com.infomaniak.euria.data.models.FileUploadResult
+import com.infomaniak.euria.data.models.js.FileInfo
+import com.infomaniak.euria.data.models.js.FileUploadErrorJsResponse
+import com.infomaniak.euria.data.models.js.FileUploadSucceedJsResponse
+import com.infomaniak.euria.utils.AccountUtils.requestCurrentUser
+import com.infomaniak.euria.utils.OkHttpClientProvider
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import java.net.SocketTimeoutException
+import java.util.UUID
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
+import javax.inject.Singleton
+import kotlin.coroutines.resume
+
+@Singleton
+class UploadManager @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val coroutineScope: CoroutineScope,
+) {
+    private val uploadJobs = mutableMapOf<String, Deferred<Unit>>()
+
+    fun uploadFiles(webView: WebView?, uris: List<Uri>) {
+        val jsonParser = Json { ignoreUnknownKeys = true }
+
+        coroutineScope.launch {
+            var organizationId: String? = null
+            withContext(Dispatchers.Main) {
+                organizationId = async { webView?.executeJSFunction("getCurrentOrganizationId()") }.await()
+            }
+            // 0 or null means we're not connected so we don't want to proceed with the files
+            if (organizationId == null || organizationId == "null" || organizationId == "0") return@launch
+
+            withContext(Dispatchers.IO) {
+                val currentUser = requestCurrentUser() ?: return@withContext
+                // First loop to get all files information to send it to the WebView
+                var filesInfo = getFilesInfo(uris)
+
+                // Send the `prepareFilesForUpload` with all files in order to display the right number of elements in the WebView
+                // but also to let the WebView display errors if one file is not valid. This JS method will also return
+                // an array of UUIDs representing the files that are valid.
+                filesInfo = prepareFilesForUpload(webView, filesInfo)
+
+                // If no files are valid, we can leave safely
+                if (filesInfo.isEmpty()) return@withContext
+
+                val okHttpClient = getHttpClient(currentUser.apiToken.accessToken)
+
+                filesInfo.forEach { fileInfo ->
+                    if (fileInfo.uri == null) return@forEach
+
+                    // Creating deferred to upload files to make it easier to cancel an upload
+                    uploadJobs[fileInfo.localId] = getUploadFileDeferred(
+                        uri = fileInfo.uri,
+                        okHttpClient = okHttpClient,
+                        fileInfo = fileInfo,
+                        organizationId = organizationId,
+                        jsonParser = jsonParser,
+                        webView = webView
+                    )
+                }
+
+                startUploadFiles()
+            }
+        }
+    }
+
+    fun cancelUpload(localId: String) {
+        uploadJobs[localId]?.cancel()
+    }
+
+    private fun CoroutineScope.getUploadFileDeferred(
+        uri: Uri,
+        okHttpClient: OkHttpClient,
+        fileInfo: FileInfo,
+        organizationId: String,
+        jsonParser: Json,
+        webView: WebView?
+    ): Deferred<Unit> = async(Dispatchers.IO, start = CoroutineStart.LAZY) {
+        try {
+            context.contentResolver.openInputStream(uri)?.buffered()?.use { fileInputStream ->
+                val uploadFileResponse = uploadFile(
+                    info = fileInfo,
+                    byteArray = fileInputStream.readBytes(),
+                    organizationId = organizationId,
+                    okHttpClient = okHttpClient,
+                )
+
+                ensureActive()
+
+                sendUploadResultToWebView(
+                    result = uploadFileResponse,
+                    jsonParser = jsonParser,
+                    fileInfo = fileInfo,
+                    webView = webView,
+                )
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: SocketTimeoutException) {
+            sendFileUploadError(fileInfo, "", webView, jsonParser)
+        } catch (_: Exception) {
+            sendFileUploadError(fileInfo, "", webView, jsonParser)
+        }
+    }
+
+    private suspend fun startUploadFiles() {
+        supervisorScope {
+            uploadJobs.values.forEach { deferred ->
+                launch {
+                    try {
+                        deferred.await()
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (_: Exception) {
+                    }
+                }
+            }
+        }
+
+        uploadJobs.clear()
+    }
+
+    private suspend fun sendUploadResultToWebView(
+        result: Response,
+        jsonParser: Json,
+        fileInfo: FileInfo,
+        webView: WebView?,
+    ) {
+        val bodyResult = result.bodyAsStringOrNull()
+        if (result.isSuccessful && bodyResult != null) {
+            sendFileUploadDone(jsonParser, bodyResult, fileInfo, webView)
+        } else {
+            sendFileUploadError(fileInfo, bodyResult, webView, jsonParser)
+        }
+    }
+
+    private suspend fun sendFileUploadDone(
+        jsonParser: Json,
+        bodyResult: String,
+        fileInfo: FileInfo,
+        webView: WebView?
+    ) {
+        val fileUploadResult = jsonParser.decodeFromString<FileUploadResult>(bodyResult)
+        val fileUploadJsResponse = FileUploadSucceedJsResponse(
+            localId = fileInfo.localId,
+            remoteId = fileUploadResult.fileUploadDetailResult.remoteId,
+            fileName = fileUploadResult.fileUploadDetailResult.fileName,
+            type = fileUploadResult.fileUploadDetailResult.type,
+        )
+        withContext(Dispatchers.Main) {
+            webView?.executeJSFunction(
+                "fileUploadDone(${jsonParser.encodeToString(fileUploadJsResponse)})"
+            )
+        }
+    }
+
+    private suspend fun sendFileUploadError(
+        fileInfo: FileInfo,
+        bodyResult: String?,
+        webView: WebView?,
+        jsonParser: Json
+    ) {
+        val fileUploadErrorJsResponse =
+            FileUploadErrorJsResponse(fileInfo.localId, bodyResult ?: "")
+        withContext(Dispatchers.Main) {
+            webView?.executeJSFunction(
+                "fileUploadError(${jsonParser.encodeToString(fileUploadErrorJsResponse)})"
+            )
+        }
+    }
+
+    private suspend fun CoroutineScope.uploadFile(
+        info: FileInfo,
+        byteArray: ByteArray,
+        organizationId: String,
+        okHttpClient: OkHttpClient,
+    ): Response {
+        val form =
+            MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart(
+                    name = "file",
+                    filename = info.fileName,
+                    body = byteArray.toRequestBody(info.type?.toMediaTypeOrNull()),
+                )
+                .build()
+
+        val request = getUploadFileRequest(organizationId, form)
+        val uploadFileCall = okHttpClient.newCall(request)
+
+        // Cancelling the network call if we cancel the coroutine
+        coroutineContext.job.invokeOnCompletion { cause ->
+            // if cause is null, that means everything is working as expected
+            if (cause != null) uploadFileCall.cancel()
+        }
+
+        val result = uploadFileCall.await()
+        return result
+    }
+
+    private fun getHttpClient(apiToken: String): OkHttpClient {
+        return OkHttpClientProvider.getOkHttpClientProvider(apiToken)
+            .newBuilder()
+            .writeTimeout(1, TimeUnit.MINUTES)
+            .readTimeout(1, TimeUnit.MINUTES)
+            .build()
+    }
+
+    private fun getUploadFileRequest(organizationId: String, form: MultipartBody): Request = Request
+        .Builder()
+        .url(ApiRoutes.uploadFile(organizationId))
+        .post(form)
+        .build()
+
+    private suspend fun prepareFilesForUpload(webView: WebView?, filesInfo: List<FileInfo>): List<FileInfo> {
+        var filteredFilesInfo = filesInfo
+        withContext(Dispatchers.Main) {
+            val validFilesUUIDString =
+                async { webView?.executeJSFunction("prepareFilesForUpload(${Json.encodeToString(filteredFilesInfo)})") }.await()
+            val validFilesUUID = Json.decodeFromString<List<String>>(validFilesUUIDString ?: "")
+            filteredFilesInfo = filteredFilesInfo.filter { it.localId in validFilesUUID }
+        }
+        return filteredFilesInfo
+    }
+
+    private fun getFilesInfo(uris: List<Uri>) = uris.map { getFileInfo(it) }
+
+    private suspend fun WebView.executeJSFunction(functionName: String) = suspendCancellableCoroutine { continuation ->
+        if (continuation.isCancelled) return@suspendCancellableCoroutine
+
+        evaluateJavascript(functionName) {
+            continuation.resume(it)
+        }
+    }
+
+    private fun getFileInfo(uri: Uri): FileInfo {
+        var fileName: String? = null
+        var fileSize: Long? = null
+        context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (nameIndex != -1) {
+                    fileName = cursor.getString(nameIndex)
+                }
+                val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
+                if (sizeIndex != -1 && !cursor.isNull(sizeIndex)) {
+                    fileSize = cursor.getLong(sizeIndex)
+                }
+            }
+        }
+        val type = context.contentResolver.getType(uri)
+
+        return FileInfo(
+            localId = UUID.randomUUID().toString(),
+            fileName = fileName,
+            fileSize = fileSize,
+            type = type,
+            uri = uri,
+        )
+    }
+}

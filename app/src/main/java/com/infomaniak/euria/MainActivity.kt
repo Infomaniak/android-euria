@@ -48,6 +48,7 @@ import com.infomaniak.euria.ui.login.CrossAppLoginViewModel
 import com.infomaniak.euria.ui.login.components.OnboardingScreen
 import com.infomaniak.euria.ui.noNetwork.NoNetworkScreen
 import com.infomaniak.euria.ui.theme.EuriaTheme
+import com.infomaniak.euria.upload.UploadManager
 import com.infomaniak.euria.utils.AccountUtils
 import com.infomaniak.euria.utils.WebViewUtils
 import com.infomaniak.lib.login.InfomaniakLogin
@@ -58,6 +59,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import splitties.experimental.ExperimentalSplittiesApi
+import javax.inject.Inject
 import com.infomaniak.core.R as RCore
 
 val twoFactorAuthManager = TwoFactorAuthManager { userId -> AccountUtils.getHttpClient(userId) }
@@ -68,6 +70,9 @@ class MainActivity : ComponentActivity() {
 
     private val mainViewModel: MainViewModel by viewModels()
     private val crossAppLoginViewModel: CrossAppLoginViewModel by viewModels()
+
+    @Inject
+    lateinit var uploadManager: UploadManager
 
     private val webViewUtils: WebViewUtils by lazy {
         WebViewUtils(
@@ -88,6 +93,7 @@ class MainActivity : ComponentActivity() {
                 },
                 onReady = { mainViewModel.isWebAppReady.value = true },
                 onDismissApp = { finish() },
+                onCancelFileUpload = { localId -> uploadManager.cancelUpload(localId) }
             )
         )
     }
@@ -177,6 +183,7 @@ class MainActivity : ComponentActivity() {
                             val userState = userState as? UserState.LoggedIn
                             EuriaMainScreen(
                                 mainViewModel = mainViewModel,
+                                uploadManager = uploadManager,
                                 webViewUtils = webViewUtils,
                                 token = userState?.user?.apiToken?.accessToken,
                                 keepSplashScreen = { state -> keepSplashScreen.update { state } },

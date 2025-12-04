@@ -27,6 +27,7 @@ class JavascriptBridge(
     private val onKeepDeviceAwake: (Boolean) -> Unit,
     private val onReady: () -> Unit,
     private val onDismissApp: () -> Unit,
+    private val onCancelFileUpload: (String) -> Unit,
 ) {
 
     @JavascriptInterface
@@ -62,6 +63,11 @@ class JavascriptBridge(
     @JavascriptInterface
     fun dismissApp() {
         onDismissApp()
+    }
+
+    @JavascriptInterface
+    fun cancelFileUpload(ref: String) {
+        onCancelFileUpload(ref)
     }
 
     companion object {
