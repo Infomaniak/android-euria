@@ -31,9 +31,8 @@ import com.infomaniak.euria.utils.extensions.getInfomaniakLogin
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.invoke
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -47,21 +46,21 @@ class LogoutUtils @Inject constructor(
 ) {
 
     fun logout(user: User) {
-        globalCoroutineScope.launch(ioDispatcher) {
-            user.logoutToken()
+        globalCoroutineScope.launch {
+            logoutToken(user)
             cookieManager.removeAllCookies(null)
-            Dispatchers.IO.invoke { cookieManager.flush() }
+            withContext(ioDispatcher) { cookieManager.flush() }
             WebStorage.getInstance().deleteAllData()
-            AccountUtils.removeAllUser()
+            AccountUtils.removeUser(user)
             localSettings.removeSettings()
         }
     }
 
-    private suspend fun User.logoutToken() {
+    private suspend fun logoutToken(user: User) {
         runCatching {
             appContext.getInfomaniakLogin().deleteToken(
                 okHttpClient = DefaultHttpClientProvider.okHttpClient,
-                token = apiToken,
+                token = user.apiToken,
             )?.let { errorStatus ->
                 SentryLog.i(TAG, "API response error: $errorStatus")
             }
