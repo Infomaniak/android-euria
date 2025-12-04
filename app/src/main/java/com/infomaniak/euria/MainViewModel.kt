@@ -18,13 +18,16 @@
 package com.infomaniak.euria
 
 import android.content.Context
+import android.webkit.CookieManager
 import android.webkit.PermissionRequest
+import android.webkit.WebStorage
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.infomaniak.core.auth.models.user.User
+import com.infomaniak.core.auth.utils.LogoutUtils.logoutToken
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
 import com.infomaniak.core.network.NetworkAvailability
 import com.infomaniak.core.network.networking.DefaultHttpClientProvider
@@ -36,7 +39,6 @@ import com.infomaniak.euria.data.LocalSettings
 import com.infomaniak.euria.network.ApiRepository
 import com.infomaniak.euria.utils.AccountUtils
 import com.infomaniak.euria.utils.AccountUtils.requestCurrentUser
-import com.infomaniak.euria.utils.LogoutUtils
 import com.infomaniak.euria.utils.OkHttpClientProvider
 import com.infomaniak.euria.utils.extensions.getInfomaniakLogin
 import com.infomaniak.lib.login.ApiToken
@@ -44,6 +46,7 @@ import com.infomaniak.lib.login.InfomaniakLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -52,6 +55,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import splitties.coroutines.repeatWhileActive
 import splitties.experimental.ExperimentalSplittiesApi
 import javax.inject.Inject
@@ -59,11 +63,12 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
-    private val logoutUtils: LogoutUtils,
     private val localSettings: LocalSettings,
 ) : ViewModel() {
 
     val infomaniakLogin: InfomaniakLogin by lazy { context.getInfomaniakLogin() }
+    val cookieManager: CookieManager by lazy { CookieManager.getInstance() }
+
     val isNetworkAvailable = NetworkAvailability(context).isNetworkAvailable.distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.Lazily, true)
 
@@ -137,8 +142,13 @@ class MainViewModel @Inject constructor(
 
     fun logout() {
         viewModelScope.launch {
-            requestCurrentUser()?.let {
-                logoutUtils.logout(it)
+            requestCurrentUser()?.let { currentUser ->
+                logoutToken(context, currentUser, BuildConfig.APPLICATION_ID, BuildConfig.CLIENT_ID)
+                cookieManager.removeAllCookies(null)
+                withContext(Dispatchers.IO) { cookieManager.flush() }
+                WebStorage.getInstance().deleteAllData()
+                AccountUtils.removeUser(currentUser)
+                localSettings.removeSettings()
             }
         }
     }
