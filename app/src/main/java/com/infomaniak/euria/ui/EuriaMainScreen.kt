@@ -41,6 +41,7 @@ import com.infomaniak.core.network.networking.HttpUtils
 import com.infomaniak.core.webview.ui.components.WebView
 import com.infomaniak.euria.EURIA_MAIN_URL
 import com.infomaniak.euria.MainViewModel
+import com.infomaniak.euria.upload.UploadManager
 import com.infomaniak.euria.utils.WebViewUtils
 import com.infomaniak.euria.webview.CustomWebViewClient
 import com.infomaniak.euria.webview.JavascriptBridge
@@ -51,6 +52,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun EuriaMainScreen(
     mainViewModel: MainViewModel,
+    uploadManager: UploadManager,
     webViewUtils: WebViewUtils,
     token: String?,
     keepSplashScreen: (Boolean) -> Unit,
@@ -81,7 +83,7 @@ fun EuriaMainScreen(
             if (isWebAppReady) {
                 launch {
                     mainViewModel.filesToShare.collect { filesUris ->
-                        if (filesUris.isNotEmpty()) mainViewModel.readFiles(currentWebview, filesUris)
+                        if (filesUris.isNotEmpty()) uploadManager.uploadFiles(currentWebview, filesUris)
                     }
                 }
                 launch {
