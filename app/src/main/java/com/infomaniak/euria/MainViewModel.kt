@@ -26,9 +26,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.infomaniak.core.auth.extensions.logoutToken
 import com.infomaniak.core.auth.models.user.User
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
-import com.infomaniak.core.network.LOGIN_ENDPOINT_URL
 import com.infomaniak.core.network.NetworkAvailability
 import com.infomaniak.core.network.networking.DefaultHttpClientProvider
 import com.infomaniak.core.sentry.SentryLog
@@ -38,7 +38,9 @@ import com.infomaniak.euria.MainActivity.Companion.getLoginErrorDescription
 import com.infomaniak.euria.data.LocalSettings
 import com.infomaniak.euria.network.ApiRepository
 import com.infomaniak.euria.utils.AccountUtils
+import com.infomaniak.euria.utils.AccountUtils.requestCurrentUser
 import com.infomaniak.euria.utils.OkHttpClientProvider
+import com.infomaniak.euria.utils.extensions.getInfomaniakLogin
 import com.infomaniak.lib.login.ApiToken
 import com.infomaniak.lib.login.InfomaniakLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -52,8 +54,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.invoke
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import splitties.coroutines.repeatWhileActive
 import splitties.experimental.ExperimentalSplittiesApi
 import javax.inject.Inject
@@ -65,6 +67,8 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
     val infomaniakLogin: InfomaniakLogin by lazy { context.getInfomaniakLogin() }
+    val cookieManager: CookieManager by lazy { CookieManager.getInstance() }
+
     val isNetworkAvailable = NetworkAvailability(context).isNetworkAvailable.distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.Lazily, true)
 
@@ -78,23 +82,10 @@ class MainViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.Lazily, UserState.Loading)
 
-    private val cookieManager by lazy { CookieManager.getInstance() }
-
     var skipOnboarding by mutableStateOf(localSettings.skipOnboarding)
     var launchMediaChooser by mutableStateOf(false)
     var hasSeenWebView by mutableStateOf(false)
     var microphonePermissionRequest by mutableStateOf<PermissionRequest?>(null)
-
-    @OptIn(ExperimentalSplittiesApi::class)
-
-    fun Context.getInfomaniakLogin() = InfomaniakLogin(
-        context = this,
-        loginUrl = "${LOGIN_ENDPOINT_URL}/",
-        appUID = BuildConfig.APPLICATION_ID,
-        clientID = BuildConfig.CLIENT_ID,
-        accessType = null,
-        sentryCallback = { error -> SentryLog.e(tag = "WebViewLogin", error) },
-    )
 
     fun authenticateUser(authCode: String, forceRefreshWebView: () -> Unit, showError: (String) -> Unit) {
         viewModelScope.launch {
@@ -151,11 +142,14 @@ class MainViewModel @Inject constructor(
 
     fun logout() {
         viewModelScope.launch {
-            cookieManager.removeAllCookies(null)
-            Dispatchers.IO.invoke { cookieManager.flush() }
-            WebStorage.getInstance().deleteAllData()
-            AccountUtils.removeAllUser()
-            localSettings.removeSettings()
+            requestCurrentUser()?.let { currentUser ->
+                infomaniakLogin.logoutToken(currentUser)
+                cookieManager.removeAllCookies(null)
+                withContext(Dispatchers.IO) { cookieManager.flush() }
+                WebStorage.getInstance().deleteAllData()
+                AccountUtils.removeUser(currentUser)
+                localSettings.removeSettings()
+            }
         }
     }
 

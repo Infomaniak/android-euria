@@ -20,15 +20,11 @@ package com.infomaniak.euria.utils
 import com.infomaniak.core.auth.CredentialManager
 import com.infomaniak.core.auth.TokenAuthenticator
 import com.infomaniak.core.auth.models.user.User
-import com.infomaniak.core.auth.networking.AuthHttpClientProvider
 import com.infomaniak.core.auth.room.UserDatabase
-import com.infomaniak.core.network.models.ApiResponseStatus
 import com.infomaniak.euria.MainApplication
-import com.infomaniak.euria.network.ApiRepository
 import io.sentry.Sentry
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.sync.withLock
-import okhttp3.OkHttpClient
 import io.sentry.protocol.User as SentryUser
 
 object AccountUtils : CredentialManager() {
@@ -71,18 +67,10 @@ object AccountUtils : CredentialManager() {
         userDatabase.userDao().insert(user)
     }
 
-    suspend fun updateCurrentUser(okHttpClient: OkHttpClient = AuthHttpClientProvider.authOkHttpClient) {
-        with(ApiRepository.getUserProfile(okHttpClient)) {
-            if (result != ApiResponseStatus.ERROR) requestUser(remoteUser = data ?: return)
-        }
-    }
-
-    suspend fun removeAllUser() {
-        userDatabase.userDao().getFirst()?.let { user ->
-            val userId = user.id.toLong()
-            MainApplication.userDataCleanableList.forEach { it.resetForUser(userId) }
-            userDatabase.userDao().delete(user)
-        }
+    suspend fun removeUser(user: User) {
+        val userId = user.id.toLong()
+        MainApplication.userDataCleanableList.forEach { it.resetForUser(userId) }
+        userDatabase.userDao().delete(user)
     }
 
     private suspend fun requestUser(remoteUser: User) {
