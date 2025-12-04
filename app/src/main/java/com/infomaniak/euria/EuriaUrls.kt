@@ -22,7 +22,7 @@ import com.infomaniak.core.network.ApiEnvironment
 
 private val host = ApiEnvironment.current.host
 
-val CREATE_ACCOUNT_URL = "https://welcome.$host/signup/euria/myksuite"
+val CREATE_ACCOUNT_URL = "https://welcome.$host/signup/euria"
 
 // iOS has a different URL for the success (ksuite.infomaniak.com) but for some reason, we don't have this
 val CREATE_ACCOUNT_SUCCESS_HOST = "euria.$host"
