@@ -26,8 +26,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.infomaniak.core.auth.extensions.logoutToken
 import com.infomaniak.core.auth.models.user.User
-import com.infomaniak.core.auth.utils.LogoutUtils.logoutToken
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
 import com.infomaniak.core.network.NetworkAvailability
 import com.infomaniak.core.network.networking.DefaultHttpClientProvider
@@ -143,7 +143,7 @@ class MainViewModel @Inject constructor(
     fun logout() {
         viewModelScope.launch {
             requestCurrentUser()?.let { currentUser ->
-                logoutToken(context, currentUser, BuildConfig.APPLICATION_ID, BuildConfig.CLIENT_ID)
+                infomaniakLogin.logoutToken(currentUser)
                 cookieManager.removeAllCookies(null)
                 withContext(Dispatchers.IO) { cookieManager.flush() }
                 WebStorage.getInstance().deleteAllData()
