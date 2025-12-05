@@ -19,6 +19,7 @@ package com.infomaniak.euria
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
@@ -28,6 +29,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.compose.material3.Surface
@@ -70,6 +72,10 @@ class MainActivity : ComponentActivity() {
 
     private val mainViewModel: MainViewModel by viewModels()
     private val crossAppLoginViewModel: CrossAppLoginViewModel by viewModels()
+    private val takePicturePreviewLauncher =
+        registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap: Bitmap? ->
+            if (bitmap != null) uploadManager.uploadBitmap(webViewUtils.webView, bitmap)
+        }
 
     @Inject
     lateinit var uploadManager: UploadManager
@@ -91,7 +97,8 @@ class MainActivity : ComponentActivity() {
                 },
                 onReady = { mainViewModel.isWebAppReady.value = true },
                 onDismissApp = { finish() },
-                onCancelFileUpload = { localId -> uploadManager.cancelUpload(localId) }
+                onCancelFileUpload = { localId -> uploadManager.cancelUpload(localId) },
+                onOpenCamera = { takePicturePreviewLauncher.launch(null) },
             )
         )
     }
@@ -145,11 +152,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        webViewUtils.updateWebViewQueryFrom(intent, updateWebViewQuery = { query ->
-            mainViewModel.webViewQueries.trySend(query)
-        })
-
-        extractFilesToShare()
+        executeIntentAction()
 
         setContent {
             EuriaTheme {
@@ -186,6 +189,7 @@ class MainActivity : ComponentActivity() {
                                 token = userState?.user?.apiToken?.accessToken,
                                 keepSplashScreen = { state -> keepSplashScreen.update { state } },
                                 finishApp = { finish() },
+                                startCamera = { takePicturePreviewLauncher.launch(null) }
                             )
                         }
                     }
@@ -198,6 +202,12 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        executeIntentAction()
+    }
+
+    private fun executeIntentAction() {
+        if (intent.getStringExtra(EXTRA_ACTION) == "CAMERA") mainViewModel.shouldStartCamera.value = true
+
         webViewUtils.updateWebViewQueryFrom(intent, updateWebViewQuery = { query ->
             mainViewModel.webViewQueries.trySend(query)
         })
@@ -277,11 +287,13 @@ class MainActivity : ComponentActivity() {
         const val CHAT = 0
         const val EPHEMERAL = 1
         const val SPEECH = 2
+        const val CAMERA = 3
     }
 
     companion object {
         const val TAG = "MainActivity"
 
+        const val EXTRA_ACTION = "EXTRA_ACTION"
         const val EXTRA_QUERY = "EXTRA_QUERY"
 
         fun getLoginErrorDescription(

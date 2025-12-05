@@ -28,6 +28,7 @@ class JavascriptBridge(
     private val onReady: () -> Unit,
     private val onDismissApp: () -> Unit,
     private val onCancelFileUpload: (String) -> Unit,
+    private val onOpenCamera: () -> Unit,
 ) {
 
     @JavascriptInterface
@@ -68,6 +69,11 @@ class JavascriptBridge(
     @JavascriptInterface
     fun cancelFileUpload(ref: String) {
         onCancelFileUpload(ref)
+    }
+
+    @JavascriptInterface
+    fun openCamera() {
+        onOpenCamera()
     }
 
     companion object {
