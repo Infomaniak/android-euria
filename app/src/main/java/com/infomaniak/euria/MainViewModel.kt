@@ -18,6 +18,7 @@
 package com.infomaniak.euria
 
 import android.content.Context
+import android.net.Uri
 import android.webkit.CookieManager
 import android.webkit.PermissionRequest
 import android.webkit.WebStorage
@@ -86,6 +87,8 @@ class MainViewModel @Inject constructor(
     var launchMediaChooser by mutableStateOf(false)
     var hasSeenWebView by mutableStateOf(false)
     var microphonePermissionRequest by mutableStateOf<PermissionRequest?>(null)
+
+    var filesToShare = MutableStateFlow(emptyList<Uri>())
 
     fun authenticateUser(authCode: String, forceRefreshWebView: () -> Unit, showError: (String) -> Unit) {
         viewModelScope.launch {

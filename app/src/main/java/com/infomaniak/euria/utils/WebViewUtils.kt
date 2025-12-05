@@ -68,6 +68,7 @@ class WebViewUtils(
             onKeepDeviceAwake = { onKeepDeviceAwake(it) },
             onReady = { onReady() },
             onDismissApp = { onDismissApp() },
+            onCancelFileUpload = { onCancelFileUpload(it) }
         )
     }
 
@@ -170,6 +171,7 @@ class WebViewUtils(
         val onKeepDeviceAwake: (Boolean) -> Unit,
         val onReady: () -> Unit,
         val onDismissApp: () -> Unit,
+        val onCancelFileUpload: (String) -> Unit,
     )
 
     companion object {
