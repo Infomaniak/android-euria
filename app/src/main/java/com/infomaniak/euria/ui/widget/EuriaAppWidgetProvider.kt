@@ -25,6 +25,7 @@ import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
 import com.infomaniak.euria.MainActivity
+import com.infomaniak.euria.MainActivity.Companion.EXTRA_ACTION
 import com.infomaniak.euria.MainActivity.Companion.EXTRA_QUERY
 import com.infomaniak.euria.MainActivity.PendingIntentRequestCodes
 import com.infomaniak.euria.R
@@ -40,6 +41,7 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
         val mainIntent = getIntent(context)
         val ephemeralIntent = getIntent(context, query = EPHEMERAL_QUERY)
         val microphoneIntent = getIntent(context, query = MICROPHONE_QUERY)
+        val cameraIntent = getIntent(context, action = "CAMERA")
 
         views.setOnClickPendingIntent(
             R.id.newConversationButton,
@@ -53,12 +55,17 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
             R.id.microphoneButton,
             getPendingIntent(context, microphoneIntent, PendingIntentRequestCodes.SPEECH)
         )
+        views.setOnClickPendingIntent(
+            R.id.cameraButton,
+            getPendingIntent(context, cameraIntent, PendingIntentRequestCodes.CAMERA)
+        )
 
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 
-    private fun getIntent(context: Context, query: String? = null): Intent {
+    private fun getIntent(context: Context, query: String? = null, action: String? = null): Intent {
         return Intent(context, MainActivity::class.java).apply {
+            putExtra(EXTRA_ACTION, action)
             putExtra(EXTRA_QUERY, query)
         }
     }

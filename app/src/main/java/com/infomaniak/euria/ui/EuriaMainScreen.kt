@@ -61,6 +61,7 @@ fun EuriaMainScreen(
     token: String?,
     keepSplashScreen: (Boolean) -> Unit,
     finishApp: () -> Unit,
+    startCamera: () -> Unit,
 ) {
     webViewUtils.setTokenToCookie(token)
 
@@ -94,6 +95,11 @@ fun EuriaMainScreen(
                 launch {
                     mainViewModel.webViewQueries.receiveAsFlow().collect { query ->
                         currentWebview?.evaluateJavascript("goTo(\"$query\")", null)
+                    }
+                }
+                launch {
+                    mainViewModel.shouldStartCamera.collect { shouldStartCamera ->
+                        if (shouldStartCamera) startCamera()
                     }
                 }
             }

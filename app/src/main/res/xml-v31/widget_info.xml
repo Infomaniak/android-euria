@@ -19,6 +19,6 @@
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:previewImage="@drawable/widget_preview"
     android:resizeMode="none"
-    android:targetCellWidth="2"
+    android:targetCellWidth="3"
     android:targetCellHeight="2"
     android:widgetCategory="home_screen" />

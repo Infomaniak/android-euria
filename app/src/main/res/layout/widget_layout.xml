@@ -50,7 +50,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/widgetPaddingBetweenActions"
         android:gravity="center"
@@ -75,6 +75,7 @@
             android:layout_width="@dimen/widgetIconSize"
             android:layout_height="@dimen/widgetIconSize"
             android:layout_marginStart="@dimen/widgetPaddingBetweenActions"
+            android:layout_marginEnd="@dimen/widgetPaddingBetweenActions"
             android:background="@drawable/widget_button_background">
 
             <ImageView
@@ -83,6 +84,20 @@
                 android:layout_gravity="center"
                 android:contentDescription="@string/contentDescriptionMicrophone"
                 android:src="@drawable/microphone" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/cameraButton"
+            android:layout_width="@dimen/widgetIconSize"
+            android:layout_height="@dimen/widgetIconSize"
+            android:background="@drawable/widget_button_background">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@string/contentDescriptionMicrophone"
+                android:src="@drawable/camera" />
         </FrameLayout>
     </LinearLayout>
 </LinearLayout>

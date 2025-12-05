@@ -16,10 +16,10 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- 128dp is the sum of all elements in widget_layout.xml-->
+<!-- 188dp is the sum of all elements in widget_layout.xml-->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:minWidth="128dp"
-    android:minHeight="128dp"
+    android:minWidth="188dp"
+    android:minHeight="188dp"
     android:previewImage="@drawable/widget_preview"
     android:resizeMode="none"
     android:widgetCategory="home_screen" />

@@ -19,6 +19,7 @@
 package com.infomaniak.euria.upload
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.webkit.WebView
@@ -54,6 +55,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
+import java.io.ByteArrayOutputStream
 import java.net.SocketTimeoutException
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -70,6 +72,41 @@ class UploadManager @Inject constructor(
 
     @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
     private val limitedDispatcher = newSingleThreadContext("Upload files").limitedParallelism(2)
+    
+	fun uploadBitmap(webView: WebView?, bitmap: Bitmap) {
+        val jsonParser = Json { ignoreUnknownKeys = true }
+
+        coroutineScope.launch {
+            var organizationId: String? = null
+            withContext(Dispatchers.Main) {
+                organizationId = async { webView?.executeJSFunction("getCurrentOrganizationId()") }.await()
+            }
+            // 0 or null means we're not connected so we don't want to proceed with the files
+            if (organizationId == null || organizationId == "null" || organizationId == "0") return@launch
+
+            withContext(Dispatchers.IO) {
+                val currentUser = requestCurrentUser() ?: return@withContext
+                val okHttpClient = getHttpClient(currentUser.apiToken.accessToken)
+                val fileInfo = getFileInfo(bitmap)
+
+                prepareFilesForUpload(webView, listOf(fileInfo))
+
+                uploadJobs[fileInfo.localId] = getUploadFileDeferred(
+                    bitmap = bitmap,
+                    okHttpClient = okHttpClient,
+                    fileInfo = fileInfo,
+                    organizationId = organizationId,
+                    jsonParser = jsonParser,
+                    webView = webView
+                )
+
+                startUploadFiles()
+            }
+        }
+    }
+
+    fun uploadFiles(webView: WebView?, uris: List<Uri>) {
+        val jsonParser = Json { ignoreUnknownKeys = true }
 
     suspend fun uploadFiles(webView: WebView?, uris: List<Uri>) = coroutineScope {
 
@@ -300,5 +337,19 @@ class UploadManager @Inject constructor(
             type = type,
             uri = uri,
         )
+    }
+
+    private fun getFileInfo(bitmap: Bitmap): FileInfo {
+        return FileInfo(
+            localId = UUID.randomUUID().toString(),
+            fileName = PHOTO_NAME_CAMERA,
+            fileSize = bitmap.byteCount.toLong(),
+            type = PHOTO_CAMERA_TYPE,
+        )
+    }
+
+    companion object {
+        private const val PHOTO_NAME_CAMERA = "camera_photo.jpeg"
+        private const val PHOTO_CAMERA_TYPE = "image/jpeg"
     }
 }
