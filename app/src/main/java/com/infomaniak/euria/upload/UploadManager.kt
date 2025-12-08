@@ -157,7 +157,6 @@ class UploadManager @Inject constructor(
                         deferred.await()
                     } catch (e: CancellationException) {
                         throw e
-                    } catch (_: Exception) {
                     }
                 }
             }
