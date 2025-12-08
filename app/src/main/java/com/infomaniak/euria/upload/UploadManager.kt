@@ -77,30 +77,25 @@ class UploadManager @Inject constructor(
         val jsonParser = Json { ignoreUnknownKeys = true }
 
         coroutineScope.launch {
-            var organizationId: String? = null
-            withContext(Dispatchers.Main) {
-                organizationId = async { webView?.executeJSFunction("getCurrentOrganizationId()") }.await()
-            }
-            // 0 or null means we're not connected so we don't want to proceed with the files
-            if (organizationId == null || organizationId == "null" || organizationId == "0") return@launch
+            withValidOrganizationId(webView) { organizationId ->
+                withContext(Dispatchers.IO) {
+                    val currentUser = requestCurrentUser() ?: return@withContext
+                    val okHttpClient = getHttpClient(currentUser.apiToken.accessToken)
+                    val fileInfo = getFileInfo(bitmap)
 
-            withContext(Dispatchers.IO) {
-                val currentUser = requestCurrentUser() ?: return@withContext
-                val okHttpClient = getHttpClient(currentUser.apiToken.accessToken)
-                val fileInfo = getFileInfo(bitmap)
+                    prepareFilesForUpload(webView, listOf(fileInfo))
 
-                prepareFilesForUpload(webView, listOf(fileInfo))
+                    uploadJobs[fileInfo.localId] = getUploadFileDeferred(
+                        bitmap = bitmap,
+                        okHttpClient = okHttpClient,
+                        fileInfo = fileInfo,
+                        organizationId = organizationId,
+                        jsonParser = jsonParser,
+                        webView = webView
+                    )
 
-                uploadJobs[fileInfo.localId] = getUploadFileDeferred(
-                    bitmap = bitmap,
-                    okHttpClient = okHttpClient,
-                    fileInfo = fileInfo,
-                    organizationId = organizationId,
-                    jsonParser = jsonParser,
-                    webView = webView
-                )
-
-                startUploadFiles()
+                    startUploadFiles()
+                }
             }
         }
     }
@@ -191,6 +186,8 @@ class UploadManager @Inject constructor(
 
     @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
     private suspend fun startUploadFiles() {
+        val dispatcher = newSingleThreadContext("File upload dispatcher")
+
         supervisorScope {
             withContext(limitedDispatcher) {
                 uploadJobs.values.forEach { deferred ->
