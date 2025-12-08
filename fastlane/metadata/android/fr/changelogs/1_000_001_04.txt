@@ -1,0 +1,1 @@
+- Correction empêchant le mode de conversation de fonctionner
