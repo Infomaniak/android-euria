@@ -77,10 +77,12 @@ class MainActivity : ComponentActivity() {
                 onUnauthenticated = { mainViewModel.logout() },
                 onSignUp = { startAccountCreation() },
                 onKeepDeviceAwake = { shouldKeepScreenOn ->
-                    if (shouldKeepScreenOn) {
-                        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-                    } else {
-                        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                    runOnUiThread {
+                        if (shouldKeepScreenOn) {
+                            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                        } else {
+                            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                        }
                     }
                 },
                 onReady = { mainViewModel.isWebAppReady.value = true },
