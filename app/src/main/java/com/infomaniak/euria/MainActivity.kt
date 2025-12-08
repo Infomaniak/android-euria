@@ -151,7 +151,7 @@ class MainActivity : ComponentActivity() {
             mainViewModel.webViewQueries.trySend(query)
         })
 
-        extractFilesToShare()
+        extractFilesToShare(intent)
 
         setContent {
             EuriaTheme {
@@ -204,10 +204,10 @@ class MainActivity : ComponentActivity() {
             mainViewModel.webViewQueries.trySend(query)
         })
 
-        extractFilesToShare()
+        extractFilesToShare(intent)
     }
 
-    private fun extractFilesToShare() {
+    private fun extractFilesToShare(intent: Intent) {
         intent.clipData?.let {
             val items = mutableListOf<Uri>()
             for (i in 0 until it.itemCount) {
