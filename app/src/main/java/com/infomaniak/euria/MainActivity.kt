@@ -153,7 +153,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        executeIntentAction()
+        executeIntentAction(intent)
 
         setContent {
             EuriaTheme {
@@ -203,10 +203,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        executeIntentAction()
+        executeIntentAction(intent)
     }
 
-    private fun executeIntentAction() {
+    private fun executeIntentAction(intent: Intent) {
         if (intent.getStringExtra(EXTRA_ACTION) == "CAMERA") mainViewModel.shouldStartCamera.value = true
 
         webViewUtils.updateWebViewQueryFrom(intent, updateWebViewQuery = { query ->
