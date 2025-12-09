@@ -82,7 +82,7 @@ fun EuriaMainScreen(
         mainViewModel.isWebAppReady.collectLatest { isWebAppReady ->
             if (isWebAppReady) {
                 launch {
-                    mainViewModel.filesToShare.collect { filesUris ->
+                    mainViewModel.filesToShare.receiveAsFlow().collect { filesUris ->
                         if (filesUris.isNotEmpty()) uploadManager.uploadFiles(currentWebview, filesUris)
                     }
                 }

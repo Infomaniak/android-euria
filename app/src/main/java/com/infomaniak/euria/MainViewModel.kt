@@ -88,7 +88,7 @@ class MainViewModel @Inject constructor(
     var hasSeenWebView by mutableStateOf(false)
     var microphonePermissionRequest by mutableStateOf<PermissionRequest?>(null)
 
-    var filesToShare = MutableStateFlow(emptyList<Uri>())
+    var filesToShare = Channel<List<Uri>>()
 
     fun authenticateUser(authCode: String, forceRefreshWebView: () -> Unit, showError: (String) -> Unit) {
         viewModelScope.launch {

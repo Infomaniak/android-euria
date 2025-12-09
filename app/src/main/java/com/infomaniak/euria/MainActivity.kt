@@ -214,7 +214,7 @@ class MainActivity : ComponentActivity() {
                 items.add(it.getItemAt(i).uri)
             }
 
-            mainViewModel.filesToShare.value = items
+            mainViewModel.filesToShare.trySend(items)
         }
     }
 
