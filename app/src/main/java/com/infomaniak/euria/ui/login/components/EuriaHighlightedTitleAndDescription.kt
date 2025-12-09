@@ -55,7 +55,7 @@ fun EuriaHighlightedTitleAndDescription(
         subtitleArgument = subtitleArgument,
         textStyle = onboardingTitle.copy(color = EuriaTheme.colors.primaryTextColor),
         descriptionWidth = Dimens.DescriptionWidth,
-        highlightedTextStyle = onboardingDescription.copy(color = EuriaTheme.colors.secondaryTextColor),
+        highlightedTextStyle = onboardingDescription.copy(color = EuriaTheme.colors.primaryTextColor),
         highlightedColor = EuriaTheme.colors.highlightedColor,
         highlightedAngleDegree = highlightedAngleDegree,
         isHighlighted = isHighlighted,
