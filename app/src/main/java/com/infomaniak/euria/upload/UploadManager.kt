@@ -72,68 +72,18 @@ class UploadManager @Inject constructor(
 
     @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
     private val limitedDispatcher = newSingleThreadContext("Upload files").limitedParallelism(2)
-    
-	fun uploadBitmap(webView: WebView?, bitmap: Bitmap) {
-        val jsonParser = Json { ignoreUnknownKeys = true }
 
-        coroutineScope.launch {
-            withValidOrganizationId(webView) { organizationId ->
-                withContext(Dispatchers.IO) {
-                    val currentUser = requestCurrentUser() ?: return@withContext
-                    val okHttpClient = getHttpClient(currentUser.apiToken.accessToken)
-                    val fileInfo = getFileInfo(bitmap)
+    suspend fun uploadBitmap(webView: WebView?, bitmap: Bitmap) = coroutineScope {
+        withValidOrganizationId(webView) { organizationId ->
+            val currentUser = requestCurrentUser() ?: return@withValidOrganizationId
+            val okHttpClient = getHttpClient(currentUser.apiToken.accessToken)
+            val fileInfo = withContext(Dispatchers.IO) { getFileInfo(bitmap) }
 
-                    prepareFilesForUpload(webView, listOf(fileInfo))
+            prepareFilesForUpload(webView, listOf(fileInfo))
 
-                    uploadJobs[fileInfo.localId] = getUploadFileDeferred(
-                        bitmap = bitmap,
-                        okHttpClient = okHttpClient,
-                        fileInfo = fileInfo,
-                        organizationId = organizationId,
-                        jsonParser = jsonParser,
-                        webView = webView
-                    )
-
-                    startUploadFiles()
-                }
-            }
-        }
-    }
-
-    fun uploadFiles(webView: WebView?, uris: List<Uri>) {
-        val jsonParser = Json { ignoreUnknownKeys = true }
-
-    suspend fun uploadFiles(webView: WebView?, uris: List<Uri>) = coroutineScope {
-
-        var organizationId: String? = null
-        withContext(Dispatchers.Main) {
-            organizationId = async { webView?.executeJSFunction("getCurrentOrganizationId()") }.await()
-        }
-        // 0 or null means we're not connected so we don't want to proceed with the files
-        // TODO Remove organizationId == "null" when the webPage handle this case properly
-        if (organizationId == null || organizationId == "null" || organizationId == "0") return@coroutineScope
-
-        val currentUser = requestCurrentUser() ?: return@coroutineScope
-        // First loop to get all files information to send it to the WebView
-        var filesInfo = getFilesInfo(uris)
-
-        // Send the `prepareFilesForUpload` with all files in order to display the right number of elements in the WebView
-        // but also to let the WebView display errors if one file is not valid. This JS method will also return
-        // an array of UUIDs representing the files that are valid.
-        filesInfo = prepareFilesForUpload(webView, filesInfo)
-
-        // If no files are valid, we can leave safely
-        if (filesInfo.isEmpty()) return@coroutineScope
-
-        val okHttpClient = getHttpClient(currentUser.apiToken.accessToken)
-
-        filesInfo.forEach { fileInfo ->
-            if (fileInfo.uri == null) return@forEach
-
-            // Creating deferred to upload files to make it easier to cancel an upload
             uploadJobs[fileInfo.localId] = async(Dispatchers.IO, start = CoroutineStart.LAZY) {
-                startFileUpload(
-                    uri = fileInfo.uri,
+                startBitmapUpload(
+                    bitmap = bitmap,
                     okHttpClient = okHttpClient,
                     fileInfo = fileInfo,
                     organizationId = organizationId,
@@ -141,12 +91,84 @@ class UploadManager @Inject constructor(
                     webView = webView
                 )
             }
+
+            startUploadFiles()
         }
-        startUploadFiles()
+    }
+
+    suspend fun uploadFiles(webView: WebView?, uris: List<Uri>) = coroutineScope {
+        withValidOrganizationId(webView) { organizationId ->
+            val currentUser = requestCurrentUser() ?: return@withValidOrganizationId
+            // First loop to get all files information to send it to the WebView
+            var filesInfo = getFilesInfo(uris)
+
+            // Send the `prepareFilesForUpload` with all files in order to display the right number of elements in the WebView
+            // but also to let the WebView display errors if one file is not valid. This JS method will also return
+            // an array of UUIDs representing the files that are valid.
+            filesInfo = prepareFilesForUpload(webView, filesInfo)
+
+            // If no files are valid, we can leave safely
+            if (filesInfo.isEmpty()) return@withValidOrganizationId
+
+            val okHttpClient = getHttpClient(currentUser.apiToken.accessToken)
+
+            filesInfo.forEach { fileInfo ->
+                if (fileInfo.uri == null) return@forEach
+
+                // Creating deferred to upload files to make it easier to cancel an upload
+                uploadJobs[fileInfo.localId] = async(Dispatchers.IO, start = CoroutineStart.LAZY) {
+                    startFileUpload(
+                        uri = fileInfo.uri,
+                        okHttpClient = okHttpClient,
+                        fileInfo = fileInfo,
+                        organizationId = organizationId,
+                        jsonParser = jsonParser,
+                        webView = webView
+                    )
+                }
+            }
+            startUploadFiles()
+        }
     }
 
     fun cancelUpload(localId: String) {
         uploadJobs[localId]?.cancel()
+    }
+
+    private suspend fun startBitmapUpload(
+        bitmap: Bitmap,
+        okHttpClient: OkHttpClient,
+        fileInfo: FileInfo,
+        organizationId: String,
+        jsonParser: Json,
+        webView: WebView?,
+    ) {
+        try {
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+
+            val uploadFileResponse = uploadFile(
+                info = fileInfo,
+                byteArray = byteArrayOutputStream.toByteArray(),
+                organizationId = organizationId,
+                okHttpClient = okHttpClient,
+            )
+
+            currentCoroutineContext().ensureActive()
+
+            sendUploadResultToWebView(
+                result = uploadFileResponse,
+                jsonParser = jsonParser,
+                fileInfo = fileInfo,
+                webView = webView,
+            )
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: SocketTimeoutException) {
+            sendFileUploadError(fileInfo, "", webView, jsonParser)
+        } catch (_: Exception) {
+            sendFileUploadError(fileInfo, "", webView, jsonParser)
+        }
     }
 
     private suspend fun startFileUpload(
@@ -186,8 +208,6 @@ class UploadManager @Inject constructor(
 
     @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
     private suspend fun startUploadFiles() {
-        val dispatcher = newSingleThreadContext("File upload dispatcher")
-
         supervisorScope {
             withContext(limitedDispatcher) {
                 uploadJobs.values.forEach { deferred ->
@@ -343,6 +363,21 @@ class UploadManager @Inject constructor(
             fileSize = bitmap.byteCount.toLong(),
             type = PHOTO_CAMERA_TYPE,
         )
+    }
+
+    private suspend inline fun withValidOrganizationId(
+        webView: WebView?,
+        crossinline validOrganizationCallback: suspend (String) -> Unit,
+    ) {
+        var organizationId: String? = null
+        withContext(Dispatchers.Main) {
+            organizationId = async { webView?.executeJSFunction("getCurrentOrganizationId()") }.await()
+        }
+        // 0 or null means we're not connected so we don't want to proceed with the files
+        // TODO Remove organizationId == "null" when the webPage handle this case properly
+        if (organizationId == null || organizationId == "null" || organizationId == "0") return
+
+        validOrganizationCallback(organizationId)
     }
 
     companion object {
