@@ -56,6 +56,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -91,7 +92,7 @@ class MainViewModel @Inject constructor(
     var microphonePermissionRequest by mutableStateOf<PermissionRequest?>(null)
 
     private var _filesToShare = MutableSharedFlow<List<Uri>>()
-    var filesToShare: SharedFlow<List<Uri>> = _filesToShare
+    var filesToShare: SharedFlow<List<Uri>> = _filesToShare.shareIn(viewModelScope, SharingStarted.Lazily)
 
     fun authenticateUser(authCode: String, forceRefreshWebView: () -> Unit, showError: (String) -> Unit) {
         viewModelScope.launch {
