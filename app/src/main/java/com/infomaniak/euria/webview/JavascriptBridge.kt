@@ -19,7 +19,7 @@ package com.infomaniak.euria.webview
 
 import android.webkit.JavascriptInterface
 
-class JavascriptBridge(
+data class JavascriptBridge(
     private val onLogin: () -> Unit,
     private val onLogout: () -> Unit,
     private val onUnauthenticated: () -> Unit,

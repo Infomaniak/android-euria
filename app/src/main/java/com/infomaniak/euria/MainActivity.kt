@@ -51,6 +51,7 @@ import com.infomaniak.euria.ui.theme.EuriaTheme
 import com.infomaniak.euria.upload.UploadManager
 import com.infomaniak.euria.utils.AccountUtils
 import com.infomaniak.euria.utils.WebViewUtils
+import com.infomaniak.euria.webview.JavascriptBridge
 import com.infomaniak.lib.login.InfomaniakLogin
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.coroutineScope
@@ -77,7 +78,7 @@ class MainActivity : ComponentActivity() {
     private val webViewUtils: WebViewUtils by lazy {
         WebViewUtils(
             context = applicationContext,
-            javascriptBridgeCallbacks = WebViewUtils.JavascriptBridgeCallbacks(
+            javascriptBridge = JavascriptBridge(
                 onLogin = { openLoginWebView() },
                 onLogout = { mainViewModel.logout() },
                 onUnauthenticated = { mainViewModel.logout() },

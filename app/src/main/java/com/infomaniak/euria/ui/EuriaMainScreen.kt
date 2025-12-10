@@ -114,7 +114,7 @@ fun EuriaMainScreen(
         ),
         withSafeArea = false,
         getWebView = { webView ->
-            webView.addJavascriptInterface(webViewUtils.jsBridge, JavascriptBridge.NAME)
+            webView.addJavascriptInterface(webViewUtils.javascriptBridge, JavascriptBridge.NAME)
             currentWebview = webView
             webViewUtils.webView = webView
         },

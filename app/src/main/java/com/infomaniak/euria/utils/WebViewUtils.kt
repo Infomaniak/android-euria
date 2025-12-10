@@ -41,10 +41,8 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 
 class WebViewUtils(
     private val context: Context,
-    private val javascriptBridgeCallbacks: JavascriptBridgeCallbacks,
+    val javascriptBridge: JavascriptBridge,
 ) {
-
-    val jsBridge by lazy { getEuriaJavascriptBridge() }
 
     private val cookieManager by lazy { CookieManager.getInstance() }
 
@@ -59,18 +57,6 @@ class WebViewUtils(
         cookieManager.setCookie(EURIA_MAIN_URL.toHttpUrl().host, cookieString)
     }
 
-    fun getEuriaJavascriptBridge() = with(javascriptBridgeCallbacks) {
-        return@with JavascriptBridge(
-            onLogin = { onLogin() },
-            onLogout = { onLogout() },
-            onUnauthenticated = { onUnauthenticated() },
-            onSignUp = { onSignUp() },
-            onKeepDeviceAwake = { onKeepDeviceAwake(it) },
-            onReady = { onReady() },
-            onDismissApp = { onDismissApp() },
-            onCancelFileUpload = { onCancelFileUpload(it) }
-        )
-    }
 
     fun applySafeAreaInsets(
         webView: WebView,
@@ -162,17 +148,6 @@ class WebViewUtils(
     private fun hasPermission(permission: String): Boolean {
         return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
     }
-
-    data class JavascriptBridgeCallbacks(
-        val onLogin: () -> Unit,
-        val onLogout: () -> Unit,
-        val onUnauthenticated: () -> Unit = {},
-        val onSignUp: () -> Unit,
-        val onKeepDeviceAwake: (Boolean) -> Unit,
-        val onReady: () -> Unit,
-        val onDismissApp: () -> Unit,
-        val onCancelFileUpload: (String) -> Unit,
-    )
 
     companion object {
         // This tag is named like that just to have a unique identifier but the Web page does not rely on it
