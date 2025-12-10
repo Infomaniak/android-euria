@@ -19,7 +19,7 @@ package com.infomaniak.euria.webview
 
 import android.webkit.JavascriptInterface
 
-class JavascriptBridge(
+data class JavascriptBridge(
     private val onLogin: () -> Unit,
     private val onLogout: () -> Unit,
     private val onUnauthenticated: () -> Unit,
@@ -27,6 +27,7 @@ class JavascriptBridge(
     private val onKeepDeviceAwake: (Boolean) -> Unit,
     private val onReady: () -> Unit,
     private val onDismissApp: () -> Unit,
+    private val onCancelFileUpload: (String) -> Unit,
 ) {
 
     @JavascriptInterface
@@ -62,6 +63,11 @@ class JavascriptBridge(
     @JavascriptInterface
     fun dismissApp() {
         onDismissApp()
+    }
+
+    @JavascriptInterface
+    fun cancelFileUpload(ref: String) {
+        onCancelFileUpload(ref)
     }
 
     companion object {

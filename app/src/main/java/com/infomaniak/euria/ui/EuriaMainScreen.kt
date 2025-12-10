@@ -41,15 +41,18 @@ import com.infomaniak.core.network.networking.HttpUtils
 import com.infomaniak.core.webview.ui.components.WebView
 import com.infomaniak.euria.EURIA_MAIN_URL
 import com.infomaniak.euria.MainViewModel
+import com.infomaniak.euria.upload.UploadManager
 import com.infomaniak.euria.utils.WebViewUtils
 import com.infomaniak.euria.webview.CustomWebViewClient
 import com.infomaniak.euria.webview.JavascriptBridge
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 
 @Composable
 fun EuriaMainScreen(
     mainViewModel: MainViewModel,
+    uploadManager: UploadManager,
     webViewUtils: WebViewUtils,
     token: String?,
     keepSplashScreen: (Boolean) -> Unit,
@@ -78,8 +81,15 @@ fun EuriaMainScreen(
     LaunchedEffect(Unit) {
         mainViewModel.isWebAppReady.collectLatest { isWebAppReady ->
             if (isWebAppReady) {
-                mainViewModel.webViewQueries.receiveAsFlow().collect { query ->
-                    currentWebview?.evaluateJavascript("goTo(\"$query\")", null)
+                launch {
+                    mainViewModel.filesToShare.collect { filesUris ->
+                        if (filesUris.isNotEmpty()) uploadManager.uploadFiles(currentWebview, filesUris)
+                    }
+                }
+                launch {
+                    mainViewModel.webViewQueries.receiveAsFlow().collect { query ->
+                        currentWebview?.evaluateJavascript("goTo(\"$query\")", null)
+                    }
                 }
             }
         }
@@ -104,7 +114,7 @@ fun EuriaMainScreen(
         ),
         withSafeArea = false,
         getWebView = { webView ->
-            webView.addJavascriptInterface(webViewUtils.jsBridge, JavascriptBridge.NAME)
+            webView.addJavascriptInterface(webViewUtils.javascriptBridge, JavascriptBridge.NAME)
             currentWebview = webView
             webViewUtils.webView = webView
         },
