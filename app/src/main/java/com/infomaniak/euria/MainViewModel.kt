@@ -49,7 +49,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -88,7 +90,8 @@ class MainViewModel @Inject constructor(
     var hasSeenWebView by mutableStateOf(false)
     var microphonePermissionRequest by mutableStateOf<PermissionRequest?>(null)
 
-    var filesToShare = Channel<List<Uri>>()
+    private var _filesToShare = MutableSharedFlow<List<Uri>>()
+    var filesToShare: SharedFlow<List<Uri>> = _filesToShare
 
     fun authenticateUser(authCode: String, forceRefreshWebView: () -> Unit, showError: (String) -> Unit) {
         viewModelScope.launch {
@@ -159,6 +162,12 @@ class MainViewModel @Inject constructor(
     fun skipOnboarding(state: Boolean) {
         localSettings.skipOnboarding = state
         skipOnboarding = state
+    }
+
+    fun setFilesToShare(files: List<Uri>) {
+        viewModelScope.launch {
+            _filesToShare.emit(files)
+        }
     }
 
     sealed interface UserState {

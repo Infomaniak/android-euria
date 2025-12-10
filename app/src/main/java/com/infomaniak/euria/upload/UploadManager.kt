@@ -72,6 +72,7 @@ class UploadManager @Inject constructor(
             organizationId = async { webView?.executeJSFunction("getCurrentOrganizationId()") }.await()
         }
         // 0 or null means we're not connected so we don't want to proceed with the files
+        // TODO Remove organizationId == "null" when the webPage handle this case properly
         if (organizationId == null || organizationId == "null" || organizationId == "0") return
 
         withContext(Dispatchers.IO) {
