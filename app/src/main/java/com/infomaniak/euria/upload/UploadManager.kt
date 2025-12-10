@@ -63,9 +63,9 @@ class UploadManager @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
     private val uploadJobs = mutableMapOf<String, Deferred<Unit>>()
+    private val jsonParser = Json { ignoreUnknownKeys = true }
 
     suspend fun uploadFiles(webView: WebView?, uris: List<Uri>) {
-        val jsonParser = Json { ignoreUnknownKeys = true }
 
         var organizationId: String? = null
         withContext(Dispatchers.Main) {
@@ -75,21 +75,21 @@ class UploadManager @Inject constructor(
         // TODO Remove organizationId == "null" when the webPage handle this case properly
         if (organizationId == null || organizationId == "null" || organizationId == "0") return
 
+        val currentUser = requestCurrentUser() ?: return
+        // First loop to get all files information to send it to the WebView
+        var filesInfo = getFilesInfo(uris)
+
+        // Send the `prepareFilesForUpload` with all files in order to display the right number of elements in the WebView
+        // but also to let the WebView display errors if one file is not valid. This JS method will also return
+        // an array of UUIDs representing the files that are valid.
+        filesInfo = prepareFilesForUpload(webView, filesInfo)
+
+        // If no files are valid, we can leave safely
+        if (filesInfo.isEmpty()) return
+
+        val okHttpClient = getHttpClient(currentUser.apiToken.accessToken)
+
         withContext(Dispatchers.IO) {
-            val currentUser = requestCurrentUser() ?: return@withContext
-            // First loop to get all files information to send it to the WebView
-            var filesInfo = getFilesInfo(uris)
-
-            // Send the `prepareFilesForUpload` with all files in order to display the right number of elements in the WebView
-            // but also to let the WebView display errors if one file is not valid. This JS method will also return
-            // an array of UUIDs representing the files that are valid.
-            filesInfo = prepareFilesForUpload(webView, filesInfo)
-
-            // If no files are valid, we can leave safely
-            if (filesInfo.isEmpty()) return@withContext
-
-            val okHttpClient = getHttpClient(currentUser.apiToken.accessToken)
-
             filesInfo.forEach { fileInfo ->
                 if (fileInfo.uri == null) return@forEach
 
