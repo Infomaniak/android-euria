@@ -17,6 +17,7 @@
   -->
 
 <resources>
+    <string name="buttonStart">Empezar</string>
     <string name="connectionError">Problema de conexión a Internet</string>
     <string name="contentDescriptionChat">Chatear con Euria</string>
     <string name="contentDescriptionEphemeralChat">Chat efímero</string>
@@ -35,6 +36,5 @@
     <string name="onboardingLoginTitle">¿Listo para empezar?</string>
     <string name="onboardingPrivacyDescription">No se recoge nada, sus datos le pertenecen.</string>
     <string name="onboardingPrivacyTitle">Euria tiene su sede en Suiza.</string>
-    <string name="onboardingStart">Inicio</string>
     <string name="serverError">Error del servidor</string>
 </resources>
