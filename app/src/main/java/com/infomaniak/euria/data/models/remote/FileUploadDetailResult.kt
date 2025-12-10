@@ -16,12 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.infomaniak.euria.data.models
+package com.infomaniak.euria.data.models.remote
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class FileUploadResult(
-    @SerialName("data") val fileUploadDetailResult: FileUploadDetailResult,
+data class FileUploadDetailResult(
+    @SerialName("id") val remoteId: String,
+    @SerialName("name") val fileName: String?,
+    @SerialName("mime_type") val type: String?,
 )

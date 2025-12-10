@@ -25,10 +25,10 @@ import android.webkit.WebView
 import com.infomaniak.core.network.utils.await
 import com.infomaniak.core.network.utils.bodyAsStringOrNull
 import com.infomaniak.euria.data.api.ApiRoutes
-import com.infomaniak.euria.data.models.FileUploadResult
 import com.infomaniak.euria.data.models.js.FileInfo
 import com.infomaniak.euria.data.models.js.FileUploadErrorJsResponse
 import com.infomaniak.euria.data.models.js.FileUploadSucceedJsResponse
+import com.infomaniak.euria.data.models.remote.FileUploadResult
 import com.infomaniak.euria.utils.AccountUtils.requestCurrentUser
 import com.infomaniak.euria.utils.OkHttpClientProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
