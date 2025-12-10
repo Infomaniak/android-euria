@@ -19,6 +19,7 @@ package com.infomaniak.euria
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.view.WindowManager
@@ -74,7 +75,7 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
     private val crossAppLoginViewModel: CrossAppLoginViewModel by viewModels()
     private val takePicturePreviewLauncher =
         registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap: Bitmap? ->
-            if (bitmap != null) uploadManager.uploadBitmap(webViewUtils.webView, bitmap)
+            if (bitmap != null) lifecycleScope.launch { uploadManager.uploadBitmap(webViewUtils.webView, bitmap) }
         }
 
     @Inject
