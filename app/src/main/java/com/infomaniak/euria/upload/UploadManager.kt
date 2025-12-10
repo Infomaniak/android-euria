@@ -61,52 +61,49 @@ import kotlin.coroutines.resume
 @Singleton
 class UploadManager @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val coroutineScope: CoroutineScope,
 ) {
     private val uploadJobs = mutableMapOf<String, Deferred<Unit>>()
 
-    fun uploadFiles(webView: WebView?, uris: List<Uri>) {
+    suspend fun uploadFiles(webView: WebView?, uris: List<Uri>) {
         val jsonParser = Json { ignoreUnknownKeys = true }
 
-        coroutineScope.launch {
-            var organizationId: String? = null
-            withContext(Dispatchers.Main) {
-                organizationId = async { webView?.executeJSFunction("getCurrentOrganizationId()") }.await()
+        var organizationId: String? = null
+        withContext(Dispatchers.Main) {
+            organizationId = async { webView?.executeJSFunction("getCurrentOrganizationId()") }.await()
+        }
+        // 0 or null means we're not connected so we don't want to proceed with the files
+        if (organizationId == null || organizationId == "null" || organizationId == "0") return
+
+        withContext(Dispatchers.IO) {
+            val currentUser = requestCurrentUser() ?: return@withContext
+            // First loop to get all files information to send it to the WebView
+            var filesInfo = getFilesInfo(uris)
+
+            // Send the `prepareFilesForUpload` with all files in order to display the right number of elements in the WebView
+            // but also to let the WebView display errors if one file is not valid. This JS method will also return
+            // an array of UUIDs representing the files that are valid.
+            filesInfo = prepareFilesForUpload(webView, filesInfo)
+
+            // If no files are valid, we can leave safely
+            if (filesInfo.isEmpty()) return@withContext
+
+            val okHttpClient = getHttpClient(currentUser.apiToken.accessToken)
+
+            filesInfo.forEach { fileInfo ->
+                if (fileInfo.uri == null) return@forEach
+
+                // Creating deferred to upload files to make it easier to cancel an upload
+                uploadJobs[fileInfo.localId] = getUploadFileDeferred(
+                    uri = fileInfo.uri,
+                    okHttpClient = okHttpClient,
+                    fileInfo = fileInfo,
+                    organizationId = organizationId,
+                    jsonParser = jsonParser,
+                    webView = webView
+                )
             }
-            // 0 or null means we're not connected so we don't want to proceed with the files
-            if (organizationId == null || organizationId == "null" || organizationId == "0") return@launch
 
-            withContext(Dispatchers.IO) {
-                val currentUser = requestCurrentUser() ?: return@withContext
-                // First loop to get all files information to send it to the WebView
-                var filesInfo = getFilesInfo(uris)
-
-                // Send the `prepareFilesForUpload` with all files in order to display the right number of elements in the WebView
-                // but also to let the WebView display errors if one file is not valid. This JS method will also return
-                // an array of UUIDs representing the files that are valid.
-                filesInfo = prepareFilesForUpload(webView, filesInfo)
-
-                // If no files are valid, we can leave safely
-                if (filesInfo.isEmpty()) return@withContext
-
-                val okHttpClient = getHttpClient(currentUser.apiToken.accessToken)
-
-                filesInfo.forEach { fileInfo ->
-                    if (fileInfo.uri == null) return@forEach
-
-                    // Creating deferred to upload files to make it easier to cancel an upload
-                    uploadJobs[fileInfo.localId] = getUploadFileDeferred(
-                        uri = fileInfo.uri,
-                        okHttpClient = okHttpClient,
-                        fileInfo = fileInfo,
-                        organizationId = organizationId,
-                        jsonParser = jsonParser,
-                        webView = webView
-                    )
-                }
-
-                startUploadFiles()
-            }
+            startUploadFiles()
         }
     }
 
