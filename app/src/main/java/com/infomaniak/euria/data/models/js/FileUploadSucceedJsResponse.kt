@@ -25,6 +25,6 @@ import kotlinx.serialization.Serializable
 data class FileUploadSucceedJsResponse(
     @SerialName("ref") val localId: String,
     @SerialName("id") val remoteId: String,
-    @SerialName("name") val fileName: String?,
-    @SerialName("mimeType") val type: String?,
+    @SerialName("name") val fileName: String,
+    @SerialName("mimeType") val type: String,
 )

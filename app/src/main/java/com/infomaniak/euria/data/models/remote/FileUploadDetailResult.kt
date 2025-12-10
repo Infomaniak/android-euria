@@ -24,6 +24,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class FileUploadDetailResult(
     @SerialName("id") val remoteId: String,
-    @SerialName("name") val fileName: String?,
-    @SerialName("mime_type") val type: String?,
+    @SerialName("name") val fileName: String,
+    @SerialName("mime_type") val type: String,
 )
