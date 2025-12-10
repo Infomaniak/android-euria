@@ -19,7 +19,6 @@ package com.infomaniak.euria
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.view.WindowManager
@@ -209,14 +208,15 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun extractFilesToShare(intent: Intent) {
-        intent.clipData?.let {
-            val items = mutableListOf<Uri>()
-            for (i in 0 until it.itemCount) {
-                items.add(it.getItemAt(i).uri)
+        val items = buildList {
+            intent.clipData?.let {
+                for (i in 0 until it.itemCount) {
+                    add(it.getItemAt(i).uri)
+                }
             }
-
-            mainViewModel.setFilesToShare(items)
         }
+
+        mainViewModel.setFilesToShare(items)
     }
 
     private suspend fun runLogin(): Nothing = coroutineScope {
