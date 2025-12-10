@@ -35,13 +35,15 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
-import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -65,6 +67,9 @@ class UploadManager @Inject constructor(
 ) {
     private val uploadJobs = mutableMapOf<String, Deferred<Unit>>()
     private val jsonParser = Json { ignoreUnknownKeys = true }
+
+    @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
+    private val limitedDispatcher = newSingleThreadContext("Upload files").limitedParallelism(2)
 
     suspend fun uploadFiles(webView: WebView?, uris: List<Uri>) = coroutineScope {
 
@@ -147,14 +152,17 @@ class UploadManager @Inject constructor(
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
     private suspend fun startUploadFiles() {
         supervisorScope {
-            uploadJobs.values.forEach { deferred ->
-                launch {
-                    try {
-                        deferred.await()
-                    } catch (e: CancellationException) {
-                        throw e
+            withContext(limitedDispatcher) {
+                uploadJobs.values.forEach { deferred ->
+                    launch {
+                        try {
+                            deferred.await()
+                        } catch (e: CancellationException) {
+                            throw e
+                        }
                     }
                 }
             }
@@ -230,15 +238,7 @@ class UploadManager @Inject constructor(
 
         val request = getUploadFileRequest(organizationId, form)
         val uploadFileCall = okHttpClient.newCall(request)
-
-        // Cancelling the network call if we cancel the coroutine
-        currentCoroutineContext().job.invokeOnCompletion { cause ->
-            // if cause is null, that means everything is working as expected
-            if (cause != null) uploadFileCall.cancel()
-        }
-
-        val result = uploadFileCall.await()
-        return result
+        return uploadFileCall.await()
     }
 
     private fun getHttpClient(apiToken: String): OkHttpClient {
@@ -266,7 +266,7 @@ class UploadManager @Inject constructor(
         return filteredFilesInfo
     }
 
-    private fun getFilesInfo(uris: List<Uri>) = uris.map { getFileInfo(it) }
+    private suspend fun getFilesInfo(uris: List<Uri>) = withContext(Dispatchers.IO) { uris.map { getFileInfo(it) } }
 
     private suspend fun WebView.executeJSFunction(functionName: String) = suspendCancellableCoroutine { continuation ->
         if (continuation.isCancelled) return@suspendCancellableCoroutine
