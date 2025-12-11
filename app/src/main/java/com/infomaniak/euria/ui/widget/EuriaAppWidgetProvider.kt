@@ -59,7 +59,16 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetId: Int,
     ) {
-        val views = RemoteViews(context.packageName, R.layout.widget_layout)
+        val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
+        val minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
+
+        val views = RemoteViews(context.packageName, R.layout.widget_view_flipper)
+
+        val widgetType = WidgetType.getWidgetTypeFrom(minWidth, minHeight)
+
+        views.setDisplayedChild(R.id.widget_view_flipper, widgetType.index)
+
+        appWidgetManager.updateAppWidget(appWidgetId, views)
 
         views.setOnClickPendingIntent(
             R.id.newConversationButton,
@@ -120,6 +129,20 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
             PendingIntentRequestCodes.SPEECH -> MatomoEuria.MatomoName.EnableMicrophone
             PendingIntentRequestCodes.CAMERA -> MatomoEuria.MatomoName.OpenCamera
             else -> null
+        }
+    }
+
+private enum class WidgetType(val index: Int, val minWidth: Int, val minHeight: Int) {
+        TWO_ROWS(0, 250, 100),
+        ONE_ROW_FOUR_ACTIONS(1, 300, 40),
+        ONE_ROW_THREE_ACTIONS(2, 250, 40),
+        ONE_ROW_TWO_ACTIONS(3, 150, 40),
+        ONE_ROW_ONE_ACTION(4, 80, 40);
+
+        companion object {
+            fun getWidgetTypeFrom(minWidth: Int, minHeight: Int): WidgetType {
+                return entries.firstOrNull { it.minWidth <= minWidth && it.minHeight <= minHeight } ?: ONE_ROW_ONE_ACTION
+            }
         }
     }
 
