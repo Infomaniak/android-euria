@@ -365,13 +365,12 @@ class UploadManager @Inject constructor(
         )
     }
 
-    private suspend inline fun withValidOrganizationId(
+    private suspend fun withValidOrganizationId(
         webView: WebView?,
-        crossinline validOrganizationCallback: suspend (String) -> Unit,
+        validOrganizationCallback: suspend (String) -> Unit,
     ) {
-        var organizationId: String? = null
-        withContext(Dispatchers.Main) {
-            organizationId = async { webView?.executeJSFunction("getCurrentOrganizationId()") }.await()
+        val organizationId = withContext(Dispatchers.Main) {
+            async { webView?.executeJSFunction("getCurrentOrganizationId()") }.await()
         }
         // 0 or null means we're not connected so we don't want to proceed with the files
         // TODO Remove organizationId == "null" when the webPage handle this case properly
