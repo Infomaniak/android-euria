@@ -50,6 +50,7 @@ import com.infomaniak.euria.ui.login.CrossAppLoginViewModel
 import com.infomaniak.euria.ui.login.components.OnboardingScreen
 import com.infomaniak.euria.ui.noNetwork.NoNetworkScreen
 import com.infomaniak.euria.ui.theme.EuriaTheme
+import com.infomaniak.euria.ui.widget.EuriaAppWidgetProvider.Companion.EXTRA_ACTION_CAMERA
 import com.infomaniak.euria.upload.UploadManager
 import com.infomaniak.euria.utils.AccountUtils
 import com.infomaniak.euria.utils.WebViewUtils
@@ -216,7 +217,7 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
     }
 
     private fun executeIntentAction(intent: Intent) {
-        if (intent.getStringExtra(EXTRA_ACTION) == "CAMERA") mainViewModel.shouldStartCamera.value = true
+        if (intent.getStringExtra(EXTRA_ACTION) == EXTRA_ACTION_CAMERA) mainViewModel.shouldStartCamera.value = true
 
         webViewUtils.updateWebViewQueryFrom(intent, updateWebViewQuery = { query ->
             mainViewModel.webViewQueries.trySend(query)

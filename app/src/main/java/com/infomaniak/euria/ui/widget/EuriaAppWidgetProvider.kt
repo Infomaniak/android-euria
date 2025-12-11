@@ -41,7 +41,7 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
         val mainIntent = getIntent(context)
         val ephemeralIntent = getIntent(context, query = EPHEMERAL_QUERY)
         val microphoneIntent = getIntent(context, query = MICROPHONE_QUERY)
-        val cameraIntent = getIntent(context, action = "CAMERA")
+        val cameraIntent = getIntent(context, action = EXTRA_ACTION_CAMERA)
 
         views.setOnClickPendingIntent(
             R.id.newConversationButton,
@@ -80,6 +80,8 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
     }
 
     companion object {
+        const val EXTRA_ACTION_CAMERA = "CAMERA"
+
         private const val EPHEMERAL_QUERY = "/?ephemeral=true"
         private const val MICROPHONE_QUERY = "/?speech=true"
     }
