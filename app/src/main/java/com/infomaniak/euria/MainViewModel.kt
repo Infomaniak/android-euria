@@ -49,14 +49,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -85,14 +82,12 @@ class MainViewModel @Inject constructor(
             UserState.LoggedIn(it)
         }
     }.stateIn(viewModelScope, SharingStarted.Lazily, UserState.Loading)
+    val filesToShare: Channel<List<Uri>> = Channel(Channel.CONFLATED)
 
     var skipOnboarding by mutableStateOf(localSettings.skipOnboarding)
     var launchMediaChooser by mutableStateOf(false)
     var hasSeenWebView by mutableStateOf(false)
     var microphonePermissionRequest by mutableStateOf<PermissionRequest?>(null)
-
-    private val _filesToShare = MutableSharedFlow<List<Uri>>()
-    var filesToShare: SharedFlow<List<Uri>> = _filesToShare.shareIn(viewModelScope, SharingStarted.Lazily)
 
     fun authenticateUser(authCode: String, forceRefreshWebView: () -> Unit, showError: (String) -> Unit) {
         viewModelScope.launch {
@@ -166,9 +161,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun setFilesToShare(files: List<Uri>) {
-        viewModelScope.launch {
-            _filesToShare.emit(files)
-        }
+        filesToShare.trySend(files)
     }
 
     sealed interface UserState {
