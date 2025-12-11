@@ -23,6 +23,7 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.widget.RemoteViews
 import com.infomaniak.euria.MainActivity
 import com.infomaniak.euria.MainActivity.Companion.EXTRA_ACTION
@@ -32,11 +33,38 @@ import com.infomaniak.euria.R
 
 class EuriaAppWidgetProvider : AppWidgetProvider() {
 
-    override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
-        // We only have on widget so we use the first one
-        val appWidgetId = appWidgetIds.firstOrNull() ?: return
+    override fun onAppWidgetOptionsChanged(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetId: Int,
+        newOptions: Bundle,
+    ) {
+        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
+        updateWidget(context, appWidgetId, appWidgetManager)
+    }
 
-        val views = RemoteViews(context.packageName, R.layout.widget_layout)
+    override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
+        val appWidgetId = appWidgetIds.firstOrNull() ?: return
+        updateWidget(context, appWidgetId, appWidgetManager)
+    }
+
+    private fun updateWidget(
+        context: Context,
+        appWidgetId: Int,
+        appWidgetManager: AppWidgetManager,
+    ) {
+        // We only have on widget so we use the first one
+        val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
+        val minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
+        val minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
+
+        val views = RemoteViews(context.packageName, R.layout.widget_view_flipper)
+
+        val widgetType = WidgetType.getWidgetTypeFrom(minWidth, minHeight)
+
+        views.setDisplayedChild(R.id.widget_view_flipper, widgetType.index)
+
+        appWidgetManager.updateAppWidget(appWidgetId, views)
 
         val mainIntent = getIntent(context)
         val ephemeralIntent = getIntent(context, query = EPHEMERAL_QUERY)
@@ -77,6 +105,20 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+    }
+
+    private enum class WidgetType(val index: Int, val minWidth: Int, val minHeight: Int) {
+        TWO_ROWS(0, 250, 100),
+        ONE_ROW_FOUR_ACTIONS(1, 300, 40),
+        ONE_ROW_THREE_ACTIONS(2, 250, 40),
+        ONE_ROW_TWO_ACTIONS(3, 150, 40),
+        ONE_ROW_ONE_ACTION(4, 80, 40);
+
+        companion object {
+            fun getWidgetTypeFrom(minWidth: Int, minHeight: Int): WidgetType {
+                return entries.firstOrNull { it.minWidth <= minWidth && it.minHeight <= minHeight } ?: ONE_ROW_ONE_ACTION
+            }
+        }
     }
 
     companion object {
