@@ -104,7 +104,7 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
                 onReady = { mainViewModel.isWebAppReady.value = true },
                 onDismissApp = { finish() },
                 onCancelFileUpload = { localId -> uploadManager.cancelUpload(localId) },
-                onOpenCamera = { takePicturePreviewLauncher.launch(null) },
+                onOpenCamera = { startCamera() },
                 onOpenReview = { mainViewModel.shouldShowInAppReview.value = true }
             )
         )
@@ -234,6 +234,10 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
         }
 
         mainViewModel.setFilesToShare(items)
+    }
+
+    private fun startCamera() {
+        takePicturePreviewLauncher.launch(null)
     }
 
     private suspend fun runLogin(): Nothing = coroutineScope {
