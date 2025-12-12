@@ -1,0 +1,2 @@
+- Désactivation automatique du login inter application lors d'une erreur
+- Mise à jour de l'icone
