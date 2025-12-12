@@ -31,38 +31,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import com.infomaniak.core.ui.compose.margin.Margin
-import com.infomaniak.euria.R
 import com.infomaniak.euria.ui.theme.EuriaTheme
-import com.infomaniak.core.R as RCore
-
-object EuriaAlertDialogDefaults {
-    @Composable
-    fun ConfirmButton(isEnabled: () -> Boolean = { true }, onClick: () -> Unit) {
-        SmallButton(
-            style = ButtonType.Tertiary,
-            title = stringResource(R.string.appName),
-            enabled = isEnabled,
-            onClick = onClick,
-        )
-    }
-
-    @Composable
-    fun CancelButton(onClick: () -> Unit) {
-        SmallButton(
-            style = ButtonType.Tertiary,
-            title = stringResource(RCore.string.buttonCancel),
-            onClick = onClick,
-        )
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -144,52 +118,5 @@ private fun ActionButtons(
     ) {
         negativeButton()
         positiveButton()
-    }
-}
-
-@Preview
-@Composable
-private fun PreviewAlertDialog() {
-    EuriaTheme {
-        Surface {
-            EuriaAlertDialog(
-                title = stringResource(R.string.appName),
-                description = stringResource(R.string.appName),
-                positiveButton = { EuriaAlertDialogDefaults.ConfirmButton { } },
-                negativeButton = { EuriaAlertDialogDefaults.CancelButton { } },
-                onDismiss = {},
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun PreviewTitleOnlyAlertDialog() {
-    EuriaTheme {
-        Surface {
-            EuriaAlertDialog(
-                title = stringResource(R.string.appName),
-                positiveButton = { EuriaAlertDialogDefaults.ConfirmButton { } },
-                negativeButton = { EuriaAlertDialogDefaults.CancelButton { } },
-                onDismiss = {},
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun WideButtonsPreview() {
-    EuriaTheme {
-        Surface {
-            EuriaAlertDialog(
-                title = stringResource(R.string.appName),
-                description = stringResource(R.string.appName),
-                positiveButton = { SmallButton("A very looong and wide button", onClick = {}, style = ButtonType.Tertiary) },
-                negativeButton = { EuriaAlertDialogDefaults.CancelButton { } },
-                onDismiss = {},
-            )
-        }
     }
 }
