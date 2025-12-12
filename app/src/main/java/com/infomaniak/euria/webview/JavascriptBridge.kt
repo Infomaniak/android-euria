@@ -28,6 +28,7 @@ data class JavascriptBridge(
     private val onReady: () -> Unit,
     private val onDismissApp: () -> Unit,
     private val onCancelFileUpload: (String) -> Unit,
+    private val onOpenReview: () -> Unit,
 ) {
 
     @JavascriptInterface
@@ -68,6 +69,11 @@ data class JavascriptBridge(
     @JavascriptInterface
     fun cancelFileUpload(ref: String) {
         onCancelFileUpload(ref)
+    }
+
+    @JavascriptInterface
+    fun openReview() {
+        onOpenReview()
     }
 
     companion object {

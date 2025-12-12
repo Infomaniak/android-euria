@@ -47,6 +47,7 @@ include(
     ":Core:CrossAppLogin:Back",
     ":Core:CrossAppLogin:Front",
     ":Core:FragmentNavigation",
+    ":Core:InAppReview",
     ":Core:Matomo",
     ":Core:Network",
     ":Core:Network:Ktor",

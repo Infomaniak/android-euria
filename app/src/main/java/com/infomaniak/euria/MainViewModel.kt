@@ -83,6 +83,7 @@ class MainViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.Lazily, UserState.Loading)
     val filesToShare: Channel<List<Uri>> = Channel(Channel.CONFLATED)
+    val shouldShowInAppReview = MutableStateFlow(false)
 
     var skipOnboarding by mutableStateOf(localSettings.skipOnboarding)
     var launchMediaChooser by mutableStateOf(false)

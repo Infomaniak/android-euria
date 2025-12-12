@@ -35,12 +35,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.infomaniak.core.inappreview.reviewmanagers.InAppReviewManager
 import com.infomaniak.core.network.networking.HttpUtils
 import com.infomaniak.core.webview.ui.components.WebView
 import com.infomaniak.euria.EURIA_MAIN_URL
 import com.infomaniak.euria.MainViewModel
+import com.infomaniak.euria.ui.components.ReviewAlertDialog
 import com.infomaniak.euria.upload.UploadManager
 import com.infomaniak.euria.utils.WebViewUtils
 import com.infomaniak.euria.webview.CustomWebViewClient
@@ -52,6 +55,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun EuriaMainScreen(
     mainViewModel: MainViewModel,
+    inAppReviewManager: InAppReviewManager,
     uploadManager: UploadManager,
     webViewUtils: WebViewUtils,
     token: String?,
@@ -65,6 +69,7 @@ fun EuriaMainScreen(
     val insets = WindowInsets.safeDrawing
     val density = LocalDensity.current
     val layoutDirection = LocalLayoutDirection.current
+    val shouldDisplayReviewDialog by mainViewModel.shouldShowInAppReview.collectAsStateWithLifecycle(initialValue = false)
 
     // Need this to apply the insets to the WebView when these ones changes
     currentWebview?.let { webViewUtils.applySafeAreaInsets(it, insets, density, layoutDirection) }
@@ -95,6 +100,8 @@ fun EuriaMainScreen(
         }
     }
 
+    ReviewDialog(shouldDisplayReviewDialog, inAppReviewManager, mainViewModel)
+
     WebView(
         url = EURIA_MAIN_URL,
         userAgentString = HttpUtils.getUserAgent,
@@ -119,6 +126,32 @@ fun EuriaMainScreen(
             webViewUtils.webView = webView
         },
     )
+}
+
+@Composable
+private fun ReviewDialog(
+    shouldDisplayReviewDialog: Boolean,
+    inAppReviewManager: InAppReviewManager,
+    mainViewModel: MainViewModel,
+) {
+    if (shouldDisplayReviewDialog) {
+        with(inAppReviewManager) {
+            ReviewAlertDialog(
+                onUserWantsToReview = {
+                    onUserWantsToReview()
+                    mainViewModel.shouldShowInAppReview.value = false
+                },
+                onUserWantsToGiveFeedback = {
+                    // Nothing to do here because we don't have a feedback URL yet
+                    mainViewModel.shouldShowInAppReview.value = false
+                },
+                onDismiss = {
+                    onUserWantsToDismiss()
+                    mainViewModel.shouldShowInAppReview.value = false
+                }
+            )
+        }
+    }
 }
 
 @Composable
