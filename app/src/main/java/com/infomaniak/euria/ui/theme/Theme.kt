@@ -21,6 +21,7 @@ package com.infomaniak.euria.ui.theme
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.shapes
 import androidx.compose.material3.darkColorScheme
@@ -276,19 +277,24 @@ data class CustomColorScheme(
     val primaryTextColor: Color = Color.Unspecified,
     val secondaryTextColor: Color = Color.Unspecified,
     val highlightedColor: Color = Color.Unspecified,
+    val tertiaryButtonBackground: Color = Color.Unspecified,
 )
 
 object EuriaTheme {
+    val typography = Typography
     val colors: CustomColorScheme
         @Composable
         get() = LocalCustomColorScheme.current
+    val materialColors: ColorScheme
+        @Composable
+        get() = MaterialTheme.colorScheme
 }
 
 @Composable
 fun EuriaTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
-    content: @Composable() () -> Unit,
+    content: @Composable () -> Unit,
 ) {
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {

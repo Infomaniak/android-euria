@@ -23,9 +23,11 @@ import androidx.compose.ui.graphics.Color
 private val contentDefaultPrimary = Color(0xFF122334)
 private val contentDefaultSecondary = Color(0xFF376A9E)
 private val highlightedColor = Color(0xffd7e6f9)
+private val tertiaryButtonBackground = Color(0xfff1f1f1)
 
 val CustomLightColorScheme = CustomColorScheme(
     primaryTextColor = contentDefaultPrimary,
     secondaryTextColor = contentDefaultSecondary,
     highlightedColor = highlightedColor,
+    tertiaryButtonBackground = tertiaryButtonBackground,
 )

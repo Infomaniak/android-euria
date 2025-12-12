@@ -37,6 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
+import com.infomaniak.core.inappreview.reviewmanagers.InAppReviewManager
 import com.infomaniak.core.observe
 import com.infomaniak.core.twofactorauth.back.TwoFactorAuthManager
 import com.infomaniak.core.twofactorauth.front.TwoFactorAuthApprovalAutoManagedBottomSheet
@@ -66,13 +67,15 @@ val twoFactorAuthManager = TwoFactorAuthManager { userId -> AccountUtils.getHttp
 
 @AndroidEntryPoint
 @OptIn(ExperimentalSplittiesApi::class)
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(), AppReviewManageable {
 
     private val mainViewModel: MainViewModel by viewModels()
     private val crossAppLoginViewModel: CrossAppLoginViewModel by viewModels()
 
     @Inject
     lateinit var uploadManager: UploadManager
+
+    override val inAppReviewManager by lazy { InAppReviewManager(this) }
 
     private val webViewUtils: WebViewUtils by lazy {
         WebViewUtils(
@@ -93,7 +96,8 @@ class MainActivity : ComponentActivity() {
                 },
                 onReady = { mainViewModel.isWebAppReady.value = true },
                 onDismissApp = { finish() },
-                onCancelFileUpload = { localId -> uploadManager.cancelUpload(localId) }
+                onCancelFileUpload = { localId -> uploadManager.cancelUpload(localId) },
+                onOpenReview = { mainViewModel.shouldShowInAppReview.value = true }
             )
         )
     }
@@ -130,6 +134,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initAppReviewManager()
         val splashScreen = installSplashScreen().apply { setKeepOnScreenCondition { true } }
 
         keepSplashScreen.observe(lifecycleOwner = this, state = Lifecycle.State.CREATED) {
@@ -183,6 +188,7 @@ class MainActivity : ComponentActivity() {
                             val userState = userState as? UserState.LoggedIn
                             EuriaMainScreen(
                                 mainViewModel = mainViewModel,
+                                inAppReviewManager = inAppReviewManager,
                                 uploadManager = uploadManager,
                                 webViewUtils = webViewUtils,
                                 token = userState?.user?.apiToken?.accessToken,

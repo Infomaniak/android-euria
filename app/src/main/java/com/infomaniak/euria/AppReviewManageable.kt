@@ -15,30 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.infomaniak.euria
 
-package com.infomaniak.euria.ui.theme
+import com.infomaniak.core.inappreview.BaseInAppReviewManager.Behavior
+import com.infomaniak.core.inappreview.reviewmanagers.InAppReviewManager
 
-import androidx.compose.material3.Typography
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
+interface AppReviewManageable {
 
-val AppTypography = Typography()
+    val inAppReviewManager: InAppReviewManager
 
-object Typography {
-
-    val bodyMedium = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 16.sp,
-        lineHeight = 20.sp,
+    fun initAppReviewManager() = inAppReviewManager.init(
+        countdownBehavior = Behavior.Manual,
+        appReviewThreshold = APP_REVIEW_THRESHOLD,
+        maxAppReviewThreshold = MAX_APP_REVIEW_THRESHOLD,
     )
 
-    val bodyRegular = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 20.sp,
-    )
+    companion object {
+        private const val APP_REVIEW_THRESHOLD = 2
+        private const val MAX_APP_REVIEW_THRESHOLD = 10
+    }
 }
