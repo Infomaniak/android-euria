@@ -205,6 +205,8 @@ private fun AskMicrophonePermission(mainViewModel: MainViewModel) {
             } else {
                 microphonePermissionRequest.deny()
             }
+
+            mainViewModel.microphonePermissionRequest = null
         }
     }
 }
