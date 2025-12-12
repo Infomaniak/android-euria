@@ -21,6 +21,7 @@
 
     <string name="buttonStart">Start</string>
     <string name="connectionError">Internet connection problem</string>
+    <string name="contentDescriptionCamera">Launch the camera to take a picture</string>
     <string name="contentDescriptionChat">Chat with Euria</string>
     <string name="contentDescriptionEphemeralChat">Ephemeral chat</string>
     <string name="contentDescriptionMicrophone">Voice chat</string>

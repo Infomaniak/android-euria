@@ -19,6 +19,7 @@
 package com.infomaniak.euria.upload
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.webkit.WebView
@@ -54,6 +55,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
+import java.io.ByteArrayOutputStream
 import java.net.SocketTimeoutException
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -71,37 +73,17 @@ class UploadManager @Inject constructor(
     @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
     private val limitedDispatcher = newSingleThreadContext("Upload files").limitedParallelism(2)
 
-    suspend fun uploadFiles(webView: WebView?, uris: List<Uri>) = coroutineScope {
+    suspend fun uploadBitmap(webView: WebView?, bitmap: Bitmap) = coroutineScope {
+        withValidOrganizationId(webView) { organizationId ->
+            val currentUser = requestCurrentUser() ?: return@withValidOrganizationId
+            val okHttpClient = getHttpClient(currentUser.apiToken.accessToken)
+            val fileInfo = withContext(Dispatchers.IO) { getFileInfo(bitmap) }
 
-        var organizationId: String? = null
-        withContext(Dispatchers.Main) {
-            organizationId = async { webView?.executeJSFunction("getCurrentOrganizationId()") }.await()
-        }
-        // 0 or null means we're not connected so we don't want to proceed with the files
-        // TODO Remove organizationId == "null" when the webPage handle this case properly
-        if (organizationId == null || organizationId == "null" || organizationId == "0") return@coroutineScope
+            prepareFilesForUpload(webView, listOf(fileInfo))
 
-        val currentUser = requestCurrentUser() ?: return@coroutineScope
-        // First loop to get all files information to send it to the WebView
-        var filesInfo = getFilesInfo(uris)
-
-        // Send the `prepareFilesForUpload` with all files in order to display the right number of elements in the WebView
-        // but also to let the WebView display errors if one file is not valid. This JS method will also return
-        // an array of UUIDs representing the files that are valid.
-        filesInfo = prepareFilesForUpload(webView, filesInfo)
-
-        // If no files are valid, we can leave safely
-        if (filesInfo.isEmpty()) return@coroutineScope
-
-        val okHttpClient = getHttpClient(currentUser.apiToken.accessToken)
-
-        filesInfo.forEach { fileInfo ->
-            if (fileInfo.uri == null) return@forEach
-
-            // Creating deferred to upload files to make it easier to cancel an upload
             uploadJobs[fileInfo.localId] = async(Dispatchers.IO, start = CoroutineStart.LAZY) {
-                startFileUpload(
-                    uri = fileInfo.uri,
+                startBitmapUpload(
+                    bitmap = bitmap,
                     okHttpClient = okHttpClient,
                     fileInfo = fileInfo,
                     organizationId = organizationId,
@@ -109,12 +91,84 @@ class UploadManager @Inject constructor(
                     webView = webView
                 )
             }
+
+            startUploadFiles()
         }
-        startUploadFiles()
+    }
+
+    suspend fun uploadFiles(webView: WebView?, uris: List<Uri>) = coroutineScope {
+        withValidOrganizationId(webView) { organizationId ->
+            val currentUser = requestCurrentUser() ?: return@withValidOrganizationId
+            // First loop to get all files information to send it to the WebView
+            var filesInfo = getFilesInfo(uris)
+
+            // Send the `prepareFilesForUpload` with all files in order to display the right number of elements in the WebView
+            // but also to let the WebView display errors if one file is not valid. This JS method will also return
+            // an array of UUIDs representing the files that are valid.
+            filesInfo = prepareFilesForUpload(webView, filesInfo)
+
+            // If no files are valid, we can leave safely
+            if (filesInfo.isEmpty()) return@withValidOrganizationId
+
+            val okHttpClient = getHttpClient(currentUser.apiToken.accessToken)
+
+            filesInfo.forEach { fileInfo ->
+                if (fileInfo.uri == null) return@forEach
+
+                // Creating deferred to upload files to make it easier to cancel an upload
+                uploadJobs[fileInfo.localId] = async(Dispatchers.IO, start = CoroutineStart.LAZY) {
+                    startFileUpload(
+                        uri = fileInfo.uri,
+                        okHttpClient = okHttpClient,
+                        fileInfo = fileInfo,
+                        organizationId = organizationId,
+                        jsonParser = jsonParser,
+                        webView = webView
+                    )
+                }
+            }
+            startUploadFiles()
+        }
     }
 
     fun cancelUpload(localId: String) {
         uploadJobs[localId]?.cancel()
+    }
+
+    private suspend fun startBitmapUpload(
+        bitmap: Bitmap,
+        okHttpClient: OkHttpClient,
+        fileInfo: FileInfo,
+        organizationId: String,
+        jsonParser: Json,
+        webView: WebView?,
+    ) {
+        try {
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+
+            val uploadFileResponse = uploadFile(
+                info = fileInfo,
+                byteArray = byteArrayOutputStream.toByteArray(),
+                organizationId = organizationId,
+                okHttpClient = okHttpClient,
+            )
+
+            currentCoroutineContext().ensureActive()
+
+            sendUploadResultToWebView(
+                result = uploadFileResponse,
+                jsonParser = jsonParser,
+                fileInfo = fileInfo,
+                webView = webView,
+            )
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: SocketTimeoutException) {
+            sendFileUploadError(fileInfo, "", webView, jsonParser)
+        } catch (_: Exception) {
+            sendFileUploadError(fileInfo, "", webView, jsonParser)
+        }
     }
 
     private suspend fun startFileUpload(
@@ -300,5 +354,33 @@ class UploadManager @Inject constructor(
             type = type,
             uri = uri,
         )
+    }
+
+    private fun getFileInfo(bitmap: Bitmap): FileInfo {
+        return FileInfo(
+            localId = UUID.randomUUID().toString(),
+            fileName = PHOTO_NAME_CAMERA,
+            fileSize = bitmap.byteCount.toLong(),
+            type = PHOTO_CAMERA_TYPE,
+        )
+    }
+
+    private suspend fun withValidOrganizationId(
+        webView: WebView?,
+        validOrganizationCallback: suspend (String) -> Unit,
+    ) {
+        val organizationId = withContext(Dispatchers.Main) {
+            async { webView?.executeJSFunction("getCurrentOrganizationId()") }.await()
+        }
+        // 0 or null means we're not connected so we don't want to proceed with the files
+        // TODO Remove organizationId == "null" when the webPage handle this case properly
+        if (organizationId == null || organizationId == "null" || organizationId == "0") return
+
+        validOrganizationCallback(organizationId)
+    }
+
+    companion object {
+        private const val PHOTO_NAME_CAMERA = "camera_photo.jpeg"
+        private const val PHOTO_CAMERA_TYPE = "image/jpeg"
     }
 }

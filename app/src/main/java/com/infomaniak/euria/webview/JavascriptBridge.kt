@@ -28,6 +28,7 @@ data class JavascriptBridge(
     private val onReady: () -> Unit,
     private val onDismissApp: () -> Unit,
     private val onCancelFileUpload: (String) -> Unit,
+    private val onOpenCamera: () -> Unit,
     private val onOpenReview: () -> Unit,
 ) {
 
@@ -72,6 +73,10 @@ data class JavascriptBridge(
     }
 
     @JavascriptInterface
+    fun openCamera() {
+        onOpenCamera()
+	}
+
     fun openReview() {
         onOpenReview()
     }

@@ -19,6 +19,7 @@
 <resources>
     <string name="buttonStart">Starten</string>
     <string name="connectionError">Problem mit der Internetverbindung</string>
+    <string name="contentDescriptionCamera">Starten Sie die Kamera, um ein Bild aufzunehmen</string>
     <string name="contentDescriptionChat">Mit Euria chatten</string>
     <string name="contentDescriptionEphemeralChat">Kurzfristiger Chat</string>
     <string name="contentDescriptionMicrophone">Sprach-Chat</string>
