@@ -1,0 +1,3 @@
+- Fonctionnalité de partage de fichiers
+- Désactivation automatique du login inter application lors d'une erreur
+- Mise à jour de l'icone

@@ -1,0 +1,3 @@
+- Sharing files feature
+- Automatically fallback to the normal flow when cross app login encounters an error
+- Update icon
