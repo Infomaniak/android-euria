@@ -132,21 +132,21 @@ fun OnboardingScreen(
 private fun Page.toOnboardingPage(
     isHighlighted: Map<Page, MutableState<Boolean>>
 ): OnboardingPage = OnboardingPage(background = {
-        DefaultBackground(
-            ImageVector.vectorResource(backgroundRes),
-            modifier = Modifier.padding(bottom = Dimens.OnboardingGradientPadding)
-        )
-    }, illustration = {
-        OnboardingPageIllustration()
-    }, text = {
-        EuriaHighlightedTitleAndDescription(
-            isHighlighted = { isHighlighted[this]?.value ?: false },
-            title = stringResource(titleRes),
-            subtitleTemplate = descriptionTemplateRes?.let { stringResource(it) } ?: "%s",
-            subtitleArgument = stringResource(descriptionArgumentRes),
-            highlightedAngleDegree = highlightedAngleDegree
-        )
-    })
+    DefaultBackground(
+        ImageVector.vectorResource(backgroundRes),
+        modifier = Modifier.padding(bottom = Dimens.OnboardingGradientPadding)
+    )
+}, illustration = {
+    OnboardingPageIllustration()
+}, text = {
+    EuriaHighlightedTitleAndDescription(
+        isHighlighted = { isHighlighted[this]?.value ?: false },
+        title = stringResource(titleRes),
+        subtitleTemplate = descriptionTemplateRes?.let { stringResource(it) } ?: "%s",
+        subtitleArgument = stringResource(descriptionArgumentRes),
+        highlightedAngleDegree = highlightedAngleDegree
+    )
+})
 
 @Composable
 private fun Page.OnboardingPageIllustration() {

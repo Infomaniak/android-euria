@@ -45,7 +45,7 @@ open class MainApplication : Application() {
 
     init {
         injectAsAppCtx()
-        
+
         // New modules configuration
         NetworkConfiguration.init(
             appId = BuildConfig.APPLICATION_ID,
