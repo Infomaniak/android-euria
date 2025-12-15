@@ -54,7 +54,7 @@ class WebViewUtils(
             if (token != null) append("USER-TOKEN=${token}; ")
             append("USER-LANGUAGE=${currentLocale} path=/")
         }
-        cookieManager.setCookie(EURIA_MAIN_URL.toHttpUrl().host, cookieString)
+        cookieManager.setCookie("local.euria.preprod.dev.infomaniak.ch", cookieString)
     }
 
     fun applySafeAreaInsets(
