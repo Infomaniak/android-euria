@@ -165,6 +165,12 @@ class MainViewModel @Inject constructor(
         filesToShare.trySend(files)
     }
 
+    fun initCurrentUser() {
+        viewModelScope.launch {
+            AccountUtils.requestCurrentUser()
+        }
+    }
+
     sealed interface UserState {
         object Loading : UserState
         data class LoggedIn(val user: User) : UserState
