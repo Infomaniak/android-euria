@@ -1,0 +1,3 @@
+• Correction d’un crash lors de l’octroi ou du refus à nouveau de la permission du microphone dans certaines conditions
+• Mise à jour de l’icône F-Droid
+• Correction de problèmes pour les comptes sans kSuite

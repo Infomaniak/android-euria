@@ -1,0 +1,3 @@
+• Fixed a crash occurring when granting or denying microphone permission again under specific conditions
+• Updated the F-Droid icon
+• Fixed issues with accounts without kSuite
