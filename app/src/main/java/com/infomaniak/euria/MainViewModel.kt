@@ -170,7 +170,7 @@ class MainViewModel @Inject constructor(
 
     fun initCurrentUser() {
         viewModelScope.launch {
-            AccountUtils.requestCurrentUser()
+            if (AccountUtils.currentUser == null) AccountUtils.requestCurrentUser()
         }
     }
 
