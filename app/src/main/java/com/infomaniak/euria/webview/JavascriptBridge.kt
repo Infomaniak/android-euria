@@ -76,7 +76,7 @@ data class JavascriptBridge(
     @JavascriptInterface
     fun openCamera() {
         onOpenCamera()
-	}
+    }
 
     fun openReview() {
         onOpenReview()
