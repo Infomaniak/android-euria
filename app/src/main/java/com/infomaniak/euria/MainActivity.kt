@@ -97,7 +97,8 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
                 onReady = { mainViewModel.isWebAppReady.value = true },
                 onDismissApp = { finish() },
                 onCancelFileUpload = { localId -> uploadManager.cancelUpload(localId) },
-                onOpenReview = { mainViewModel.shouldShowInAppReview.value = true }
+                onOpenReview = { mainViewModel.shouldShowInAppReview.value = true },
+                onUpgrade = { startAccountUpgrade() },
             )
         )
     }
@@ -134,6 +135,7 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mainViewModel.initCurrentUser()
         initAppReviewManager()
         val splashScreen = installSplashScreen().apply { setKeepOnScreenCondition { true } }
 
@@ -267,6 +269,18 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
             createAccountUrl = CREATE_ACCOUNT_URL,
             successHost = CREATE_ACCOUNT_SUCCESS_HOST,
             cancelHost = CREATE_ACCOUNT_CANCEL_HOST,
+        )
+    }
+
+    private fun startAccountUpgrade() {
+        mainViewModel.infomaniakLogin.startCreateAccountWebView(
+            resultLauncher = createAccountResultLauncher,
+            createAccountUrl = UPGRADE_ACCOUNT_URL,
+            successHost = CREATE_ACCOUNT_SUCCESS_HOST,
+            cancelHost = CREATE_ACCOUNT_CANCEL_HOST,
+            headers = mapOf("Authorization" to "Bearer ${AccountUtils.currentUser?.apiToken?.accessToken}"),
+            removeCookies = false,
+            ignoreFirstCancelUrl = true,
         )
     }
 
