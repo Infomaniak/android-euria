@@ -23,6 +23,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.webkit.WebView
+import com.infomaniak.core.cancellable
 import com.infomaniak.core.network.utils.await
 import com.infomaniak.core.network.utils.bodyAsStringOrNull
 import com.infomaniak.euria.data.api.ApiRoutes
@@ -143,7 +144,7 @@ class UploadManager @Inject constructor(
         jsonParser: Json,
         webView: WebView?,
     ) {
-        try {
+        runCatching {
             val byteArrayOutputStream = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
 
@@ -162,13 +163,14 @@ class UploadManager @Inject constructor(
                 fileInfo = fileInfo,
                 webView = webView,
             )
-        } catch (e: CancellationException) {
-            throw e
-        } catch (_: SocketTimeoutException) {
-            sendFileUploadError(fileInfo, "", webView, jsonParser)
-        } catch (_: Exception) {
-            sendFileUploadError(fileInfo, "", webView, jsonParser)
         }
+            .cancellable()
+            .onFailure { exception ->
+                when (exception) {
+                    is CancellationException -> throw exception
+                    else -> sendFileUploadError(fileInfo, "", webView, jsonParser)
+                }
+            }
     }
 
     private suspend fun startFileUpload(
