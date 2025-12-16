@@ -29,6 +29,7 @@ data class JavascriptBridge(
     private val onDismissApp: () -> Unit,
     private val onCancelFileUpload: (String) -> Unit,
     private val onOpenReview: () -> Unit,
+    private val onUpgrade: () -> Unit,
 ) {
 
     @JavascriptInterface
@@ -74,6 +75,11 @@ data class JavascriptBridge(
     @JavascriptInterface
     fun openReview() {
         onOpenReview()
+    }
+
+    @JavascriptInterface
+    fun upgrade() {
+        onUpgrade()
     }
 
     companion object {

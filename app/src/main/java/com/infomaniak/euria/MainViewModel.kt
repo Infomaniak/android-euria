@@ -123,7 +123,10 @@ class MainViewModel @Inject constructor(
             ApiRepository.getUserProfile(OkHttpClientProvider.getOkHttpClientProvider(apiToken.accessToken)).data?.let {
                 it.apiToken = apiToken
                 it.organizations = arrayListOf()
-                AccountUtils.addUser(it)
+
+                // Upsert user here because in case of an account without a kSuite, the user is already logged in
+                // so the user will already exist in DB.
+                AccountUtils.upsertUser(it)
             } ?: run {
                 showError(context.getString(R.string.connectionError))
             }

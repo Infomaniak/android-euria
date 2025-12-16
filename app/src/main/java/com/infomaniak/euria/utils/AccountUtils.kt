@@ -60,11 +60,11 @@ object AccountUtils : CredentialManager() {
 
     fun getCurrentUserFlow(): Flow<User?> = userDatabase.userDao().getFirstFlow()
 
-    suspend fun addUser(user: User) {
+    suspend fun upsertUser(user: User) {
         currentUser = user
         val userId = user.id.toLong()
         MainApplication.userDataCleanableList.forEach { it.resetForUser(userId) }
-        userDatabase.userDao().insert(user)
+        userDatabase.userDao().upsert(user)
     }
 
     suspend fun removeUser(user: User) {
