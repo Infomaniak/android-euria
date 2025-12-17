@@ -284,12 +284,12 @@ class UploadManager @Inject constructor(
     }
 
     private fun getFileInfo(bitmap: Bitmap): FileInfo {
-        val date = SimpleDateFormat("yyyyMMdd-HHmmss").format(Date())
+        val dateFormatter = SimpleDateFormat("yyyyMMdd-HHmmss")
         return FileInfo(
             localId = UUID.randomUUID().toString(),
-            fileName = "$date.jpeg",
+            fileName = "${dateFormatter.format(Date())}.jpeg",
             fileSize = bitmap.byteCount.toLong(),
-            type = PHOTO_CAMERA_TYPE,
+            type = "image/jpeg",
         )
     }
 
@@ -325,8 +325,4 @@ class UploadManager @Inject constructor(
     }
 
     private class UploadTask(val fileInfo: FileInfo, val data: ByteArray)
-
-    companion object {
-        private const val PHOTO_CAMERA_TYPE = "image/jpeg"
-    }
 }
