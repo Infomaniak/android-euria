@@ -61,6 +61,7 @@ fun EuriaMainScreen(
     token: String?,
     keepSplashScreen: (Boolean) -> Unit,
     finishApp: () -> Unit,
+    startCamera: () -> Unit,
 ) {
     webViewUtils.setTokenToCookie(token)
 
@@ -88,6 +89,9 @@ fun EuriaMainScreen(
             if (isWebAppReady) {
                 launch {
                     mainViewModel.filesToShare.receiveAsFlow().collectLatest { filesUris ->
+                        // We don't want to add the files to the currently opened conversation.
+                        // So we go back to the main screen.
+                        currentWebview?.evaluateJavascript("goTo(\"/\")", null)
                         if (filesUris.isNotEmpty()) uploadManager.uploadFiles(currentWebview, filesUris)
                     }
                 }
@@ -95,6 +99,9 @@ fun EuriaMainScreen(
                     mainViewModel.webViewQueries.receiveAsFlow().collect { query ->
                         currentWebview?.evaluateJavascript("goTo(\"$query\")", null)
                     }
+                }
+                launch {
+                    mainViewModel.cameraLaunchEvents.receiveAsFlow().collect { startCamera() }
                 }
             }
         }
@@ -139,15 +146,15 @@ private fun ReviewDialog(
             ReviewAlertDialog(
                 onUserWantsToReview = {
                     onUserWantsToReview()
-                    mainViewModel.shouldShowInAppReview.value = false
+                    mainViewModel.shouldShowInAppReview(false)
                 },
                 onUserWantsToGiveFeedback = {
                     // Nothing to do here because we don't have a feedback URL yet
-                    mainViewModel.shouldShowInAppReview.value = false
+                    mainViewModel.shouldShowInAppReview(false)
                 },
                 onDismiss = {
                     onUserWantsToDismiss()
-                    mainViewModel.shouldShowInAppReview.value = false
+                    mainViewModel.shouldShowInAppReview(false)
                 }
             )
         }

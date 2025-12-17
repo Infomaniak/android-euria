@@ -52,6 +52,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -73,8 +74,11 @@ class MainViewModel @Inject constructor(
     val isNetworkAvailable = NetworkAvailability(context).isNetworkAvailable.distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.Lazily, true)
 
-    val isWebAppReady = MutableStateFlow(false)
+    private val _isWebAppReady: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isWebAppReady: StateFlow<Boolean> = _isWebAppReady.asStateFlow()
+
     val webViewQueries = Channel<String>(capacity = Channel.CONFLATED)
+    val cameraLaunchEvents = Channel<Unit>(capacity = Channel.CONFLATED)
     val userState: StateFlow<UserState> = AccountUtils.getCurrentUserFlow().map {
         if (it == null) {
             UserState.NotLoggedIn
@@ -83,7 +87,9 @@ class MainViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.Lazily, UserState.Loading)
     val filesToShare: Channel<List<Uri>> = Channel(Channel.CONFLATED)
-    val shouldShowInAppReview = MutableStateFlow(false)
+
+    private val _shouldShowInAppReview: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val shouldShowInAppReview: StateFlow<Boolean> = _shouldShowInAppReview.asStateFlow()
 
     var skipOnboarding by mutableStateOf(localSettings.skipOnboarding)
     var launchMediaChooser by mutableStateOf(false)
@@ -170,8 +176,16 @@ class MainViewModel @Inject constructor(
 
     fun initCurrentUser() {
         viewModelScope.launch {
-            if (AccountUtils.currentUser == null) AccountUtils.requestCurrentUser()
+            if (AccountUtils.currentUser == null) requestCurrentUser()
         }
+    }
+
+    fun isWebAppReady(state: Boolean) {
+        _isWebAppReady.tryEmit(state)
+    }
+
+    fun shouldShowInAppReview(state: Boolean) {
+        _shouldShowInAppReview.tryEmit(state)
     }
 
     sealed interface UserState {
