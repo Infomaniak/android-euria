@@ -37,19 +37,16 @@ import com.infomaniak.euria.utils.OkHttpClientProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -72,27 +69,24 @@ class UploadManager @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
 ) {
-    private val uploadJobs = mutableMapOf<String, Deferred<Unit>>()
+    private val uploadJobs = mutableMapOf<String, Job>()
     private val jsonParser = Json { ignoreUnknownKeys = true }
-
-    @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
-    private val limitedDispatcher = newSingleThreadContext("Upload files").limitedParallelism(2)
 
     suspend fun uploadBitmap(webView: WebView?, bitmap: Bitmap) = coroutineScope {
         withValidOrganizationId(webView) { organizationId ->
             val tasks = createUploadTasks(bitmap)
-            startUploads(webView, tasks, organizationId)
+            uploadAttachments(webView, tasks, organizationId)
         }
     }
 
     suspend fun uploadFiles(webView: WebView?, uris: List<Uri>) = coroutineScope {
         withValidOrganizationId(webView) { organizationId ->
             val tasks = createUploadTasks(uris)
-            startUploads(webView, tasks, organizationId)
+            uploadAttachments(webView, tasks, organizationId)
         }
     }
 
-    private suspend fun CoroutineScope.startUploads(
+    private suspend fun uploadAttachments(
         webView: WebView?,
         tasks: List<UploadTask>,
         organizationId: String
@@ -107,20 +101,25 @@ class UploadManager @Inject constructor(
         val validTasks = tasks.filter { it.fileInfo.localId in validFileIds }
 
         val okHttpClient = getHttpClient(currentUser.apiToken.accessToken)
-        validTasks.forEach { task ->
-            uploadJobs[task.fileInfo.localId] = async(ioDispatcher, start = CoroutineStart.LAZY) {
-                startFileUpload(
-                    byteArray = task.data,
-                    okHttpClient = okHttpClient,
-                    fileInfo = task.fileInfo,
-                    organizationId = organizationId,
-                    jsonParser = jsonParser,
-                    webView = webView
-                )
+
+        supervisorScope {
+            val semaphore = Semaphore(2)
+            validTasks.forEach { task ->
+                uploadJobs[task.fileInfo.localId] = launch {
+                    semaphore.withPermit {
+                        startFileUpload(
+                            byteArray = task.data,
+                            okHttpClient = okHttpClient,
+                            fileInfo = task.fileInfo,
+                            organizationId = organizationId,
+                            jsonParser = jsonParser,
+                            webView = webView,
+                        )
+                    }
+                }
             }
         }
-
-        startUploadFiles()
+        uploadJobs.clear()
     }
 
     fun cancelUpload(localId: String) {
@@ -160,24 +159,6 @@ class UploadManager @Inject constructor(
         }
     }
 
-    @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
-    private suspend fun startUploadFiles() {
-        supervisorScope {
-            withContext(limitedDispatcher) {
-                uploadJobs.values.forEach { deferred ->
-                    launch {
-                        try {
-                            deferred.await()
-                        } catch (e: CancellationException) {
-                            throw e
-                        }
-                    }
-                }
-            }
-        }
-
-        uploadJobs.clear()
-    }
 
     private suspend fun sendUploadResultToWebView(
         result: Response,
