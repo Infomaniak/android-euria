@@ -108,13 +108,14 @@ class UploadManager @Inject constructor(
                 uploadJobs[task.fileInfo.localId] = launch {
                     semaphore.withPermit {
                         uploadAttachment(
-                            byteArray = task.data,
+                            task = task,
                             okHttpClient = okHttpClient,
                             fileInfo = task.fileInfo,
                             organizationId = organizationId,
                             jsonParser = jsonParser,
                             webView = webView,
                         )
+
                     }
                 }
             }
@@ -122,12 +123,26 @@ class UploadManager @Inject constructor(
         uploadJobs.clear()
     }
 
+    private fun getByteArrayFrom(task: UploadTask): ByteArray? = when (task.data) {
+        is UploadTask.Data.Image -> {
+            ByteArrayOutputStream().use { stream ->
+                task.data.bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                stream.toByteArray()
+            }
+        }
+        is UploadTask.Data.Reference -> {
+            context.contentResolver.openInputStream(task.data.uri)?.use { inputStream ->
+                inputStream.readBytes()
+            }
+        }
+    }
+
     fun cancelUpload(localId: String) {
         uploadJobs[localId]?.cancel()
     }
 
     private suspend fun uploadAttachment(
-        byteArray: ByteArray,
+        task: UploadTask,
         okHttpClient: OkHttpClient,
         fileInfo: FileInfo,
         organizationId: String,
@@ -137,7 +152,7 @@ class UploadManager @Inject constructor(
         runCatching {
             val uploadFileResponse = uploadFile(
                 info = fileInfo,
-                byteArray = byteArray,
+                byteArray = getByteArrayFrom(task)!!,
                 organizationId = organizationId,
                 okHttpClient = okHttpClient,
             )
@@ -308,21 +323,18 @@ class UploadManager @Inject constructor(
     }
 
     private suspend fun createUploadTasks(uris: List<Uri>): List<UploadTask> = withContext(ioDispatcher) {
-        uris.mapNotNull { uri ->
-            context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                val byteArray = inputStream.readBytes()
-                UploadTask(getFileInfo(uri), byteArray)
-            }
-        }
+        uris.map { uri -> UploadTask(getFileInfo(uri), UploadTask.Data.Reference(uri)) }
     }
 
     private suspend fun createUploadTasks(bitmap: Bitmap): List<UploadTask> = withContext(ioDispatcher) {
-        val byteArray = ByteArrayOutputStream().use { stream ->
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-            stream.toByteArray()
-        }
-        listOf(UploadTask(getFileInfo(bitmap), byteArray))
+        listOf(UploadTask(getFileInfo(bitmap), UploadTask.Data.Image(bitmap)))
     }
 
-    private class UploadTask(val fileInfo: FileInfo, val data: ByteArray)
+    private class UploadTask(val fileInfo: FileInfo, val data: Data) {
+
+        sealed interface Data {
+            class Reference(val uri: Uri) : Data
+            class Image(val bitmap: Bitmap) : Data
+        }
+    }
 }
