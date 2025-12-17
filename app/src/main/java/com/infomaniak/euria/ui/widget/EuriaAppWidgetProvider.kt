@@ -28,6 +28,7 @@ import com.infomaniak.euria.MainActivity
 import com.infomaniak.euria.MainActivity.Companion.EXTRA_ACTION
 import com.infomaniak.euria.MainActivity.Companion.EXTRA_QUERY
 import com.infomaniak.euria.MainActivity.PendingIntentRequestCodes
+import com.infomaniak.euria.MatomoEuria
 import com.infomaniak.euria.R
 
 class EuriaAppWidgetProvider : AppWidgetProvider() {
@@ -71,12 +72,24 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
     }
 
     private fun getPendingIntent(context: Context, intent: Intent, requestCode: Int): PendingIntent {
+        getMatomoNameFromRequestCode(requestCode)?.let { MatomoEuria.trackWidgetEvent(it) }
+
         return PendingIntent.getActivity(
             context,
             requestCode,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+    }
+
+    private fun getMatomoNameFromRequestCode(requestCode: Int): MatomoEuria.MatomoName? {
+        return when (requestCode) {
+            PendingIntentRequestCodes.CHAT -> MatomoEuria.MatomoName.NewChat
+            PendingIntentRequestCodes.EPHEMERAL -> MatomoEuria.MatomoName.EphemeralMode
+            PendingIntentRequestCodes.SPEECH -> MatomoEuria.MatomoName.EnableMicrophone
+            PendingIntentRequestCodes.CAMERA -> MatomoEuria.MatomoName.OpenCamera
+            else -> null
+        }
     }
 
     companion object {
