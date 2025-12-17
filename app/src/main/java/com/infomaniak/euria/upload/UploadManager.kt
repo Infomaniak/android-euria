@@ -23,6 +23,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.webkit.WebView
+import com.infomaniak.core.cancellable
 import com.infomaniak.core.network.utils.await
 import com.infomaniak.core.network.utils.bodyAsStringOrNull
 import com.infomaniak.euria.data.api.ApiRoutes
@@ -35,7 +36,6 @@ import com.infomaniak.euria.di.MainDispatcher
 import com.infomaniak.euria.utils.AccountUtils.requestCurrentUser
 import com.infomaniak.euria.utils.OkHttpClientProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -43,7 +43,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -102,7 +101,7 @@ class UploadManager @Inject constructor(
 
         val okHttpClient = getHttpClient(currentUser.apiToken.accessToken)
 
-        supervisorScope {
+        coroutineScope {
             val semaphore = Semaphore(2)
             validTasks.forEach { task ->
                 uploadJobs[task.fileInfo.localId] = launch {
@@ -134,7 +133,7 @@ class UploadManager @Inject constructor(
         jsonParser: Json,
         webView: WebView?,
     ) {
-        try {
+        runCatching {
             val uploadFileResponse = uploadFile(
                 info = fileInfo,
                 byteArray = byteArray,
@@ -150,12 +149,12 @@ class UploadManager @Inject constructor(
                 fileInfo = fileInfo,
                 webView = webView,
             )
-        } catch (e: CancellationException) {
-            throw e
-        } catch (_: SocketTimeoutException) {
-            sendFileUploadError(fileInfo, "", webView, jsonParser)
-        } catch (_: Exception) {
-            sendFileUploadError(fileInfo, "", webView, jsonParser)
+        }.cancellable().onFailure { exception ->
+            when (exception) {
+                is SocketTimeoutException, is Exception -> {
+                    sendFileUploadError(fileInfo, "", webView, jsonParser)
+                }
+            }
         }
     }
 
