@@ -127,18 +127,6 @@ class UploadManager @Inject constructor(
         uploadJobs[localId]?.cancel()
     }
 
-    private fun getFileByteArray(uri: Uri?, bitmap: Bitmap?): ByteArray? {
-        return if (uri != null) {
-            context.contentResolver.openInputStream(uri)?.buffered()?.readBytes()
-        } else if (bitmap != null) {
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-            byteArrayOutputStream.toByteArray()
-        } else {
-            null
-        }
-    }
-
     private suspend fun startFileUpload(
         byteArray: ByteArray,
         okHttpClient: OkHttpClient,
