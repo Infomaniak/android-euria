@@ -73,7 +73,9 @@ class MainViewModel @Inject constructor(
     val isNetworkAvailable = NetworkAvailability(context).isNetworkAvailable.distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.Lazily, true)
 
-    val isWebAppReady = MutableStateFlow(false)
+    private val _isWebAppReady = MutableStateFlow(false)
+    val isWebAppReady = _isWebAppReady.stateIn(viewModelScope, SharingStarted.Lazily, false)
+
     val webViewQueries = Channel<String>(capacity = Channel.CONFLATED)
     val shouldStartCamera = Channel<Unit>(capacity = Channel.CONFLATED)
     val userState: StateFlow<UserState> = AccountUtils.getCurrentUserFlow().map {
@@ -84,7 +86,9 @@ class MainViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.Lazily, UserState.Loading)
     val filesToShare: Channel<List<Uri>> = Channel(Channel.CONFLATED)
-    val shouldShowInAppReview = MutableStateFlow(false)
+
+    private val _shouldShowInAppReview = MutableStateFlow(false)
+    val shouldShowInAppReview = _shouldShowInAppReview.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     var skipOnboarding by mutableStateOf(localSettings.skipOnboarding)
     var launchMediaChooser by mutableStateOf(false)
@@ -173,6 +177,14 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             if (AccountUtils.currentUser == null) AccountUtils.requestCurrentUser()
         }
+    }
+
+    fun isWebAppReady(state: Boolean) {
+        _isWebAppReady.tryEmit(state)
+    }
+
+    fun shouldShowInAppReview(state: Boolean) {
+        _shouldShowInAppReview.tryEmit(state)
     }
 
     sealed interface UserState {

@@ -101,9 +101,7 @@ fun EuriaMainScreen(
                     }
                 }
                 launch {
-                    mainViewModel.shouldStartCamera.collect { shouldStartCamera ->
-                        if (shouldStartCamera) startCamera()
-                    }
+                    mainViewModel.shouldStartCamera.receiveAsFlow().collect { startCamera() }
                 }
             }
         }
@@ -148,15 +146,15 @@ private fun ReviewDialog(
             ReviewAlertDialog(
                 onUserWantsToReview = {
                     onUserWantsToReview()
-                    mainViewModel.shouldShowInAppReview.value = false
+                    mainViewModel.shouldShowInAppReview(false)
                 },
                 onUserWantsToGiveFeedback = {
                     // Nothing to do here because we don't have a feedback URL yet
-                    mainViewModel.shouldShowInAppReview.value = false
+                    mainViewModel.shouldShowInAppReview(false)
                 },
                 onDismiss = {
                     onUserWantsToDismiss()
-                    mainViewModel.shouldShowInAppReview.value = false
+                    mainViewModel.shouldShowInAppReview(false)
                 }
             )
         }

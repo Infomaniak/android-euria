@@ -101,11 +101,11 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
                         }
                     }
                 },
-                onReady = { mainViewModel.isWebAppReady.value = true },
+                onReady = { mainViewModel.isWebAppReady(true) },
                 onDismissApp = { finish() },
                 onCancelFileUpload = { localId -> uploadManager.cancelUpload(localId) },
                 onOpenCamera = { takePicturePreviewLauncher.launch(null) },
-                onOpenReview = { mainViewModel.shouldShowInAppReview.value = true },
+                onOpenReview = { mainViewModel.shouldShowInAppReview(true) },
                 onUpgrade = { startAccountUpgrade() },
             )
         )
