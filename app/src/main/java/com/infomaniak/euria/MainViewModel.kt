@@ -52,6 +52,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -73,8 +74,8 @@ class MainViewModel @Inject constructor(
     val isNetworkAvailable = NetworkAvailability(context).isNetworkAvailable.distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.Lazily, true)
 
-    private val _isWebAppReady = MutableStateFlow(false)
-    val isWebAppReady = _isWebAppReady.stateIn(viewModelScope, SharingStarted.Lazily, false)
+    private val _isWebAppReady: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isWebAppReady: StateFlow<Boolean> = _isWebAppReady.asStateFlow()
 
     val webViewQueries = Channel<String>(capacity = Channel.CONFLATED)
     val cameraLaunchEvents = Channel<Unit>(capacity = Channel.CONFLATED)
@@ -87,8 +88,8 @@ class MainViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.Lazily, UserState.Loading)
     val filesToShare: Channel<List<Uri>> = Channel(Channel.CONFLATED)
 
-    private val _shouldShowInAppReview = MutableStateFlow(false)
-    val shouldShowInAppReview = _shouldShowInAppReview.stateIn(viewModelScope, SharingStarted.Lazily, false)
+    private val _shouldShowInAppReview: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val shouldShowInAppReview: StateFlow<Boolean> = _shouldShowInAppReview.asStateFlow()
 
     var skipOnboarding by mutableStateOf(localSettings.skipOnboarding)
     var launchMediaChooser by mutableStateOf(false)
@@ -175,7 +176,7 @@ class MainViewModel @Inject constructor(
 
     fun initCurrentUser() {
         viewModelScope.launch {
-            if (AccountUtils.currentUser == null) AccountUtils.requestCurrentUser()
+            if (AccountUtils.currentUser == null) requestCurrentUser()
         }
     }
 

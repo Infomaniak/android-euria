@@ -38,7 +38,6 @@ import com.infomaniak.euria.utils.OkHttpClientProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -70,14 +69,14 @@ class UploadManager @Inject constructor(
     private val uploadJobs = mutableMapOf<String, Job>()
     private val jsonParser = Json { ignoreUnknownKeys = true }
 
-    suspend fun uploadBitmap(webView: WebView?, bitmap: Bitmap) = coroutineScope {
+    suspend fun uploadBitmap(webView: WebView?, bitmap: Bitmap) {
         withValidOrganizationId(webView) { organizationId ->
             val tasks = createUploadTasks(bitmap)
             uploadAttachments(webView, tasks, organizationId)
         }
     }
 
-    suspend fun uploadFiles(webView: WebView?, uris: List<Uri>) = coroutineScope {
+    suspend fun uploadFiles(webView: WebView?, uris: List<Uri>) {
         withValidOrganizationId(webView) { organizationId ->
             val tasks = createUploadTasks(uris)
             uploadAttachments(webView, tasks, organizationId)
@@ -92,15 +91,18 @@ class UploadManager @Inject constructor(
         val currentUser = requestCurrentUser() ?: return
 
         val allFilesInfo = tasks.map { it.fileInfo }
-        val validFilesInfo = prepareFilesForUpload(webView, allFilesInfo)
-        if (validFilesInfo.isEmpty()) return
+        val acceptedFilesInfo = prepareFilesForUpload(webView, allFilesInfo)
+        if (acceptedFilesInfo.isEmpty()) return
 
-        val validFileIds = validFilesInfo.map { it.localId }.toSet()
-        val validTasks = tasks.filter { it.fileInfo.localId in validFileIds }
+        val acceptedFileIds = acceptedFilesInfo.map { it.localId }.toSet()
+        val validTasks = tasks.filter { it.fileInfo.localId in acceptedFileIds }
 
         val okHttpClient = getHttpClient(currentUser.apiToken.accessToken)
 
         coroutineScope {
+            // We want to limit parallel uploads in case big files are selected for two reasons:
+            // 1. Because we load the entire file in memory (for now, for simpler JS interop)
+            // 2. We favor quicker WebPage files preview over uploads speed
             val semaphore = Semaphore(2)
             validTasks.forEach { task ->
                 uploadJobs[task.fileInfo.localId] = launch {
@@ -240,7 +242,7 @@ class UploadManager @Inject constructor(
         var filteredFilesInfo = filesInfo
         withContext(mainDispatcher) {
             val validFilesUUIDString =
-                async { webView?.executeJSFunction("prepareFilesForUpload(${Json.encodeToString(filteredFilesInfo)})") }.await()
+                webView?.executeJSFunction("prepareFilesForUpload(${Json.encodeToString(filteredFilesInfo)})")
             val validFilesUUID = Json.decodeFromString<List<String>>(validFilesUUIDString ?: "")
             filteredFilesInfo = filteredFilesInfo.filter { it.localId in validFilesUUID }
         }
@@ -296,7 +298,7 @@ class UploadManager @Inject constructor(
         validOrganizationCallback: suspend (String) -> Unit,
     ) {
         val organizationId = withContext(mainDispatcher) {
-            async { webView?.executeJSFunction("getCurrentOrganizationId()") }.await()
+            webView?.executeJSFunction("getCurrentOrganizationId()")
         }
         // 0 or null means we're not connected so we don't want to proceed with the files
         // TODO Remove organizationId == "null" when the webPage handles this case properly
@@ -322,7 +324,7 @@ class UploadManager @Inject constructor(
         listOf(UploadTask(getFileInfo(bitmap), byteArray))
     }
 
-    private data class UploadTask(val fileInfo: FileInfo, val data: ByteArray)
+    private class UploadTask(val fileInfo: FileInfo, val data: ByteArray)
 
     companion object {
         private const val PHOTO_CAMERA_TYPE = "image/jpeg"
