@@ -23,7 +23,6 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.webkit.WebView
-import com.infomaniak.core.cancellable
 import com.infomaniak.core.network.utils.await
 import com.infomaniak.core.network.utils.bodyAsStringOrNull
 import com.infomaniak.euria.data.api.ApiRoutes
@@ -31,14 +30,17 @@ import com.infomaniak.euria.data.models.js.FileInfo
 import com.infomaniak.euria.data.models.js.FileUploadErrorJsResponse
 import com.infomaniak.euria.data.models.js.FileUploadSucceedJsResponse
 import com.infomaniak.euria.data.models.remote.FileUploadResult
+import com.infomaniak.euria.di.IoDispatcher
+import com.infomaniak.euria.di.MainDispatcher
 import com.infomaniak.euria.utils.AccountUtils.requestCurrentUser
 import com.infomaniak.euria.utils.OkHttpClientProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -67,6 +69,8 @@ import kotlin.coroutines.resume
 @Singleton
 class UploadManager @Inject constructor(
     @ApplicationContext private val context: Context,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
 ) {
     private val uploadJobs = mutableMapOf<String, Deferred<Unit>>()
     private val jsonParser = Json { ignoreUnknownKeys = true }
@@ -76,81 +80,77 @@ class UploadManager @Inject constructor(
 
     suspend fun uploadBitmap(webView: WebView?, bitmap: Bitmap) = coroutineScope {
         withValidOrganizationId(webView) { organizationId ->
-            val currentUser = requestCurrentUser() ?: return@withValidOrganizationId
-            val okHttpClient = getHttpClient(currentUser.apiToken.accessToken)
-            val fileInfo = withContext(Dispatchers.IO) { getFileInfo(bitmap) }
-
-            prepareFilesForUpload(webView, listOf(fileInfo))
-
-            uploadJobs[fileInfo.localId] = async(Dispatchers.IO, start = CoroutineStart.LAZY) {
-                startBitmapUpload(
-                    bitmap = bitmap,
-                    okHttpClient = okHttpClient,
-                    fileInfo = fileInfo,
-                    organizationId = organizationId,
-                    jsonParser = jsonParser,
-                    webView = webView
-                )
-            }
-
-            startUploadFiles()
+            val tasks = createUploadTasks(bitmap)
+            startUploads(webView, tasks, organizationId)
         }
     }
 
     suspend fun uploadFiles(webView: WebView?, uris: List<Uri>) = coroutineScope {
         withValidOrganizationId(webView) { organizationId ->
-            val currentUser = requestCurrentUser() ?: return@withValidOrganizationId
-            // First loop to get all files information to send it to the WebView
-            var filesInfo = getFilesInfo(uris)
-
-            // Send the `prepareFilesForUpload` with all files in order to display the right number of elements in the WebView
-            // but also to let the WebView display errors if one file is not valid. This JS method will also return
-            // an array of UUIDs representing the files that are valid.
-            filesInfo = prepareFilesForUpload(webView, filesInfo)
-
-            // If no files are valid, we can leave safely
-            if (filesInfo.isEmpty()) return@withValidOrganizationId
-
-            val okHttpClient = getHttpClient(currentUser.apiToken.accessToken)
-
-            filesInfo.forEach { fileInfo ->
-                if (fileInfo.uri == null) return@forEach
-
-                // Creating deferred to upload files to make it easier to cancel an upload
-                uploadJobs[fileInfo.localId] = async(Dispatchers.IO, start = CoroutineStart.LAZY) {
-                    startFileUpload(
-                        uri = fileInfo.uri,
-                        okHttpClient = okHttpClient,
-                        fileInfo = fileInfo,
-                        organizationId = organizationId,
-                        jsonParser = jsonParser,
-                        webView = webView
-                    )
-                }
-            }
-            startUploadFiles()
+            val tasks = createUploadTasks(uris)
+            startUploads(webView, tasks, organizationId)
         }
+    }
+
+    private suspend fun CoroutineScope.startUploads(
+        webView: WebView?,
+        tasks: List<UploadTask>,
+        organizationId: String
+    ) {
+        val currentUser = requestCurrentUser() ?: return
+
+        val allFilesInfo = tasks.map { it.fileInfo }
+        val validFilesInfo = prepareFilesForUpload(webView, allFilesInfo)
+        if (validFilesInfo.isEmpty()) return
+
+        val validFileIds = validFilesInfo.map { it.localId }.toSet()
+        val validTasks = tasks.filter { it.fileInfo.localId in validFileIds }
+
+        val okHttpClient = getHttpClient(currentUser.apiToken.accessToken)
+        validTasks.forEach { task ->
+            uploadJobs[task.fileInfo.localId] = async(ioDispatcher, start = CoroutineStart.LAZY) {
+                startFileUpload(
+                    byteArray = task.data,
+                    okHttpClient = okHttpClient,
+                    fileInfo = task.fileInfo,
+                    organizationId = organizationId,
+                    jsonParser = jsonParser,
+                    webView = webView
+                )
+            }
+        }
+
+        startUploadFiles()
     }
 
     fun cancelUpload(localId: String) {
         uploadJobs[localId]?.cancel()
     }
 
-    private suspend fun startBitmapUpload(
-        bitmap: Bitmap,
+    private fun getFileByteArray(uri: Uri?, bitmap: Bitmap?): ByteArray? {
+        return if (uri != null) {
+            context.contentResolver.openInputStream(uri)?.buffered()?.readBytes()
+        } else if (bitmap != null) {
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+            byteArrayOutputStream.toByteArray()
+        } else {
+            null
+        }
+    }
+
+    private suspend fun startFileUpload(
+        byteArray: ByteArray,
         okHttpClient: OkHttpClient,
         fileInfo: FileInfo,
         organizationId: String,
         jsonParser: Json,
         webView: WebView?,
     ) {
-        runCatching {
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-
+        try {
             val uploadFileResponse = uploadFile(
                 info = fileInfo,
-                byteArray = byteArrayOutputStream.toByteArray(),
+                byteArray = byteArray,
                 organizationId = organizationId,
                 okHttpClient = okHttpClient,
             )
@@ -163,42 +163,6 @@ class UploadManager @Inject constructor(
                 fileInfo = fileInfo,
                 webView = webView,
             )
-        }
-            .cancellable()
-            .onFailure { exception ->
-                when (exception) {
-                    is CancellationException -> throw exception
-                    else -> sendFileUploadError(fileInfo, "", webView, jsonParser)
-                }
-            }
-    }
-
-    private suspend fun startFileUpload(
-        uri: Uri,
-        okHttpClient: OkHttpClient,
-        fileInfo: FileInfo,
-        organizationId: String,
-        jsonParser: Json,
-        webView: WebView?,
-    ) {
-        try {
-            context.contentResolver.openInputStream(uri)?.buffered()?.use { fileInputStream ->
-                val uploadFileResponse = uploadFile(
-                    info = fileInfo,
-                    byteArray = fileInputStream.readBytes(),
-                    organizationId = organizationId,
-                    okHttpClient = okHttpClient,
-                )
-
-                currentCoroutineContext().ensureActive()
-
-                sendUploadResultToWebView(
-                    result = uploadFileResponse,
-                    jsonParser = jsonParser,
-                    fileInfo = fileInfo,
-                    webView = webView,
-                )
-            } ?: Unit
         } catch (e: CancellationException) {
             throw e
         } catch (_: SocketTimeoutException) {
@@ -254,7 +218,7 @@ class UploadManager @Inject constructor(
             fileName = fileUploadResult.fileUploadDetailResult.fileName,
             type = fileUploadResult.fileUploadDetailResult.type,
         )
-        withContext(Dispatchers.Main) {
+        withContext(mainDispatcher) {
             webView?.executeJSFunction(
                 "fileUploadDone(${jsonParser.encodeToString(fileUploadJsResponse)})"
             )
@@ -269,7 +233,7 @@ class UploadManager @Inject constructor(
     ) {
         val fileUploadErrorJsResponse =
             FileUploadErrorJsResponse(fileInfo.localId, bodyResult ?: "")
-        withContext(Dispatchers.Main) {
+        withContext(mainDispatcher) {
             webView?.executeJSFunction(
                 "fileUploadError(${jsonParser.encodeToString(fileUploadErrorJsResponse)})"
             )
@@ -313,7 +277,7 @@ class UploadManager @Inject constructor(
 
     private suspend fun prepareFilesForUpload(webView: WebView?, filesInfo: List<FileInfo>): List<FileInfo> {
         var filteredFilesInfo = filesInfo
-        withContext(Dispatchers.Main) {
+        withContext(mainDispatcher) {
             val validFilesUUIDString =
                 async { webView?.executeJSFunction("prepareFilesForUpload(${Json.encodeToString(filteredFilesInfo)})") }.await()
             val validFilesUUID = Json.decodeFromString<List<String>>(validFilesUUIDString ?: "")
@@ -321,8 +285,6 @@ class UploadManager @Inject constructor(
         }
         return filteredFilesInfo
     }
-
-    private suspend fun getFilesInfo(uris: List<Uri>) = withContext(Dispatchers.IO) { uris.map { getFileInfo(it) } }
 
     private suspend fun WebView.executeJSFunction(functionName: String) = suspendCancellableCoroutine { continuation ->
         if (continuation.isCancelled) return@suspendCancellableCoroutine
@@ -371,7 +333,7 @@ class UploadManager @Inject constructor(
         webView: WebView?,
         validOrganizationCallback: suspend (String) -> Unit,
     ) {
-        val organizationId = withContext(Dispatchers.Main) {
+        val organizationId = withContext(mainDispatcher) {
             async { webView?.executeJSFunction("getCurrentOrganizationId()") }.await()
         }
         // 0 or null means we're not connected so we don't want to proceed with the files
@@ -380,6 +342,25 @@ class UploadManager @Inject constructor(
 
         validOrganizationCallback(organizationId)
     }
+
+    private suspend fun createUploadTasks(uris: List<Uri>): List<UploadTask> = withContext(ioDispatcher) {
+        uris.mapNotNull { uri ->
+            context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                val byteArray = inputStream.readBytes()
+                UploadTask(getFileInfo(uri), byteArray)
+            }
+        }
+    }
+
+    private suspend fun createUploadTasks(bitmap: Bitmap): List<UploadTask> = withContext(ioDispatcher) {
+        val byteArray = ByteArrayOutputStream().use { stream ->
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+            stream.toByteArray()
+        }
+        listOf(UploadTask(getFileInfo(bitmap), byteArray))
+    }
+
+    private data class UploadTask(val fileInfo: FileInfo, val data: ByteArray)
 
     companion object {
         private const val PHOTO_NAME_CAMERA = "camera_photo.jpeg"
