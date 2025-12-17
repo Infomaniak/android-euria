@@ -238,10 +238,6 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
         mainViewModel.setFilesToShare(items)
     }
 
-    private fun startCamera() {
-        takePicturePreviewLauncher.launch(null)
-    }
-
     private suspend fun runLogin(): Nothing = coroutineScope {
         launch {
             mainViewModel.handleLogin(
