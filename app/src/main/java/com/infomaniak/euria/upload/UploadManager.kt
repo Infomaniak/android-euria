@@ -40,8 +40,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Semaphore
@@ -55,7 +53,8 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.ByteArrayOutputStream
-import java.net.SocketTimeoutException
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -106,7 +105,7 @@ class UploadManager @Inject constructor(
             validTasks.forEach { task ->
                 uploadJobs[task.fileInfo.localId] = launch {
                     semaphore.withPermit {
-                        startFileUpload(
+                        uploadAttachment(
                             byteArray = task.data,
                             okHttpClient = okHttpClient,
                             fileInfo = task.fileInfo,
@@ -125,7 +124,7 @@ class UploadManager @Inject constructor(
         uploadJobs[localId]?.cancel()
     }
 
-    private suspend fun startFileUpload(
+    private suspend fun uploadAttachment(
         byteArray: ByteArray,
         okHttpClient: OkHttpClient,
         fileInfo: FileInfo,
@@ -141,20 +140,14 @@ class UploadManager @Inject constructor(
                 okHttpClient = okHttpClient,
             )
 
-            currentCoroutineContext().ensureActive()
-
             sendUploadResultToWebView(
                 result = uploadFileResponse,
                 jsonParser = jsonParser,
                 fileInfo = fileInfo,
                 webView = webView,
             )
-        }.cancellable().onFailure { exception ->
-            when (exception) {
-                is SocketTimeoutException, is Exception -> {
-                    sendFileUploadError(fileInfo, "", webView, jsonParser)
-                }
-            }
+        }.cancellable().onFailure {
+            sendFileUploadError(fileInfo, "", webView, jsonParser)
         }
     }
 
@@ -289,9 +282,10 @@ class UploadManager @Inject constructor(
     }
 
     private fun getFileInfo(bitmap: Bitmap): FileInfo {
+        val date = SimpleDateFormat("yyyyMMdd-HHmmss").format(Date())
         return FileInfo(
             localId = UUID.randomUUID().toString(),
-            fileName = PHOTO_NAME_CAMERA,
+            fileName = "$date.jpeg",
             fileSize = bitmap.byteCount.toLong(),
             type = PHOTO_CAMERA_TYPE,
         )
@@ -305,7 +299,7 @@ class UploadManager @Inject constructor(
             async { webView?.executeJSFunction("getCurrentOrganizationId()") }.await()
         }
         // 0 or null means we're not connected so we don't want to proceed with the files
-        // TODO Remove organizationId == "null" when the webPage handle this case properly
+        // TODO Remove organizationId == "null" when the webPage handles this case properly
         if (organizationId == null || organizationId == "null" || organizationId == "0") return
 
         validOrganizationCallback(organizationId)
@@ -331,7 +325,6 @@ class UploadManager @Inject constructor(
     private data class UploadTask(val fileInfo: FileInfo, val data: ByteArray)
 
     companion object {
-        private const val PHOTO_NAME_CAMERA = "camera_photo.jpeg"
         private const val PHOTO_CAMERA_TYPE = "image/jpeg"
     }
 }
