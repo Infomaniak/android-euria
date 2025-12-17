@@ -89,6 +89,9 @@ fun EuriaMainScreen(
             if (isWebAppReady) {
                 launch {
                     mainViewModel.filesToShare.receiveAsFlow().collectLatest { filesUris ->
+                        // We don't want to add the files to the currently opened conversation.
+                        // So we go back to the main screen.
+                        currentWebview?.evaluateJavascript("goTo(\"/\")", null)
                         if (filesUris.isNotEmpty()) uploadManager.uploadFiles(currentWebview, filesUris)
                     }
                 }
