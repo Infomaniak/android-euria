@@ -101,7 +101,7 @@ fun EuriaMainScreen(
                     }
                 }
                 launch {
-                    mainViewModel.shouldStartCamera.receiveAsFlow().collect { startCamera() }
+                    mainViewModel.cameraLaunchEvents.receiveAsFlow().collect { startCamera() }
                 }
             }
         }

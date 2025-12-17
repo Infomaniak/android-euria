@@ -77,7 +77,7 @@ class MainViewModel @Inject constructor(
     val isWebAppReady = _isWebAppReady.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     val webViewQueries = Channel<String>(capacity = Channel.CONFLATED)
-    val shouldStartCamera = Channel<Unit>(capacity = Channel.CONFLATED)
+    val cameraLaunchEvents = Channel<Unit>(capacity = Channel.CONFLATED)
     val userState: StateFlow<UserState> = AccountUtils.getCurrentUserFlow().map {
         if (it == null) {
             UserState.NotLoggedIn

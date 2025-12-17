@@ -217,7 +217,7 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
     }
 
     private fun executeIntentAction(intent: Intent) {
-        if (intent.getStringExtra(EXTRA_ACTION) == EXTRA_ACTION_CAMERA) mainViewModel.shouldStartCamera.trySend(Unit)
+        if (intent.getStringExtra(EXTRA_ACTION) == EXTRA_ACTION_CAMERA) mainViewModel.cameraLaunchEvents.trySend(Unit)
 
         webViewUtils.updateWebViewQueryFrom(intent, updateWebViewQuery = { query ->
             mainViewModel.webViewQueries.trySend(query)
