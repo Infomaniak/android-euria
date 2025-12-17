@@ -122,6 +122,7 @@ dependencies {
     implementation(project(":Core:CrossAppLogin:Front"))
     implementation(project(":Core:FragmentNavigation"))
     implementation(project(":Core:InAppReview"))
+    implementation(project(":Core:Matomo"))
     implementation(project(":Core:Network"))
     implementation(project(":Core:Network:Models"))
     implementation(project(":Core:Onboarding"))
