@@ -118,6 +118,9 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info" />
         </receiver>
+        <receiver
+            android:name=".ui.widget.WidgetClickReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>

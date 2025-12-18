@@ -25,11 +25,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.RemoteViews
-import com.infomaniak.euria.MainActivity
 import com.infomaniak.euria.MainActivity.Companion.EXTRA_ACTION
 import com.infomaniak.euria.MainActivity.Companion.EXTRA_QUERY
 import com.infomaniak.euria.MainActivity.PendingIntentRequestCodes
-import com.infomaniak.euria.MatomoEuria
 import com.infomaniak.euria.R
 
 class EuriaAppWidgetProvider : AppWidgetProvider() {
@@ -60,57 +58,60 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
     ) {
         val views = RemoteViews(context.packageName, R.layout.widget_layout)
 
-        val mainIntent = getIntent(context)
-        val ephemeralIntent = getIntent(context, query = EPHEMERAL_QUERY)
-        val microphoneIntent = getIntent(context, query = MICROPHONE_QUERY)
-        val cameraIntent = getIntent(context, action = EXTRA_ACTION_CAMERA)
-
         views.setOnClickPendingIntent(
             R.id.newConversationButton,
-            getPendingIntent(context, mainIntent, PendingIntentRequestCodes.CHAT)
+            getBroadcastPendingIntent(
+                context = context,
+                requestCode = PendingIntentRequestCodes.CHAT,
+            )
         )
         views.setOnClickPendingIntent(
             R.id.ephemeralButton,
-            getPendingIntent(context, ephemeralIntent, PendingIntentRequestCodes.EPHEMERAL)
+            getBroadcastPendingIntent(
+                context = context,
+                requestCode = PendingIntentRequestCodes.EPHEMERAL,
+                query = EPHEMERAL_QUERY,
+            )
         )
         views.setOnClickPendingIntent(
             R.id.microphoneButton,
-            getPendingIntent(context, microphoneIntent, PendingIntentRequestCodes.SPEECH)
+            getBroadcastPendingIntent(
+                context = context,
+                requestCode = PendingIntentRequestCodes.SPEECH,
+                query = MICROPHONE_QUERY,
+            )
         )
         views.setOnClickPendingIntent(
             R.id.cameraButton,
-            getPendingIntent(context, cameraIntent, PendingIntentRequestCodes.CAMERA)
+            getBroadcastPendingIntent(
+                context = context,
+                requestCode = PendingIntentRequestCodes.CAMERA,
+                actionValue = EXTRA_ACTION_CAMERA,
+            )
         )
 
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 
-    private fun getIntent(context: Context, query: String? = null, action: String? = null): Intent {
-        return Intent(context, MainActivity::class.java).apply {
-            putExtra(EXTRA_ACTION, action)
+    private fun getBroadcastPendingIntent(
+        context: Context,
+        requestCode: Int,
+        query: String? = null,
+        actionValue: String? = null
+    ): PendingIntent {
+        val intent = Intent(context, WidgetClickReceiver::class.java).apply {
+            action = requestCode.toString()
+
             putExtra(EXTRA_QUERY, query)
+            putExtra(EXTRA_ACTION, actionValue)
         }
-    }
 
-    private fun getPendingIntent(context: Context, intent: Intent, requestCode: Int): PendingIntent {
-        getMatomoNameFromRequestCode(requestCode)?.let { MatomoEuria.trackWidgetEvent(it) }
-
-        return PendingIntent.getActivity(
+        return PendingIntent.getBroadcast(
             context,
             requestCode,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-    }
-
-    private fun getMatomoNameFromRequestCode(requestCode: Int): MatomoEuria.MatomoName? {
-        return when (requestCode) {
-            PendingIntentRequestCodes.CHAT -> MatomoEuria.MatomoName.NewChat
-            PendingIntentRequestCodes.EPHEMERAL -> MatomoEuria.MatomoName.EphemeralMode
-            PendingIntentRequestCodes.SPEECH -> MatomoEuria.MatomoName.EnableMicrophone
-            PendingIntentRequestCodes.CAMERA -> MatomoEuria.MatomoName.OpenCamera
-            else -> null
-        }
     }
 
     companion object {
