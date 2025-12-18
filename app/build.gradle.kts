@@ -46,7 +46,7 @@ android {
         applicationId = "com.infomaniak.euria"
         minSdk = appMinSdk
         targetSdk = appTargetSdk
-        versionCode = 1_001_002_01
+        versionCode = 1_001_002_02
         versionName = "1.1.2"
 
         buildConfigField("String", "CLIENT_ID", "\"10476B29-7B98-4D42-B06B-2B7AB0F06FDE\"")

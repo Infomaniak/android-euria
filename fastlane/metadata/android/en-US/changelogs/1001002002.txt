@@ -1,0 +1,1 @@
+• Fix to make the Widget more responsive
