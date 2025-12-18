@@ -15,7 +15,6 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -25,31 +24,16 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@drawable/widget_background"
-        android:baselineAligned="false"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:padding="@dimen/widgetPadding">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/widgetPaddingBetweenActions"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal">
-
-            <include
-                layout="@layout/widget_action_button_new_conversation"
-                android:layout_width="@dimen/widgetIconSize"
-                android:layout_height="@dimen/widgetIconSize" />
-
-        </LinearLayout>
+        <include layout="@layout/widget_action_button_new_conversation_with_text" />
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/widgetPaddingBetweenActions"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
+            android:layout_marginTop="@dimen/widgetPaddingBetweenActions"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <include
@@ -57,29 +41,12 @@
                 android:layout_width="@dimen/widgetIconSize"
                 android:layout_height="@dimen/widgetIconSize" />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/widgetPaddingBetweenActions"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal">
-
             <include
                 layout="@layout/widget_action_button_microphone"
                 android:layout_width="@dimen/widgetIconSize"
-                android:layout_height="@dimen/widgetIconSize" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal">
+                android:layout_height="@dimen/widgetIconSize"
+                android:layout_marginStart="@dimen/widgetPaddingBetweenActions"
+                android:layout_marginEnd="@dimen/widgetPaddingBetweenActions" />
 
             <include
                 layout="@layout/widget_action_button_camera"
