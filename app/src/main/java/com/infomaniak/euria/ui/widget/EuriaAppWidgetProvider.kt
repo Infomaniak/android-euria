@@ -23,6 +23,7 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.widget.RemoteViews
 import com.infomaniak.euria.MainActivity
 import com.infomaniak.euria.MainActivity.Companion.EXTRA_ACTION
@@ -33,10 +34,30 @@ import com.infomaniak.euria.R
 
 class EuriaAppWidgetProvider : AppWidgetProvider() {
 
-    override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
-        // We only have on widget so we use the first one
-        val appWidgetId = appWidgetIds.firstOrNull() ?: return
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray,
+    ) {
+        if (appWidgetIds.isEmpty()) return
 
+        appWidgetIds.forEach { updateWidget(context, appWidgetManager, it) }
+    }
+
+    override fun onAppWidgetOptionsChanged(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetId: Int,
+        newOptions: Bundle,
+    ) {
+        updateWidget(context, appWidgetManager, appWidgetId)
+    }
+
+    private fun updateWidget(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetId: Int,
+    ) {
         val views = RemoteViews(context.packageName, R.layout.widget_layout)
 
         val mainIntent = getIntent(context)
