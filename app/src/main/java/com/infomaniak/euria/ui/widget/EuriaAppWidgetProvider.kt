@@ -60,6 +60,7 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
         appWidgetId: Int,
     ) {
         val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
+        val minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
         val minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
 
         val views = RemoteViews(context.packageName, R.layout.widget_view_flipper)
@@ -132,7 +133,7 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
         }
     }
 
-private enum class WidgetType(val index: Int, val minWidth: Int, val minHeight: Int) {
+    private enum class WidgetType(val index: Int, val minWidth: Int, val minHeight: Int) {
         TWO_ROWS(0, 250, 100),
         ONE_ROW_FOUR_ACTIONS(1, 300, 40),
         ONE_ROW_THREE_ACTIONS(2, 250, 40),
