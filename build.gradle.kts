@@ -11,9 +11,6 @@ buildscript {
         set("legacyMinSdk", 27)
         set("javaVersion", JavaVersion.VERSION_17)
     }
-    dependencies {
-        classpath(libs.navigation.safeargs)
-    }
 }
 
 plugins {
@@ -21,6 +18,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android) apply false
     alias(libs.plugins.jetbrains.kotlin.serialization) apply false
     alias(core.plugins.kapt) apply false
+    alias(core.plugins.navigation.safeargs) apply false
 }
 
 tasks.register<Delete>("clean") {
