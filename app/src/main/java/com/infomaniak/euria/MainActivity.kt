@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
+import com.infomaniak.core.extensions.serializableExtra
 import com.infomaniak.core.inappreview.reviewmanagers.InAppReviewManager
 import com.infomaniak.core.observe
 import com.infomaniak.core.twofactorauth.back.TwoFactorAuthManager
@@ -217,6 +218,10 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
     }
 
     private fun executeIntentAction(intent: Intent) {
+        intent.serializableExtra<MatomoEuria.MatomoName>(EXTRA_MATOMO_WIDGET_NAME)?.let {
+            MatomoEuria.trackWidgetEvent(it)
+        }
+
         if (intent.getStringExtra(EXTRA_ACTION) == EXTRA_ACTION_CAMERA) mainViewModel.cameraLaunchEvents.trySend(Unit)
 
         webViewUtils.updateWebViewQueryFrom(intent, updateWebViewQuery = { query ->
@@ -317,6 +322,7 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
     companion object {
         const val TAG = "MainActivity"
 
+        const val EXTRA_MATOMO_WIDGET_NAME = "EXTRA_MATOMO_NAME"
         const val EXTRA_ACTION = "EXTRA_ACTION"
         const val EXTRA_QUERY = "EXTRA_QUERY"
 

@@ -27,6 +27,7 @@ import android.os.Bundle
 import android.widget.RemoteViews
 import com.infomaniak.euria.MainActivity
 import com.infomaniak.euria.MainActivity.Companion.EXTRA_ACTION
+import com.infomaniak.euria.MainActivity.Companion.EXTRA_MATOMO_WIDGET_NAME
 import com.infomaniak.euria.MainActivity.Companion.EXTRA_QUERY
 import com.infomaniak.euria.MainActivity.PendingIntentRequestCodes
 import com.infomaniak.euria.MatomoEuria
@@ -60,40 +61,49 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
     ) {
         val views = RemoteViews(context.packageName, R.layout.widget_layout)
 
-        val mainIntent = getIntent(context)
-        val ephemeralIntent = getIntent(context, query = EPHEMERAL_QUERY)
-        val microphoneIntent = getIntent(context, query = MICROPHONE_QUERY)
-        val cameraIntent = getIntent(context, action = EXTRA_ACTION_CAMERA)
-
         views.setOnClickPendingIntent(
             R.id.newConversationButton,
-            getPendingIntent(context, mainIntent, PendingIntentRequestCodes.CHAT)
+            getPendingIntent(context, requestCode = PendingIntentRequestCodes.CHAT),
         )
         views.setOnClickPendingIntent(
             R.id.ephemeralButton,
-            getPendingIntent(context, ephemeralIntent, PendingIntentRequestCodes.EPHEMERAL)
+            getPendingIntent(
+                context,
+                query = EPHEMERAL_QUERY,
+                requestCode = PendingIntentRequestCodes.EPHEMERAL,
+            ),
         )
         views.setOnClickPendingIntent(
             R.id.microphoneButton,
-            getPendingIntent(context, microphoneIntent, PendingIntentRequestCodes.SPEECH)
+            getPendingIntent(
+                context,
+                query = MICROPHONE_QUERY,
+                requestCode = PendingIntentRequestCodes.SPEECH,
+            ),
         )
         views.setOnClickPendingIntent(
             R.id.cameraButton,
-            getPendingIntent(context, cameraIntent, PendingIntentRequestCodes.CAMERA)
+            getPendingIntent(
+                context,
+                action = EXTRA_ACTION_CAMERA,
+                requestCode = PendingIntentRequestCodes.CAMERA,
+            ),
         )
 
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 
-    private fun getIntent(context: Context, query: String? = null, action: String? = null): Intent {
-        return Intent(context, MainActivity::class.java).apply {
+    private fun getPendingIntent(
+        context: Context,
+        query: String? = null,
+        action: String? = null,
+        requestCode: Int,
+    ): PendingIntent {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            putExtra(EXTRA_MATOMO_WIDGET_NAME, getMatomoNameFromRequestCode(requestCode))
             putExtra(EXTRA_ACTION, action)
             putExtra(EXTRA_QUERY, query)
         }
-    }
-
-    private fun getPendingIntent(context: Context, intent: Intent, requestCode: Int): PendingIntent {
-        getMatomoNameFromRequestCode(requestCode)?.let { MatomoEuria.trackWidgetEvent(it) }
 
         return PendingIntent.getActivity(
             context,
