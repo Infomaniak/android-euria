@@ -35,6 +35,12 @@
 
     <style name="AppTheme" parent="AppThemeBase" />
 
+    <style name="EuriaDialog" parent="Theme.Material3.DayNight.Dialog.Alert">
+        <item name="colorPrimary">@color/black</item>
+        <item name="colorSurface">@color/background</item>
+        <item name="colorOnSurface">@color/title</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="Widget.Design.AppBarLayout">
         <item name="android:backgroundTint">@color/background</item>
         <item name="elevation">0dp</item>

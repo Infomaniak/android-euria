@@ -37,6 +37,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
 import com.infomaniak.core.extensions.serializableExtra
@@ -152,7 +153,7 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
             splashScreen.setKeepOnScreenCondition { it }
         }
 
-        WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
+        if (!enableWebViewDebugging()) return
 
         enableEdgeToEdge()
         if (SDK_INT >= 29) window.isNavigationBarContrastEnforced = false
@@ -212,9 +213,43 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
         }
     }
 
+    private fun enableWebViewDebugging(): Boolean {
+        return runCatching {
+            WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
+        }.fold(
+            onSuccess = { true },
+            onFailure = { throwable ->
+                if (throwable.hasCause("MissingWebViewPackageException")) {
+                    showWebViewNotAvailableError()
+                    false
+                } else {
+                    throw throwable
+                }
+            }
+        )
+    }
+
+    private fun Throwable.hasCause(className: String): Boolean {
+        var current: Throwable? = this
+        while (current != null) {
+            if (current.javaClass.name.contains(className)) return true
+            current = current.cause
+        }
+        return false
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         executeIntentAction(intent)
+    }
+
+    private fun showWebViewNotAvailableError() {
+        MaterialAlertDialogBuilder(this, R.style.EuriaDialog)
+            .setTitle(getString(RCore.string.anErrorHasOccurred))
+            .setMessage(getString(R.string.noWebViewAvailable))
+            .setPositiveButton(android.R.string.ok) { _, _ -> finish() }
+            .setCancelable(false)
+            .show()
     }
 
     private fun executeIntentAction(intent: Intent) {
