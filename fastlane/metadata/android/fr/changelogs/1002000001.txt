@@ -1,0 +1,1 @@
+• Les widgets sont maintenant redimensionnables avec plusieurs variantes.
