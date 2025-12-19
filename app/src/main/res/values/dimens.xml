@@ -22,7 +22,10 @@
     <!--  Euria Widget  -->
     <dimen name="widgetPadding">16dp</dimen>
     <dimen name="widgetBackgroundRadius">36dp</dimen>
-    <dimen name="widgetButtonBackgroundRadius">20dp</dimen>
     <dimen name="widgetIconSize">52dp</dimen>
+    <dimen name="smallWidgetPadding">12dp</dimen>
+    <dimen name="smallWidgetBackgroundRadius">36dp</dimen>
+    <dimen name="smallWidgetIconSize">48dp</dimen>
+    <dimen name="widgetButtonBackgroundRadius">20dp</dimen>
     <dimen name="widgetPaddingBetweenActions">8dp</dimen>
 </resources>
