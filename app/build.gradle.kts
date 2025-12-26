@@ -26,7 +26,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.jetbrains.kotlin.serialization)
     alias(core.plugins.kapt)
-    alias(libs.plugins.navigation.safeargs)
+    alias(core.plugins.navigation.safeargs)
     alias(libs.plugins.dagger.hilt)
     alias(core.plugins.sentry.plugin)
 }

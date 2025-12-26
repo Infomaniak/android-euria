@@ -27,6 +27,7 @@
     <string name="contentDescriptionMicrophone">Voice chat</string>
     <string name="noNetworkDescription">Check your Internet connection and try again to resume your conversation</string>
     <string name="noNetworkTitle">No Internet access</string>
+    <string name="noWebViewAvailable">The application requires the WebView component to function. Please activate or update it from the Play Store.</string>
     <string name="onboardingDatacenterDescription" formatted="false">AI energy is 100% revalued.</string>
     <string name="onboardingDatacenterTitle">Euria heats homes.</string>
     <string name="onboardingEphemeralDescriptionArguments">Euria keeps no trace</string>
