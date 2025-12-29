@@ -20,6 +20,7 @@ package com.infomaniak.euria
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.view.WindowManager
@@ -40,6 +41,8 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
+import com.infomaniak.core.extensions.parcelable
+import com.infomaniak.core.extensions.parcelableArrayList
 import com.infomaniak.core.extensions.serializableExtra
 import com.infomaniak.core.inappreview.reviewmanagers.InAppReviewManager
 import com.infomaniak.core.observe
@@ -267,15 +270,31 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
     }
 
     private fun extractFilesToShare(intent: Intent) {
-        val items = buildList {
-            intent.clipData?.let {
-                for (i in 0 until it.itemCount) {
-                    add(it.getItemAt(i).uri)
+        val uris = buildList {
+            if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
+                intent.parcelableArrayList<Uri>(Intent.EXTRA_STREAM)?.let {
+                    addAll(it.toList())
+                }
+            } else if (intent.action == Intent.ACTION_SEND) {
+                var clipDataContainsUris = false
+                intent.clipData?.getItemAt(0)?.uri?.let {
+                    add(it)
+                    clipDataContainsUris = true
+                }
+                if (!clipDataContainsUris) {
+                    intent.parcelable<Uri>(Intent.EXTRA_STREAM)?.let {
+                        add(it)
+                    }
                 }
             }
         }
 
-        mainViewModel.setFilesToShare(items)
+        if (uris.isNotEmpty()) {
+            mainViewModel.setFilesToShare(uris)
+            intent.action = ""
+            intent.clipData = null
+            intent.removeExtra(Intent.EXTRA_STREAM)
+        }
     }
 
     private suspend fun runLogin(): Nothing = coroutineScope {
