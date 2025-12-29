@@ -18,14 +18,20 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/ephemeralButton"
-    android:layout_width="@dimen/widgetIconSize"
-    android:layout_height="@dimen/widgetIconSize"
-    android:background="@drawable/widget_button_background">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/widget_button_background"
+    android:paddingTop="@dimen/widgetPadding"
+    android:paddingBottom="@dimen/widgetPadding">
 
     <ImageView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:adjustViewBounds="true"
         android:contentDescription="@string/contentDescriptionEphemeralChat"
+        android:maxWidth="@dimen/maxWidgetIconSize"
+        android:maxHeight="@dimen/maxWidgetIconSize"
         android:src="@drawable/clock" />
 </FrameLayout>

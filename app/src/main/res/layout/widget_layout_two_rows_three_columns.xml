@@ -15,44 +15,50 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@drawable/widget_background"
+    android:maxHeight="100dp"
+    android:orientation="vertical"
+    android:padding="@dimen/widgetPadding">
+
+    <include
+        layout="@layout/widget_action_button_new_conversation_with_text"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="@drawable/widget_background"
-        android:orientation="vertical"
-        android:padding="@dimen/widgetPadding">
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/widgetPaddingBetweenActions"
+        android:layout_weight="1"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
 
-        <include layout="@layout/widget_action_button_new_conversation_with_text" />
+        <include
+            layout="@layout/widget_action_button_ephemeral"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            tools:ignore="NestedWeights" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/widgetPaddingBetweenActions"
-            android:gravity="center"
-            android:orientation="horizontal">
+        <include
+            layout="@layout/widget_action_button_microphone"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/widgetPaddingBetweenActions"
+            android:layout_marginEnd="@dimen/widgetPaddingBetweenActions"
+            android:layout_weight="1" />
 
-            <include
-                layout="@layout/widget_action_button_ephemeral"
-                android:layout_width="@dimen/widgetIconSize"
-                android:layout_height="@dimen/widgetIconSize" />
+        <include
+            layout="@layout/widget_action_button_camera"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
 
-            <include
-                layout="@layout/widget_action_button_microphone"
-                android:layout_width="@dimen/widgetIconSize"
-                android:layout_height="@dimen/widgetIconSize"
-                android:layout_marginStart="@dimen/widgetPaddingBetweenActions"
-                android:layout_marginEnd="@dimen/widgetPaddingBetweenActions" />
-
-            <include
-                layout="@layout/widget_action_button_camera"
-                android:layout_width="@dimen/widgetIconSize"
-                android:layout_height="@dimen/widgetIconSize" />
-
-        </LinearLayout>
     </LinearLayout>
-</FrameLayout>
+</LinearLayout>

@@ -32,6 +32,7 @@ import com.infomaniak.euria.MainActivity.Companion.EXTRA_QUERY
 import com.infomaniak.euria.MainActivity.PendingIntentRequestCodes
 import com.infomaniak.euria.MatomoEuria
 import com.infomaniak.euria.R
+import kotlin.math.max
 
 class EuriaAppWidgetProvider : AppWidgetProvider() {
 
@@ -62,15 +63,10 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
         val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
         val minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
         val minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
-
         val views = RemoteViews(context.packageName, R.layout.widget_view_flipper)
+        val widgetType = WidgetType.getWidgetLayoutFrom(minWidth, minHeight)
 
-        val widgetType = WidgetType.getWidgetTypeFrom(minWidth, minHeight)
-
-        views.setDisplayedChild(R.id.widget_view_flipper, widgetType.index)
-
-        appWidgetManager.updateAppWidget(appWidgetId, views)
-
+        views.setDisplayedChild(R.id.widget_view_flipper, widgetType.ordinal)
         views.setOnClickPendingIntent(
             R.id.newConversationButton,
             getPendingIntent(context, requestCode = PendingIntentRequestCodes.CHAT),
@@ -133,18 +129,30 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
         }
     }
 
-    private enum class WidgetType(val index: Int, val minWidth: Int, val minHeight: Int) {
-        TwoRowThreeColumns(0, 250, 100),
-        TwoRowTwoColumns(1, 150, 100),
-        OneRowFourActions(2, 300, 40),
-        OneRowThreeActions(3, 250, 40),
-        OneRowTwoActions(4, 150, 40),
-        OneRowOneAction(5, 80, 40);
+    private enum class WidgetType(val minHorizontalCells: Int, val minVerticalCells: Int) {
+        OneRowOneAction(1, 1),
+        OneRowTwoActions(2, 1),
+        OneRowThreeActions(3, 1),
+        OneRowFourActions(4, 1),
+        TwoRowOneColumn(1, 2),
+        TwoRowTwoColumns(2, 2),
+        TwoRowThreeColumns(3, 2);
 
         companion object {
-            fun getWidgetTypeFrom(minWidth: Int, minHeight: Int): WidgetType {
-                return entries.firstOrNull { it.minWidth <= minWidth && it.minHeight <= minHeight } ?: OneRowOneAction
+            fun getWidgetLayoutFrom(minWidth: Int, minHeight: Int): WidgetType {
+                val horizontalCells = dpToCells(minWidth)
+                val verticalCells = dpToCells(minHeight)
+                val compatibleWidgets = entries.filter {
+                    it.minHorizontalCells <= horizontalCells && it.minVerticalCells <= verticalCells
+                }
+
+                if (compatibleWidgets.isEmpty()) return OneRowOneAction
+
+                val bestWidget = compatibleWidgets.maxByOrNull { it.minHorizontalCells * it.minVerticalCells }
+                return bestWidget ?: OneRowOneAction
             }
+
+            private fun dpToCells(sizeDp: Int) = max(1, (sizeDp + 30) / 70)
         }
     }
 

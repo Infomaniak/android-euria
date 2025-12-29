@@ -18,16 +18,21 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/newConversationButton"
-    android:layout_width="@dimen/widgetIconSize"
-    android:layout_height="@dimen/widgetIconSize"
-    android:layout_marginEnd="@dimen/widgetPaddingBetweenActions"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
     android:background="@drawable/widget_button_background"
-    android:gravity="center_vertical">
+    android:paddingTop="@dimen/widgetPadding"
+    android:paddingBottom="@dimen/widgetPadding">
 
     <ImageView
-        android:layout_width="@dimen/widgetIconSize"
-        android:layout_height="@dimen/widgetIconSize"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:adjustViewBounds="true"
         android:contentDescription="@string/contentDescriptionChat"
-        android:src="@drawable/euria" />
+        android:maxWidth="@dimen/maxWidgetEuriaIconSize"
+        android:maxHeight="@dimen/maxWidgetEuriaIconSize"
+        android:src="@drawable/euria_icon_widget" />
 
 </FrameLayout>
