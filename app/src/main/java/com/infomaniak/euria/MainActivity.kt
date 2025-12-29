@@ -276,7 +276,7 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
                     addAll(it.toList())
                 }
             } else if (intent.action == Intent.ACTION_SEND) {
-                var hasUrisBeenFetched = false
+                var clipDataContainsUris = false
                 intent.clipData?.getItemAt(0)?.uri?.let {
                     add(it)
                     hasUrisBeenFetched = true
