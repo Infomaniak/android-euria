@@ -279,9 +279,9 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
                 var clipDataContainsUris = false
                 intent.clipData?.getItemAt(0)?.uri?.let {
                     add(it)
-                    hasUrisBeenFetched = true
+                    clipDataContainsUris = true
                 }
-                if (!hasUrisBeenFetched) {
+                if (!clipDataContainsUris) {
                     intent.parcelable<Uri>(Intent.EXTRA_STREAM)?.let {
                         add(it)
                     }
