@@ -1,0 +1,2 @@
+• Fix widget resizability.
+• Add another widget variant.
