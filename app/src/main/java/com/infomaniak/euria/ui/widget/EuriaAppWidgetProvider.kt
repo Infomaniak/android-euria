@@ -63,10 +63,9 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
         val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
         val minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
         val minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
-        val views = RemoteViews(context.packageName, R.layout.widget_view_flipper)
         val widgetType = WidgetType.getWidgetLayoutFrom(minWidth, minHeight)
+        val views = RemoteViews(context.packageName, widgetType.layoutId)
 
-        views.setDisplayedChild(R.id.widget_view_flipper, widgetType.ordinal)
         views.setOnClickPendingIntent(
             R.id.newConversationButton,
             getPendingIntent(context, requestCode = PendingIntentRequestCodes.CHAT),
@@ -95,7 +94,6 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
                 requestCode = PendingIntentRequestCodes.CAMERA,
             ),
         )
-
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 
@@ -129,14 +127,14 @@ class EuriaAppWidgetProvider : AppWidgetProvider() {
         }
     }
 
-    private enum class WidgetType(val minHorizontalCells: Int, val minVerticalCells: Int) {
-        OneRowOneAction(1, 1),
-        OneRowTwoActions(2, 1),
-        OneRowThreeActions(3, 1),
-        OneRowFourActions(4, 1),
-        TwoRowOneColumn(1, 2),
-        TwoRowTwoColumns(2, 2),
-        TwoRowThreeColumns(3, 2);
+    private enum class WidgetType(val layoutId: Int, val minHorizontalCells: Int, val minVerticalCells: Int) {
+        OneRowOneAction(R.layout.widget_layout_one_row_one_action, 1, 1),
+        OneRowTwoActions(R.layout.widget_layout_one_row_two_actions, 2, 1),
+        OneRowThreeActions(R.layout.widget_layout_one_row_three_actions, 3, 1),
+        OneRowFourActions(R.layout.widget_layout_one_row_four_actions, 4, 1),
+        TwoRowOneColumn(R.layout.widget_layout_two_rows_one_action, 1, 2),
+        TwoRowTwoColumns(R.layout.widget_layout_two_rows_two_columns, 2, 2),
+        TwoRowThreeColumns(R.layout.widget_layout_two_rows_three_columns, 3, 2);
 
         companion object {
             fun getWidgetLayoutFrom(minWidth: Int, minHeight: Int): WidgetType {
