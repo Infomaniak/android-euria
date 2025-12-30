@@ -1,0 +1,2 @@
+• Correction du redimensionnement des widgets.
+• Ajout d'une nouvelle variante de widget.
