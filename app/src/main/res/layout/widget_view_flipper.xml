@@ -24,16 +24,18 @@
     android:inAnimation="@android:anim/fade_in"
     android:outAnimation="@android:anim/fade_out">
 
-    <include layout="@layout/widget_layout_two_rows_three_columns" />
-
-    <include layout="@layout/widget_layout_two_rows_two_columns" />
-
-    <include layout="@layout/widget_layout_one_row_four_actions" />
-
-    <include layout="@layout/widget_layout_one_row_three_actions" />
+    <include layout="@layout/widget_layout_one_row_one_action" />
 
     <include layout="@layout/widget_layout_one_row_two_actions" />
 
-    <include layout="@layout/widget_layout_one_row_one_action" />
+    <include layout="@layout/widget_layout_one_row_three_actions" />
+
+    <include layout="@layout/widget_layout_one_row_four_actions" />
+
+    <include layout="@layout/widget_layout_two_rows_one_action" />
+
+    <include layout="@layout/widget_layout_two_rows_two_columns" />
+
+    <include layout="@layout/widget_layout_two_rows_three_columns" />
 
 </ViewFlipper>

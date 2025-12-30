@@ -56,7 +56,7 @@ class WebViewUtils(
         }
         cookieManager.setCookie(EURIA_MAIN_URL.toHttpUrl().host, cookieString)
     }
-    
+
     fun applySafeAreaInsets(
         webView: WebView,
         insets: WindowInsets,
