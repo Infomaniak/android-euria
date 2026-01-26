@@ -113,6 +113,10 @@ android {
         uploadNativeSymbols = isRelease
         includeNativeSources = isRelease
     }
+
+    androidResources {
+        generateLocaleConfig = true
+    }
 }
 
 dependencies {
