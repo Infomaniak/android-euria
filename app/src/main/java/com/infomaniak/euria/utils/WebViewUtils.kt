@@ -1,6 +1,6 @@
 /*
  * Infomaniak Euria - Android
- * Copyright (C) 2025 Infomaniak Network SA
+ * Copyright (C) 2025-2026 Infomaniak Network SA
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,13 +48,13 @@ class WebViewUtils(
 
     var webView: WebView? = null
 
+    fun setUserLanguageToCookie() {
+        val currentLocale = ConfigurationCompat.getLocales(context.resources.configuration).get(0)?.language ?: "en"
+        cookieManager.setCookie(EURIA_MAIN_URL.toHttpUrl().host, "USER-LANGUAGE=${currentLocale}")
+    }
+
     fun setTokenToCookie(token: String?) {
-        val currentLocale = ConfigurationCompat.getLocales(context.resources.configuration).get(0)?.toLanguageTag() ?: "en-US"
-        val cookieString = buildString {
-            if (token != null) append("USER-TOKEN=${token}; ")
-            append("USER-LANGUAGE=${currentLocale} path=/")
-        }
-        cookieManager.setCookie(EURIA_MAIN_URL.toHttpUrl().host, cookieString)
+        if (token != null) cookieManager.setCookie(EURIA_MAIN_URL.toHttpUrl().host, "USER-TOKEN=${token}")
     }
 
     fun applySafeAreaInsets(
