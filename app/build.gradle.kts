@@ -50,6 +50,8 @@ android {
         versionName = "1.2.1"
 
         buildConfigField("String", "CLIENT_ID", "\"10476B29-7B98-4D42-B06B-2B7AB0F06FDE\"")
+
+        androidResources.localeFilters += listOf("en", "de", "es", "fr", "it")
     }
 
     compileOptions {
