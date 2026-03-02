@@ -1,0 +1,1 @@
+• Add possibility to change the app language in the system settings
