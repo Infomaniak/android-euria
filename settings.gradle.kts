@@ -22,6 +22,7 @@ pluginManagement {
         google()
         mavenCentral()
     }
+    includeBuild("Core/build-logic")
 }
 
 dependencyResolutionManagement {
@@ -37,33 +38,11 @@ dependencyResolutionManagement {
     }
 }
 
+plugins {
+    id("com.infomaniak.core.composite")
+}
+
 rootProject.name = "euria"
 include(
     ":app",
-    ":Core:AppIntegrity",
-    ":Core:Auth",
-    ":Core:Avatar",
-    ":Core:Coil",
-    ":Core:CrossAppLogin:Back",
-    ":Core:CrossAppLogin:Front",
-    ":Core:FragmentNavigation",
-    ":Core:InAppReview",
-    ":Core:Matomo",
-    ":Core:Network",
-    ":Core:Network:Ktor",
-    ":Core:Network:Models",
-    ":Core:Notifications:Registration",
-    ":Core:Onboarding",
-    ":Core:Sentry",
-    ":Core:SharedValues",
-    ":Core:TwoFactorAuth:Back:WithUserDb",
-    ":Core:TwoFactorAuth:Front",
-    ":Core:Ui:Compose:BasicButton",
-    ":Core:Ui:Compose:Basics",
-    ":Core:Ui:Compose:Margin",
-    ":Core:Ui:Compose:MaterialThemeFromXml",
-    ":Core:Ui:Compose:Preview",
-    ":Core:Ui:Compose:Theme",
-    ":Core:Ui:View",
-    ":Core:WebView",
 )

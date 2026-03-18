@@ -30,5 +30,20 @@ fun Context.getInfomaniakLogin() = InfomaniakLogin(
     appUID = BuildConfig.APPLICATION_ID,
     clientID = BuildConfig.CLIENT_ID,
     accessType = null,
-    sentryCallback = { error -> SentryLog.e(tag = "WebViewLogin", error) },
+    sentryCallback = { errorMessage, extras ->
+        val result = Regex("""(https?:\S+)\s+([A-Z]+\s+\d+)""").find(errorMessage)
+        val url = result?.groupValues[1]
+        val methodAndCode = result?.groupValues[2]
+
+        SentryLog.e(
+            tag = "WebViewLogin",
+            msg = "An error occurred on the login/Account creation webview",
+            scopeCallback = { scope ->
+                scope.setTag("error", errorMessage)
+                scope.setTag("url", "$url")
+                scope.setTag("code", "$methodAndCode")
+                extras.forEach(scope::setExtra)
+            },
+        )
+    },
 )

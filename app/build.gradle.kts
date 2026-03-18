@@ -20,7 +20,7 @@ import java.util.Properties
  */
 
 plugins {
-    alias(libs.plugins.android.application) // This line should be 1st, or you'll have Gradle sync issue
+    alias(core.plugins.android.application) // This line should be 1st, or you'll have Gradle sync issue
     alias(core.plugins.compose.compiler)
     alias(libs.plugins.google.services)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -121,28 +121,27 @@ android {
 }
 
 dependencies {
-    implementation(project(":Core"))
-    implementation(project(":Core:Auth"))
-    implementation(project(":Core:CrossAppLogin:Back"))
-    implementation(project(":Core:CrossAppLogin:Front"))
-    implementation(project(":Core:FragmentNavigation"))
-    implementation(project(":Core:InAppReview"))
-    implementation(project(":Core:Matomo"))
-    implementation(project(":Core:Network"))
-    implementation(project(":Core:Network:Models"))
-    implementation(project(":Core:Onboarding"))
-    implementation(project(":Core:Sentry"))
-    implementation(project(":Core:SharedValues"))
-    implementation(project(":Core:TwoFactorAuth:Back:WithUserDb"))
-    implementation(project(":Core:TwoFactorAuth:Front"))
-    implementation(project(":Core:Ui:Compose:BasicButton"))
-    implementation(project(":Core:Ui:Compose:Basics"))
-    implementation(project(":Core:Ui:Compose:Margin"))
-    implementation(project(":Core:Ui:Compose:Theme"))
-    implementation(project(":Core:Ui:View"))
-    implementation(project(":Core:WebView"))
+    implementation(core.infomaniak.core.common)
+    implementation(core.infomaniak.core.auth)
+    implementation(core.infomaniak.core.crossapplogin.back)
+    implementation(core.infomaniak.core.crossapplogin.front)
+    implementation(core.infomaniak.core.fragmentnavigation)
+    implementation(core.infomaniak.core.inappreview)
+    implementation(core.infomaniak.core.matomo)
+    implementation(core.infomaniak.core.network)
+    implementation(core.infomaniak.core.onboarding)
+    implementation(core.infomaniak.core.sentry)
+    implementation(core.infomaniak.core.sharedvalues)
+    implementation(core.infomaniak.core.twofactorauth.back)
+    implementation(core.infomaniak.core.twofactorauth.front)
+    implementation(core.infomaniak.core.ui.compose.basicbutton)
+    implementation(core.infomaniak.core.ui.compose.basics)
+    implementation(core.infomaniak.core.ui.compose.margin)
+    implementation(core.infomaniak.core.ui.compose.theme)
+    implementation(core.infomaniak.core.ui.view)
+    implementation(core.infomaniak.core.webview)
 
-    "standardImplementation"(project(":Core:Notifications:Registration"))
+    "standardImplementation"(core.infomaniak.core.notifications.registration)
     "standardImplementation"(core.firebase.messaging.ktx)
 
     // Compose

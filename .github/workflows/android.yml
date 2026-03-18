@@ -43,4 +43,4 @@ jobs:
 
       # Run tests
       - name: Run Unit tests
-        run: ./gradlew testDebugUnitTest --stacktrace
+        run: ./gradlew testFdroidDebugUnitTest testStandardDebugUnitTest --stacktrace

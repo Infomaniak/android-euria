@@ -19,7 +19,7 @@
 package com.infomaniak.euria
 
 import android.app.Application
-import com.infomaniak.core.AssociatedUserDataCleanable
+import com.infomaniak.core.common.AssociatedUserDataCleanable
 import com.infomaniak.core.crossapplogin.back.internal.deviceinfo.DeviceInfoUpdateManager
 import com.infomaniak.core.network.ApiEnvironment
 import com.infomaniak.core.network.NetworkConfiguration
