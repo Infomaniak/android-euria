@@ -40,12 +40,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.infomaniak.core.common.extensions.parcelable
+import com.infomaniak.core.common.extensions.parcelableArrayList
+import com.infomaniak.core.common.extensions.serializableExtra
+import com.infomaniak.core.common.observe
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
-import com.infomaniak.core.extensions.parcelable
-import com.infomaniak.core.extensions.parcelableArrayList
-import com.infomaniak.core.extensions.serializableExtra
 import com.infomaniak.core.inappreview.reviewmanagers.InAppReviewManager
-import com.infomaniak.core.observe
 import com.infomaniak.core.twofactorauth.back.TwoFactorAuthManager
 import com.infomaniak.core.twofactorauth.front.TwoFactorAuthApprovalAutoManagedBottomSheet
 import com.infomaniak.core.ui.compose.basics.CallableState
@@ -69,7 +69,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import splitties.experimental.ExperimentalSplittiesApi
 import javax.inject.Inject
-import com.infomaniak.core.R as RCore
+import com.infomaniak.core.common.R as RCore
 
 val twoFactorAuthManager = TwoFactorAuthManager { userId -> AccountUtils.getHttpClient(userId) }
 

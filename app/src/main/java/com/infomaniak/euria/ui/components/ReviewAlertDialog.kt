@@ -20,7 +20,7 @@ package com.infomaniak.euria.ui.components
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.infomaniak.euria.R
-import com.infomaniak.core.R as RCore
+import com.infomaniak.core.common.R as RCore
 
 @Composable
 fun ReviewAlertDialog(onUserWantsToReview: () -> Unit, onUserWantsToGiveFeedback: () -> Unit, onDismiss: () -> Unit) {
