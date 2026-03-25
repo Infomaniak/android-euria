@@ -117,6 +117,7 @@ fun EuriaMainScreen(
             onPageSucessfullyLoaded = { webView ->
                 // Waiting to get the WebView to inject CSS
                 webViewUtils.applySafeAreaInsets(webView, insets, density, layoutDirection)
+                webViewUtils.setupKeyboardDetection(webView, insets, density)
                 mainViewModel.hasSeenWebView = true
                 keepSplashScreen(false)
             },
