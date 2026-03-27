@@ -46,6 +46,7 @@ import com.infomaniak.core.common.extensions.serializableExtra
 import com.infomaniak.core.common.observe
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
 import com.infomaniak.core.inappreview.reviewmanagers.InAppReviewManager
+import com.infomaniak.core.network.api.InternalTranslatedErrorCode
 import com.infomaniak.core.twofactorauth.back.TwoFactorAuthManager
 import com.infomaniak.core.twofactorauth.front.TwoFactorAuthApprovalAutoManagedBottomSheet
 import com.infomaniak.core.ui.compose.basics.CallableState
@@ -387,8 +388,8 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
         ): String {
             return context.getString(
                 when (error) {
-                    InfomaniakLogin.ErrorStatus.SERVER -> R.string.serverError
-                    InfomaniakLogin.ErrorStatus.CONNECTION -> R.string.connectionError
+                    InfomaniakLogin.ErrorStatus.SERVER -> InternalTranslatedErrorCode.ServerError.translateRes
+                    InfomaniakLogin.ErrorStatus.CONNECTION -> InternalTranslatedErrorCode.ConnectionError.translateRes
                     else -> RCore.string.anErrorHasOccurred
                 }
             )

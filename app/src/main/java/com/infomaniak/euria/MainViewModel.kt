@@ -1,6 +1,6 @@
 /*
  * Infomaniak Euria - Android
- * Copyright (C) 2025 Infomaniak Network SA
+ * Copyright (C) 2025-2026 Infomaniak Network SA
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ import com.infomaniak.core.auth.extensions.logoutToken
 import com.infomaniak.core.auth.models.user.User
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
 import com.infomaniak.core.network.NetworkAvailability
+import com.infomaniak.core.network.api.InternalTranslatedErrorCode
 import com.infomaniak.core.network.networking.DefaultHttpClientProvider
 import com.infomaniak.core.sentry.SentryLog
 import com.infomaniak.core.ui.compose.basics.CallableState
@@ -134,7 +135,7 @@ class MainViewModel @Inject constructor(
                 // so the user will already exist in DB.
                 AccountUtils.upsertUser(it)
             } ?: run {
-                showError(context.getString(R.string.connectionError))
+                showError(context.getString(InternalTranslatedErrorCode.ConnectionError.translateRes))
             }
         }
     }
