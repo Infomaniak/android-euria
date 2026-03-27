@@ -18,9 +18,6 @@
 
 <resources>
     <string name="appName" translatable="false">Euria</string>
-
-    <string name="buttonStart">Start</string>
-    <string name="connectionError">Internet connection problem</string>
     <string name="contentDescriptionCamera">Launch the camera to take a picture</string>
     <string name="contentDescriptionChat">Chat with Euria</string>
     <string name="contentDescriptionEphemeralChat">Ephemeral chat</string>
@@ -40,5 +37,4 @@
     <string name="onboardingLoginTitle">Ready to start?</string>
     <string name="onboardingPrivacyDescription">Nothing is collected, your data belongs to you.</string>
     <string name="onboardingPrivacyTitle">Euria is hosted in Switzerland.</string>
-    <string name="serverError">Server Error</string>
 </resources>

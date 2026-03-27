@@ -17,8 +17,6 @@
   -->
 
 <resources>
-    <string name="buttonStart">Starten</string>
-    <string name="connectionError">Problem mit der Internetverbindung</string>
     <string name="contentDescriptionCamera">Starten Sie die Kamera, um ein Bild aufzunehmen</string>
     <string name="contentDescriptionChat">Mit Euria chatten</string>
     <string name="contentDescriptionEphemeralChat">Kurzfristiger Chat</string>
@@ -38,5 +36,4 @@
     <string name="onboardingLoginTitle">Bereit zum Start?</string>
     <string name="onboardingPrivacyDescription">Es wird nichts gesammelt, Ihre Daten gehören Ihnen.</string>
     <string name="onboardingPrivacyTitle">Euria ist in der Schweiz beheimatet.</string>
-    <string name="serverError">Server-Fehler</string>
 </resources>
