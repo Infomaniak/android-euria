@@ -150,10 +150,14 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.compose.ui.android)
+
+    // Hilt
     implementation(libs.hilt.android)
     implementation(libs.hilt.androidx.work)
     kapt(libs.hilt.android.compiler)
     kapt(libs.hilt.androidx.compiler)
+    kapt(libs.room.processing) // TODO[workaround]: Remove when https://github.com/google/dagger/issues/4693 is fixed.
+
     implementation(libs.kotlinx.serialization.json)
     implementation(core.compose.material3)
     implementation(core.compose.runtime)
