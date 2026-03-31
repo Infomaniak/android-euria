@@ -103,8 +103,7 @@ class WebViewUtils(
             val keyboardHeightCss = keyboardHeight.toDp(webView)
             val safeBottomCss = (if (keyboardHeight > 0) keyboardHeight else bottom).toDp(webView)
 
-            webView.evaluateJavascript(
-                """
+            webView.evaluateJavascript("""
             document.documentElement.style.setProperty('--android-screen-height', '${screenHeightCss}px');
             document.documentElement.style.setProperty('--android-viewport-height', '${visibleHeightCss}px');
             document.documentElement.style.setProperty('--android-keyboard-height', '${keyboardHeightCss}px');
