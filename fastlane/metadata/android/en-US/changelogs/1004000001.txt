@@ -1,0 +1,2 @@
+• Improved keyboard handling
+• Better error messages for network issues
