@@ -15,7 +15,6 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-
 <resources>
     <string name="contentDescriptionCamera">Lancer la caméra pour prendre une photo</string>
     <string name="contentDescriptionChat">Discuter avec Euria</string>

@@ -1,4 +1,4 @@
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Infomaniak Euria - Android
   ~ Copyright (C) 2025 Infomaniak Network SA
   ~
@@ -15,7 +15,6 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-
 <resources>
     <string name="appName" translatable="false">Euria</string>
     <string name="contentDescriptionCamera">Launch the camera to take a picture</string>
