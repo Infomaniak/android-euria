@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Infomaniak Euria - Android
+  ~ Copyright (C) 2026 Infomaniak Network SA
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+<resources>
+    <string name="contentDescriptionCamera">Starta kameran för att ta en bild</string>
+    <string name="contentDescriptionChat">Chatta med Euria</string>
+    <string name="contentDescriptionEphemeralChat">Tillfällig chatt</string>
+    <string name="contentDescriptionMicrophone">Röstchatt</string>
+    <string name="noNetworkDescription">Kontrollera din internetanslutning och försök igen för att återuppta konversationen</string>
+    <string name="noNetworkTitle">Ingen internetåtkomst</string>
+    <string name="noWebViewAvailable">Appen kräver WebView-komponenten för att fungera. Aktivera eller uppdatera den från Play Store.</string>
+    <string name="onboardingDatacenterDescription" formatted="false">AI-energin återanvänds till 100%.</string>
+    <string name="onboardingDatacenterTitle">Euria värmer hem.</string>
+    <string name="onboardingEphemeralDescriptionArguments">Euria lagrar inga spår</string>
+    <string name="onboardingEphemeralDescriptionTemplate">%s av dina utbyten.</string>
+    <string name="onboardingEphemeralTitle">Med tillfälligt läge,</string>
+    <string name="onboardingEuriaDescription">Suverän AI som respekterar dina data och planeten.</string>
+    <string name="onboardingEuriaTitle">Välkommen till Euria</string>
+    <string name="onboardingLoginArguments">Chatta nu</string>
+    <string name="onboardingLoginTemplate">%s med Euria.</string>
+    <string name="onboardingLoginTitle">Redo att börja?</string>
+    <string name="onboardingPrivacyDescription">Inget samlas in, dina data tillhör dig.</string>
+    <string name="onboardingPrivacyTitle">Euria är värd i Schweiz.</string>
+</resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Infomaniak Euria - Android
+  ~ Copyright (C) 2026 Infomaniak Network SA
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+<resources>
+    <string name="contentDescriptionCamera">Εκκίνηση της κάμερας για να τραβήξετε μια φωτογραφία</string>
+    <string name="contentDescriptionChat">Συνομιλία με το Euria</string>
+    <string name="contentDescriptionEphemeralChat">Παροδική συνομιλία</string>
+    <string name="contentDescriptionMicrophone">Φωνητική συνομιλία</string>
+    <string name="noNetworkDescription">Ελέγξτε τη σύνδεσή σας στο Internet και προσπαθήστε ξανά για να συνεχίσετε τη συνομιλία σας</string>
+    <string name="noNetworkTitle">Χωρίς πρόσβαση στο Internet</string>
+    <string name="noWebViewAvailable">Η εφαρμογή απαιτεί το στοιχείο WebView για να λειτουργήσει. Ενεργοποιήστε το ή ενημερώστε το από το Play Store.</string>
+    <string name="onboardingDatacenterDescription" formatted="false">Η ενέργεια της ΤΝ αξιοποιείται κατά 100%.</string>
+    <string name="onboardingDatacenterTitle">Το Euria θερμαίνει σπίτια.</string>
+    <string name="onboardingEphemeralDescriptionArguments">Το Euria δεν διατηρεί ίχνη</string>
+    <string name="onboardingEphemeralDescriptionTemplate">%s των ανταλλαγών σας.</string>
+    <string name="onboardingEphemeralTitle">Με την παροδική λειτουργία,</string>
+    <string name="onboardingEuriaDescription">Κυρίαρχη ΤΝ που σέβεται τα δεδομένα σας και τον πλανήτη.</string>
+    <string name="onboardingEuriaTitle">Καλώς ήρθατε στο Euria</string>
+    <string name="onboardingLoginArguments">Συνομίλησε τώρα</string>
+    <string name="onboardingLoginTemplate">%s με το Euria.</string>
+    <string name="onboardingLoginTitle">Έτοιμοι να ξεκινήσετε;</string>
+    <string name="onboardingPrivacyDescription">Τίποτα δεν συλλέγεται, τα δεδομένα σας σας ανήκουν.</string>
+    <string name="onboardingPrivacyTitle">Το Euria φιλοξενείται στην Ελβετία.</string>
+</resources>

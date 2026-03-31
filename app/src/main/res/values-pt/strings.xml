@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Infomaniak Euria - Android
+  ~ Copyright (C) 2026 Infomaniak Network SA
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+<resources>
+    <string name="contentDescriptionCamera">Iniciar a câmara para tirar uma foto</string>
+    <string name="contentDescriptionChat">Conversar com o Euria</string>
+    <string name="contentDescriptionEphemeralChat">Chat efémero</string>
+    <string name="contentDescriptionMicrophone">Chat de voz</string>
+    <string name="noNetworkDescription">Verifique a sua ligação à Internet e tente novamente para retomar a conversa</string>
+    <string name="noNetworkTitle">Sem acesso à Internet</string>
+    <string name="noWebViewAvailable">A aplicação requer o componente WebView para funcionar. Por favor, ative-o ou atualize-o a partir da Play Store.</string>
+    <string name="onboardingDatacenterDescription" formatted="false">A energia da IA é 100% revalorizada.</string>
+    <string name="onboardingDatacenterTitle">O Euria aquece habitações.</string>
+    <string name="onboardingEphemeralDescriptionArguments">O Euria não guarda registo</string>
+    <string name="onboardingEphemeralDescriptionTemplate">%s das suas trocas.</string>
+    <string name="onboardingEphemeralTitle">Com o modo efémero,</string>
+    <string name="onboardingEuriaDescription">IA soberana que respeita os seus dados e o planeta.</string>
+    <string name="onboardingEuriaTitle">Bem-vindo ao Euria</string>
+    <string name="onboardingLoginArguments">Converse agora</string>
+    <string name="onboardingLoginTemplate">%s com o Euria.</string>
+    <string name="onboardingLoginTitle">Pronto para começar?</string>
+    <string name="onboardingPrivacyDescription">Nada é recolhido, os seus dados são seus.</string>
+    <string name="onboardingPrivacyTitle">O Euria está alojado na Suíça.</string>
+</resources>

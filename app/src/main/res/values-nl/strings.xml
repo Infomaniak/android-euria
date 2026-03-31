@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Infomaniak Euria - Android
+  ~ Copyright (C) 2026 Infomaniak Network SA
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+<resources>
+    <string name="contentDescriptionCamera">Start de camera om een foto te maken</string>
+    <string name="contentDescriptionChat">Chatten met Euria</string>
+    <string name="contentDescriptionEphemeralChat">Vergankelijke chat</string>
+    <string name="contentDescriptionMicrophone">Spraakchat</string>
+    <string name="noNetworkDescription">Controleer uw internetverbinding en probeer het opnieuw om uw gesprek te hervatten</string>
+    <string name="noNetworkTitle">Geen internettoegang</string>
+    <string name="noWebViewAvailable">De applicatie heeft de WebView-component nodig om te functioneren. Activeer of update deze via de Play Store.</string>
+    <string name="onboardingDatacenterDescription" formatted="false">KI-energie wordt voor 100% herwaardeerd.</string>
+    <string name="onboardingDatacenterTitle">Euria verwarmt woningen.</string>
+    <string name="onboardingEphemeralDescriptionArguments">Euria bewaart geen spoor</string>
+    <string name="onboardingEphemeralDescriptionTemplate">%s van uw uitwisselingen.</string>
+    <string name="onboardingEphemeralTitle">Met de vergankelijke modus,</string>
+    <string name="onboardingEuriaDescription">Soevereine AI die uw gegevens en de planeet respecteert.</string>
+    <string name="onboardingEuriaTitle">Welkom bij Euria</string>
+    <string name="onboardingLoginArguments">Chat nu</string>
+    <string name="onboardingLoginTemplate">%s met Euria.</string>
+    <string name="onboardingLoginTitle">Klaar om te beginnen?</string>
+    <string name="onboardingPrivacyDescription">Er wordt niets verzameld, uw gegevens zijn van u.</string>
+    <string name="onboardingPrivacyTitle">Euria wordt gehost in Zwitserland.</string>
+</resources>
