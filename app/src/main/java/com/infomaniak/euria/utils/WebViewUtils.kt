@@ -32,6 +32,8 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.content.ContextCompat
 import androidx.core.os.ConfigurationCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat.Type
 import com.infomaniak.core.ui.view.toDp
 import com.infomaniak.euria.EURIA_MAIN_URL
 import com.infomaniak.euria.MainActivity.Companion.EXTRA_QUERY
@@ -90,6 +92,34 @@ class WebViewUtils(
     """.trimIndent()
 
         webView.evaluateJavascript(script, null)
+    }
+
+    fun setupKeyboardDetection(webView: WebView, insets: WindowInsets, density: Density) {
+        val bottom = insets.getBottom(density)
+
+        fun updateViewport(keyboardHeight: Int) {
+            val screenHeightCss = webView.height.toDp(webView)
+            val visibleHeightCss = (webView.height - keyboardHeight).toDp(webView)
+            val keyboardHeightCss = keyboardHeight.toDp(webView)
+            val safeBottomCss = (if (keyboardHeight > 0) keyboardHeight else bottom).toDp(webView)
+
+            webView.evaluateJavascript("""
+            document.documentElement.style.setProperty('--android-screen-height', '${screenHeightCss}px');
+            document.documentElement.style.setProperty('--android-viewport-height', '${visibleHeightCss}px');
+            document.documentElement.style.setProperty('--android-keyboard-height', '${keyboardHeightCss}px');
+            document.documentElement.style.setProperty('--android-safe-area-inset-bottom', '${safeBottomCss}px');
+            """.trimIndent(),
+                null
+            )
+        }
+
+        updateViewport(0)
+
+        ViewCompat.setOnApplyWindowInsetsListener(webView) { _, insets ->
+            val imeHeight = insets.getInsets(Type.ime()).bottom
+            updateViewport(imeHeight)
+            insets
+        }
     }
 
     fun updateWebViewQueryFrom(intent: Intent, updateWebViewQuery: (String) -> Unit) {
