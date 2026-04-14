@@ -40,6 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.infomaniak.core.common.extensions.openUrl
 import com.infomaniak.core.common.extensions.parcelable
 import com.infomaniak.core.common.extensions.parcelableArrayList
 import com.infomaniak.core.common.extensions.serializableExtra
@@ -112,7 +113,7 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
                 onCancelFileUpload = { localId -> uploadManager.cancelUpload(localId) },
                 onOpenCamera = { takePicturePreviewLauncher.launch(null) },
                 onOpenReview = { mainViewModel.shouldShowInAppReview(true) },
-                onUpgrade = { startAccountUpgrade() },
+                onUpgradeWithLink = { url -> this@MainActivity.openUrl(url) },
             )
         )
     }
@@ -341,18 +342,6 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
             createAccountUrl = CREATE_ACCOUNT_URL,
             successHost = CREATE_ACCOUNT_SUCCESS_HOST,
             cancelHost = CREATE_ACCOUNT_CANCEL_HOST,
-        )
-    }
-
-    private fun startAccountUpgrade() {
-        mainViewModel.infomaniakLogin.startCreateAccountWebView(
-            resultLauncher = createAccountResultLauncher,
-            createAccountUrl = UPGRADE_ACCOUNT_URL,
-            successHost = CREATE_ACCOUNT_SUCCESS_HOST,
-            cancelHost = CREATE_ACCOUNT_CANCEL_HOST,
-            headers = mapOf("Authorization" to "Bearer ${AccountUtils.currentUser?.apiToken?.accessToken}"),
-            removeCookies = false,
-            ignoreFirstCancelUrl = true,
         )
     }
 
