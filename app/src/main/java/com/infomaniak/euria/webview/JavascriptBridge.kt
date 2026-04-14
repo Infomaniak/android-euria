@@ -1,6 +1,6 @@
 /*
  * Infomaniak Euria - Android
- * Copyright (C) 2025 Infomaniak Network SA
+ * Copyright (C) 2025-2026 Infomaniak Network SA
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ data class JavascriptBridge(
     private val onCancelFileUpload: (String) -> Unit,
     private val onOpenCamera: () -> Unit,
     private val onOpenReview: () -> Unit,
-    private val onUpgrade: () -> Unit,
+    private val onUpgradeWithLink: (url: String) -> Unit,
 ) {
 
     @JavascriptInterface
@@ -78,13 +78,14 @@ data class JavascriptBridge(
         onOpenCamera()
     }
 
+    @JavascriptInterface
     fun openReview() {
         onOpenReview()
     }
 
     @JavascriptInterface
-    fun upgrade() {
-        onUpgrade()
+    fun upgradeWithLink(link: String) {
+        onUpgradeWithLink(link)
     }
 
     companion object {
