@@ -67,7 +67,7 @@ android-euria/
 ## Universal Conventions
 
 - **Kotlin style**: Official Kotlin style guide, enforced via `.editorconfig` (from Core)
-- **Commit format**: Conventional commits recommended
+- **Commit format**: Conventional commits enforced — `<type>[(<scope>)]: <Uppercase message>`. Allowed types: `feat`, `fix`, `chore`, `docs`, `style`, `refactor`, `perf`, `ci`, `test`. The message after `: ` **must start with an uppercase letter or digit** (e.g. `feat(auth): Add login support`).
 - **Branch strategy**: Feature branches → main; open an issue before a PR
 - **PR requirements**: CI must pass; one review required
 - **Never commit**: `env.properties`, API tokens, `local.properties`, or any credentials
