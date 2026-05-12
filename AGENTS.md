@@ -69,7 +69,7 @@ android-euria/
 - **Kotlin style**: Official Kotlin style guide, enforced via `.editorconfig` (from Core)
 - **Commit format**: Conventional commits recommended
 - **Branch strategy**: Feature branches → main; open an issue before a PR
-- **PR requirements**: CI must pass; one review required for significant changes
+- **PR requirements**: CI must pass; one review required
 - **Never commit**: `env.properties`, API tokens, `local.properties`, or any credentials
 
 ## Security & Secrets
@@ -198,3 +198,10 @@ rg -n "class.*Worker" app/src/
 - [ ] Background work uses `WorkManager` or coroutines launched from a `ViewModel`/`applicationScope`
 - [ ] Native↔Web interactions go through `JavascriptBridge` and documented JS function contracts
 - [ ] No secrets or tokens committed (verify `env.properties` is gitignored)
+
+## Learned Preferences
+
+> This section is maintained by AI agents. Add entries here when a review or PR reveals a preference, convention, or pattern that should be remembered for future work.
+
+<!-- Format: `- **<topic>**: <concise rule or preference>` -->
+
