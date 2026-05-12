@@ -18,7 +18,7 @@ android-euria/
 │   └── src/
 │       ├── main/java/com/infomaniak/euria/
 │       │   ├── data/               # Local persistence (LocalSettings via SharedPreferences) and API models
-│       │   ├── di/                 # Hilt DI modules (CoroutineDispatchers)
+│       │   ├── di/                 # Hilt DI modules (CoroutinesDispatchersModule, CoroutinesQualifiers)
 │       │   ├── network/            # ApiRepository (extends Core's ApiRepositoryCore)
 │       │   ├── services/           # WorkManager workers (DeviceInfoUpdateWorker)
 │       │   ├── ui/                 # Compose screens and components
