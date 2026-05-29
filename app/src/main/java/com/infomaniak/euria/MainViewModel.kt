@@ -30,6 +30,8 @@ import androidx.lifecycle.viewModelScope
 import com.infomaniak.core.auth.extensions.logoutToken
 import com.infomaniak.core.auth.models.user.User
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
+import com.infomaniak.core.login.ApiToken
+import com.infomaniak.core.login.InfomaniakLogin
 import com.infomaniak.core.network.NetworkAvailability
 import com.infomaniak.core.network.api.InternalTranslatedErrorCode
 import com.infomaniak.core.network.networking.DefaultHttpClientProvider
@@ -43,8 +45,6 @@ import com.infomaniak.euria.utils.AccountUtils
 import com.infomaniak.euria.utils.AccountUtils.requestCurrentUser
 import com.infomaniak.euria.utils.OkHttpClientProvider
 import com.infomaniak.euria.utils.extensions.getInfomaniakLogin
-import com.infomaniak.lib.login.ApiToken
-import com.infomaniak.lib.login.InfomaniakLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException

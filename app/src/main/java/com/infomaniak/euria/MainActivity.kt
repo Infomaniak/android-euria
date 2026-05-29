@@ -40,6 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.infomaniak.core.common.extensions.isNightModeEnabled
 import com.infomaniak.core.common.extensions.openUrl
 import com.infomaniak.core.common.extensions.parcelable
 import com.infomaniak.core.common.extensions.parcelableArrayList
@@ -47,6 +48,7 @@ import com.infomaniak.core.common.extensions.serializableExtra
 import com.infomaniak.core.common.observe
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
 import com.infomaniak.core.inappreview.reviewmanagers.InAppReviewManager
+import com.infomaniak.core.login.InfomaniakLogin
 import com.infomaniak.core.network.api.InternalTranslatedErrorCode
 import com.infomaniak.core.twofactorauth.back.TwoFactorAuthManager
 import com.infomaniak.core.twofactorauth.front.TwoFactorAuthApprovalAutoManagedBottomSheet
@@ -62,7 +64,6 @@ import com.infomaniak.euria.upload.UploadManager
 import com.infomaniak.euria.utils.AccountUtils
 import com.infomaniak.euria.utils.WebViewUtils
 import com.infomaniak.euria.webview.JavascriptBridge
-import com.infomaniak.lib.login.InfomaniakLogin
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -213,7 +214,7 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
                         }
                     }
 
-                    TwoFactorAuthApprovalAutoManagedBottomSheet(twoFactorAuthManager)
+                    TwoFactorAuthApprovalAutoManagedBottomSheet(twoFactorAuthManager, isNightModeEnabled())
                 }
             }
         }
