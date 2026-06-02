@@ -1,0 +1,2 @@
+• Improved two-factor approval display in dark mode
+• Internal updates for better stability and compatibility
