@@ -1,0 +1,2 @@
+• Affichage de l'approbation à deux facteurs amélioré en mode sombre
+• Mises à jour internes pour une meilleure stabilité et compatibilité
