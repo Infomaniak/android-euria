@@ -34,7 +34,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.ConfigurationCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat.Type
-import com.infomaniak.core.ui.view.toDp
+import com.infomaniak.core.ui.view.utils.toDp
 import com.infomaniak.euria.EURIA_MAIN_URL
 import com.infomaniak.euria.MainActivity.Companion.EXTRA_QUERY
 import com.infomaniak.euria.webview.CustomWebChromeClient
