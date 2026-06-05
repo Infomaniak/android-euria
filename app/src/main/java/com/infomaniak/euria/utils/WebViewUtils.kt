@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.content.ContextCompat
 import androidx.core.os.ConfigurationCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat.Type
+import androidx.core.view.WindowInsetsCompat
 import com.infomaniak.core.ui.view.utils.toDp
 import com.infomaniak.euria.EURIA_MAIN_URL
 import com.infomaniak.euria.MainActivity.Companion.EXTRA_QUERY
@@ -95,31 +95,46 @@ class WebViewUtils(
     }
 
     fun setupKeyboardDetection(webView: WebView, insets: WindowInsets, density: Density) {
-        val bottom = insets.getBottom(density)
+        // Ensure WebView doesn't consume insets automatically
+        webView.fitsSystemWindows = false
 
-        fun updateViewport(keyboardHeight: Int) {
-            val screenHeightCss = webView.height.toDp(webView)
-            val visibleHeightCss = (webView.height - keyboardHeight).toDp(webView)
-            val keyboardHeightCss = keyboardHeight.toDp(webView)
-            val safeBottomCss = (if (keyboardHeight > 0) keyboardHeight else bottom).toDp(webView)
+        // Helper to convert pixels to DP for CSS
+        fun Int.toDp(): String = (this / webView.context.resources.displayMetrics.density).toInt().toString()
 
+        // Listener callback
+        fun updateViewport(insets: WindowInsetsCompat) {
+            // Get IME (Keyboard) insets
+            val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
+            val keyboardHeight = imeInsets.bottom
+
+            // Get System Bars (Status/Nav) insets for safe area
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val safeBottom = if (keyboardHeight > 0) keyboardHeight else systemBars.bottom
+
+            // Get CSS values
+            val screenHeightCss = webView.height.toDp()
+            val visibleHeightCss = (webView.height - keyboardHeight).toDp()
+            val keyboardHeightCss = keyboardHeight.toDp()
+            val safeBottomCss = safeBottom.toDp()
+
+            // Inject CSS values
             webView.evaluateJavascript("""
             document.documentElement.style.setProperty('--android-screen-height', '${screenHeightCss}px');
             document.documentElement.style.setProperty('--android-viewport-height', '${visibleHeightCss}px');
             document.documentElement.style.setProperty('--android-keyboard-height', '${keyboardHeightCss}px');
             document.documentElement.style.setProperty('--android-safe-area-inset-bottom', '${safeBottomCss}px');
-            """.trimIndent(),
-                null
-            )
+            """.trimIndent(), null)
         }
 
-        updateViewport(0)
-
+        // Set the listener
         ViewCompat.setOnApplyWindowInsetsListener(webView) { _, insets ->
-            val imeHeight = insets.getInsets(Type.ime()).bottom
-            updateViewport(imeHeight)
+            updateViewport(insets)
+
             insets
         }
+
+        // Trigger the listener immediately to handle initial state
+        ViewCompat.requestApplyInsets(webView)
     }
 
     fun updateWebViewQueryFrom(intent: Intent, updateWebViewQuery: (String) -> Unit) {
