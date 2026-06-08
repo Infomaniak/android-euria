@@ -98,42 +98,34 @@ class WebViewUtils(
         // Ensure WebView doesn't consume insets automatically
         webView.fitsSystemWindows = false
 
-        // Helper to convert pixels to DP for CSS
         fun Int.toDp(): String = (this / webView.context.resources.displayMetrics.density).toInt().toString()
 
-        // Listener callback
         fun updateViewport(insets: WindowInsetsCompat) {
-            // Get IME (Keyboard) insets
             val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
             val keyboardHeight = imeInsets.bottom
 
-            // Get System Bars (Status/Nav) insets for safe area
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            val safeBottom = if (keyboardHeight > 0) keyboardHeight else systemBars.bottom
+            val safeBottomCss = (if (keyboardHeight > 0) keyboardHeight else systemBars.bottom).toDp()
 
-            // Get CSS values
             val screenHeightCss = webView.height.toDp()
             val visibleHeightCss = (webView.height - keyboardHeight).toDp()
             val keyboardHeightCss = keyboardHeight.toDp()
-            val safeBottomCss = safeBottom.toDp()
-
-            // Inject CSS values
-            webView.evaluateJavascript("""
+            webView.evaluateJavascript(
+                """
             document.documentElement.style.setProperty('--android-screen-height', '${screenHeightCss}px');
             document.documentElement.style.setProperty('--android-viewport-height', '${visibleHeightCss}px');
             document.documentElement.style.setProperty('--android-keyboard-height', '${keyboardHeightCss}px');
             document.documentElement.style.setProperty('--android-safe-area-inset-bottom', '${safeBottomCss}px');
-            """.trimIndent(), null)
+            """.trimIndent(), null
+            )
         }
 
-        // Set the listener
         ViewCompat.setOnApplyWindowInsetsListener(webView) { _, insets ->
             updateViewport(insets)
 
             insets
         }
 
-        // Trigger the listener immediately to handle initial state
         ViewCompat.requestApplyInsets(webView)
     }
 
