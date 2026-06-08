@@ -62,7 +62,7 @@ open class MainApplication : Application() {
 
         AccountUtils.init()
 
-        this.configureSentry(isDebug = BuildConfig.DEBUG, isSentryTrackingEnabled = true)
+        this.configureSentry(isDebug = BuildConfig.DEBUG, isSentryTrackingEnabled = { true })
         notificationUtils.initNotificationChannel()
 
         applicationScope.launch {
