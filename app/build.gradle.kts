@@ -101,7 +101,7 @@ android {
 
     val envProperties = rootProject.file("env.properties")
         .takeIf { it.exists() }
-        ?.let { file -> Properties().also { it.load(file.reader()) } }
+        ?.let { file -> Properties().also { file.inputStream().use(it::load) } }
 
     val sentryAuthToken = envProperties?.getProperty("sentryAuthToken")
         .takeUnless { it.isNullOrBlank() }
