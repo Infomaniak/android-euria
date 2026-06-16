@@ -53,7 +53,7 @@ class CustomWebViewClient(
     private var hasReceivedError = false
 
     private val urlsToDownloadFlow = scope.dynamicLazyMap(cacheManager = { _, _ -> awaitCancellation() }) { url: String ->
-        Channel<Unit>(capacity = Channel.BUFFERED).also { triggerDlEvents ->
+        Channel<Unit>(capacity = Channel.CONFLATED).also { triggerDlEvents ->
             if (url.isEmpty()) return@also
 
             triggerDlEvents.receiveAsFlow()
