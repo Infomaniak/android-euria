@@ -77,7 +77,7 @@ class CustomWebViewClient(
         val euriaHost = EURIA_MAIN_URL.toHttpUrl().host
         val path = request.url.encodedPath.orEmpty()
 
-        if (host == euriaHost && path.contains("/download")) {
+        if (host == euriaHost && path.endsWith("/download")) {
             triggerDownloadOnce(url)
             return true
         }
