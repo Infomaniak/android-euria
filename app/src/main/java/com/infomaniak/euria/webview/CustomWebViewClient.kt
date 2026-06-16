@@ -1,6 +1,6 @@
 /*
  * Infomaniak Euria - Android
- * Copyright (C) 2025 Infomaniak Network SA
+ * Copyright (C) 2025-2026 Infomaniak Network SA
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,25 +25,65 @@ import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.infomaniak.core.common.dynamicLazyMap
 import com.infomaniak.euria.BuildConfig
 import com.infomaniak.euria.EURIA_MAIN_URL
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
+@OptIn(FlowPreview::class)
 class CustomWebViewClient(
-    private val onPageSucessfullyLoaded: (WebView) -> Unit,
+    private val scope: CoroutineScope,
+    private val onPageSuccessfullyLoaded: (WebView) -> Unit,
+    private val onDownloadRequest: (url: String) -> Unit = {},
 ) : WebViewClient() {
 
     private var hasReceivedError = false
 
+    private val urlsToDownloadFlow = scope.dynamicLazyMap(cacheManager = { _, _ -> awaitCancellation() }) { url: String ->
+        Channel<Unit>(capacity = Channel.BUFFERED).also { triggerDlEvents ->
+            if (url.isEmpty()) return@also
+
+            triggerDlEvents.receiveAsFlow()
+                .onEach {
+                    withContext(Dispatchers.Main) {
+                        onDownloadRequest(url)
+                    }
+                    delay(1_500.toDuration(DurationUnit.MILLISECONDS))
+                }.launchIn(scope)
+        }
+    }
+
     @SuppressLint("WebViewClientOnReceivedSslError")
     override fun onReceivedSslError(view: WebView, handler: SslErrorHandler, error: SslError) {
-        // In order to use localhost, we have to ignore all SSL errors and proceed
         if (BuildConfig.DEBUG) handler.proceed()
     }
 
     override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-        return when (request.url.host) {
-            EURIA_MAIN_URL.toHttpUrl().host -> false
+        val url = request.url.toString()
+        val host = request.url.host
+        val euriaHost = EURIA_MAIN_URL.toHttpUrl().host
+        val path = request.url.encodedPath.orEmpty()
+
+        if (host == euriaHost && path.contains("/download")) {
+            triggerDownloadOnce(url)
+            return true
+        }
+
+        return when (host) {
+            euriaHost -> false
             else -> {
                 openExternalBrowser(view, request)
                 true
@@ -51,9 +91,15 @@ class CustomWebViewClient(
         }
     }
 
+    private fun triggerDownloadOnce(url: String) {
+        scope.launch {
+            urlsToDownloadFlow.useElement(url) { it.trySend(Unit) }
+        }
+    }
+
     override fun onPageFinished(view: WebView, url: String?) {
         super.onPageFinished(view, url)
-        if (!hasReceivedError) onPageSucessfullyLoaded(view)
+        if (!hasReceivedError) onPageSuccessfullyLoaded(view)
     }
 
     override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {

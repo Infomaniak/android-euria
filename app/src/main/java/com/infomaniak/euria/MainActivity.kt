@@ -95,6 +95,7 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
     private val webViewUtils: WebViewUtils by lazy {
         WebViewUtils(
             context = applicationContext,
+            scope = lifecycleScope,
             javascriptBridge = JavascriptBridge(
                 onLogin = { openLoginWebView() },
                 onLogout = { mainViewModel.logout() },
