@@ -166,24 +166,26 @@ class WebViewUtils(
 
     fun startDownloadAsync(url: String, userId: Int) {
         scope.launch(Dispatchers.IO) {
-            val uri = url.toUri()
-            val httpClient = AccountUtils.getHttpClient(userId)
-            val headResponse = httpClient.newCall(Request.Builder().url(url).head().build()).execute()
-            val contentDisposition = headResponse.header("Content-Disposition") ?: ""
-            headResponse.close()
+            runCatching {
+                val uri = url.toUri()
+                val httpClient = AccountUtils.getHttpClient(userId)
+                val contentDisposition = httpClient.newCall(Request.Builder().url(url).head().build())
+                    .execute()
+                    .use { it.header("Content-Disposition") ?: "" }
 
-            val filename = extractFilename(contentDisposition) ?: uri.lastPathSegment ?: "download"
+                val filename = extractFilename(contentDisposition) ?: uri.lastPathSegment ?: "download"
 
-            val request = DownloadManager.Request(uri).apply {
-                addRequestHeader("Authorization", "Bearer ${AccountUtils.requestCurrentUser()?.apiToken?.accessToken}")
+                val request = DownloadManager.Request(uri).apply {
+                    addRequestHeader("Authorization", "Bearer ${AccountUtils.requestCurrentUser()?.apiToken?.accessToken}")
 
-                setTitle(filename)
-                setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE or DownloadManager.Request.NETWORK_WIFI)
-                setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename)
-                setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                    setTitle(filename)
+                    setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE or DownloadManager.Request.NETWORK_WIFI)
+                    setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, filename)
+                    setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                }
+
+                (context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager).enqueue(request)
             }
-
-            (context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager).enqueue(request)
         }
     }
 
