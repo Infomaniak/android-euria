@@ -25,7 +25,9 @@ import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.core.net.toUri
 import com.infomaniak.core.common.dynamicLazyMap
+import com.infomaniak.core.common.extensions.goToAppStore
 import com.infomaniak.euria.BuildConfig
 import com.infomaniak.euria.EURIA_MAIN_URL
 import kotlinx.coroutines.CoroutineScope
@@ -77,6 +79,10 @@ class CustomWebViewClient(
         val euriaHost = EURIA_MAIN_URL.toHttpUrl().host
         val path = request.url.encodedPath.orEmpty()
 
+        if (url.startsWith("intent://")) {
+            return handleIntentUri(view, url)
+        }
+
         if (host == euriaHost && path.endsWith("/download")) {
             triggerDownloadOnce(url)
             return true
@@ -89,6 +95,26 @@ class CustomWebViewClient(
                 true
             }
         }
+    }
+
+    private fun handleIntentUri(view: WebView, intentUrl: String): Boolean {
+        return runCatching {
+            val intent = Intent.parseUri(intentUrl, Intent.URI_INTENT_SCHEME)
+            val packageName = intent.`package`
+            val fallbackUrl = intent.getStringExtra("browser_fallback_url")
+
+            when {
+                !packageName.isNullOrBlank() -> {
+                    view.context.goToAppStore(packageName)
+                    true
+                }
+                !fallbackUrl.isNullOrBlank() -> {
+                    view.context.startActivity(Intent(Intent.ACTION_VIEW, fallbackUrl.toUri()))
+                    true
+                }
+                else -> false
+            }
+        }.getOrElse { false }
     }
 
     private fun triggerDownloadOnce(url: String) {
