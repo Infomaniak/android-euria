@@ -43,6 +43,7 @@ import com.infomaniak.core.inappreview.reviewmanagers.InAppReviewManager
 import com.infomaniak.core.network.networking.HttpUtils
 import com.infomaniak.core.webview.ui.components.WebView
 import com.infomaniak.euria.EURIA_MAIN_URL
+import com.infomaniak.euria.EnabledFeature
 import com.infomaniak.euria.MainViewModel
 import com.infomaniak.euria.ui.components.ReviewAlertDialog
 import com.infomaniak.euria.upload.UploadManager
@@ -89,6 +90,8 @@ fun EuriaMainScreen(
     LaunchedEffect(Unit) {
         mainViewModel.isWebAppReady.collectLatest { isWebAppReady ->
             if (isWebAppReady) {
+                currentWebview?.evaluateJavascript("enableAppFeatures([${EnabledFeature.getAll()}])", null)
+
                 launch {
                     mainViewModel.filesToShare.receiveAsFlow().collectLatest { filesUris ->
                         // We don't want to add the files to the currently opened conversation.
