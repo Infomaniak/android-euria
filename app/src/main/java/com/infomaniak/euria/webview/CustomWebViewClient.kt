@@ -32,7 +32,6 @@ import com.infomaniak.euria.BuildConfig
 import com.infomaniak.euria.EURIA_MAIN_URL
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -45,7 +44,6 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-@OptIn(FlowPreview::class)
 class CustomWebViewClient(
     private val scope: CoroutineScope,
     private val onPageSuccessfullyLoaded: (WebView) -> Unit,
