@@ -42,7 +42,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import kotlin.time.Duration.Companion.seconds
 
 class CustomWebViewClient(
-    private val scope: CoroutineScope,
+    scope: CoroutineScope,
     private val onPageSuccessfullyLoaded: (WebView) -> Unit,
     private val onDownloadRequest: (url: String) -> Unit = {},
 ) : WebViewClient() {
@@ -53,7 +53,7 @@ class CustomWebViewClient(
         Channel<Unit>(capacity = Channel.RENDEZVOUS).also { triggerDlEvents ->
             if (url.isEmpty()) return@also
 
-            scope.launch(context = Dispatchers.Main, start = CoroutineStart.UNDISPATCHED) {
+            launch(context = Dispatchers.Main, start = CoroutineStart.UNDISPATCHED) {
                 triggerDlEvents.receiveAsFlow().collect {
                     onDownloadRequest(url)
                     delay(1.5.seconds)
