@@ -1,6 +1,6 @@
 /*
  * Infomaniak Euria - Android
- * Copyright (C) 2025 Infomaniak Network SA
+ * Copyright (C) 2025-2026 Infomaniak Network SA
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -42,6 +43,7 @@ import com.infomaniak.core.inappreview.reviewmanagers.InAppReviewManager
 import com.infomaniak.core.network.networking.HttpUtils
 import com.infomaniak.core.webview.ui.components.WebView
 import com.infomaniak.euria.EURIA_MAIN_URL
+import com.infomaniak.euria.EnabledFeature
 import com.infomaniak.euria.MainViewModel
 import com.infomaniak.euria.ui.components.ReviewAlertDialog
 import com.infomaniak.euria.upload.UploadManager
@@ -71,6 +73,7 @@ fun EuriaMainScreen(
     val density = LocalDensity.current
     val layoutDirection = LocalLayoutDirection.current
     val shouldDisplayReviewDialog by mainViewModel.shouldShowInAppReview.collectAsStateWithLifecycle(initialValue = false)
+    val userState by mainViewModel.userState.collectAsStateWithLifecycle()
 
     // Need this to apply the insets to the WebView when these ones changes
     currentWebview?.let { webViewUtils.applySafeAreaInsets(it, insets, density, layoutDirection) }
@@ -87,6 +90,8 @@ fun EuriaMainScreen(
     LaunchedEffect(Unit) {
         mainViewModel.isWebAppReady.collectLatest { isWebAppReady ->
             if (isWebAppReady) {
+                currentWebview?.evaluateJavascript("enableAppFeatures([${EnabledFeature.getAll()}])", null)
+
                 launch {
                     mainViewModel.filesToShare.receiveAsFlow().collectLatest { filesUris ->
                         // We don't want to add the files to the currently opened conversation.
@@ -109,17 +114,25 @@ fun EuriaMainScreen(
 
     ReviewDialog(shouldDisplayReviewDialog, inAppReviewManager, mainViewModel)
 
+    val scope = rememberCoroutineScope()
     WebView(
         url = EURIA_MAIN_URL,
         userAgentString = HttpUtils.getUserAgent,
         domStorageEnabled = true,
         webViewClient = CustomWebViewClient(
-            onPageSucessfullyLoaded = { webView ->
+            scope = scope,
+            onPageSuccessfullyLoaded = { webView ->
                 // Waiting to get the WebView to inject CSS
                 webViewUtils.applySafeAreaInsets(webView, insets, density, layoutDirection)
                 webViewUtils.setupKeyboardDetection(webView, insets, density)
                 mainViewModel.hasSeenWebView = true
                 keepSplashScreen(false)
+            },
+            onDownloadRequest = { url ->
+                val userId = (userState as? MainViewModel.UserState.LoggedIn)?.user?.id
+                if (userId != null) {
+                    webViewUtils.startDownloadAsync(url, userId)
+                }
             },
         ),
         webChromeClient = webViewUtils.getCustomWebChromeClient(

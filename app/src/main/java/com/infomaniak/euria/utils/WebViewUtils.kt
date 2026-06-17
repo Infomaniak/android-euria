@@ -19,10 +19,12 @@
 package com.infomaniak.euria.utils
 
 import android.Manifest
+import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Environment
 import android.webkit.CookieManager
 import android.webkit.PermissionRequest
 import android.webkit.ValueCallback
@@ -31,18 +33,25 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.core.os.ConfigurationCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.infomaniak.core.network.utils.await
 import com.infomaniak.core.ui.view.utils.toDp
 import com.infomaniak.euria.EURIA_MAIN_URL
 import com.infomaniak.euria.MainActivity.Companion.EXTRA_QUERY
 import com.infomaniak.euria.webview.CustomWebChromeClient
 import com.infomaniak.euria.webview.JavascriptBridge
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.Request
 
 class WebViewUtils(
     private val context: Context,
+    private val scope: CoroutineScope,
     val javascriptBridge: JavascriptBridge,
 ) {
 
@@ -153,6 +162,42 @@ class WebViewUtils(
             deeplink.endsWith("euria") -> EURIA_MAIN_URL
             deeplink.startsWith("/all") -> "$EURIA_MAIN_URL/${deeplink.substringAfter("euria/")}"
             else -> "$EURIA_MAIN_URL/${deeplink.replace("/euria", "")}"
+        }
+    }
+
+    fun startDownloadAsync(url: String, userId: Int) {
+        scope.launch(Dispatchers.IO) {
+            runCatching {
+                val uri = url.toUri()
+                val httpClient = AccountUtils.getHttpClient(userId)
+                val contentDisposition = httpClient.newCall(Request.Builder().url(url).head().build())
+                    .await()
+                    .use { it.header("Content-Disposition") ?: "" }
+
+                val filename = extractFilename(contentDisposition) ?: uri.lastPathSegment ?: "download"
+
+                val request = DownloadManager.Request(uri).apply {
+                    addRequestHeader("Authorization", "Bearer ${AccountUtils.requestCurrentUser()?.apiToken?.accessToken}")
+
+                    setTitle(filename)
+                    setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE or DownloadManager.Request.NETWORK_WIFI)
+                    setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, filename)
+                    setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                }
+
+                (context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager).enqueue(request)
+            }
+        }
+    }
+
+    private fun extractFilename(contentDisposition: String): String? {
+        return when {
+            contentDisposition.contains("filename=") -> {
+                val start = contentDisposition.indexOf("filename=") + 9
+                val end = contentDisposition.indexOf('"', start + 1).takeIf { it > 0 } ?: contentDisposition.length
+                contentDisposition.substring(start, end).trim('"', ' ')
+            }
+            else -> null
         }
     }
 

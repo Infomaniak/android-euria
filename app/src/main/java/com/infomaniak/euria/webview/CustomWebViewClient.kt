@@ -1,6 +1,6 @@
 /*
  * Infomaniak Euria - Android
- * Copyright (C) 2025 Infomaniak Network SA
+ * Copyright (C) 2025-2026 Infomaniak Network SA
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,25 +25,65 @@ import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.core.net.toUri
+import com.infomaniak.core.common.dynamicLazyMap
+import com.infomaniak.core.common.extensions.goToAppStore
 import com.infomaniak.euria.BuildConfig
 import com.infomaniak.euria.EURIA_MAIN_URL
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import kotlin.time.Duration.Companion.seconds
 
 class CustomWebViewClient(
-    private val onPageSucessfullyLoaded: (WebView) -> Unit,
+    scope: CoroutineScope,
+    private val onPageSuccessfullyLoaded: (WebView) -> Unit,
+    private val onDownloadRequest: (url: String) -> Unit = {},
 ) : WebViewClient() {
 
     private var hasReceivedError = false
 
+    private val urlDownloadTriggers = scope.dynamicLazyMap(cacheManager = { _, _ -> awaitCancellation() }) { url: String ->
+        Channel<Unit>(capacity = Channel.RENDEZVOUS).also { triggerDlEvents ->
+            if (url.isEmpty()) return@also
+
+            launch(context = Dispatchers.Main, start = CoroutineStart.UNDISPATCHED) {
+                triggerDlEvents.receiveAsFlow().collect {
+                    onDownloadRequest(url)
+                    delay(1.5.seconds) // Avoid re-downloading the same file
+                }
+            }
+        }
+    }
+
     @SuppressLint("WebViewClientOnReceivedSslError")
     override fun onReceivedSslError(view: WebView, handler: SslErrorHandler, error: SslError) {
-        // In order to use localhost, we have to ignore all SSL errors and proceed
         if (BuildConfig.DEBUG) handler.proceed()
     }
 
     override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-        return when (request.url.host) {
-            EURIA_MAIN_URL.toHttpUrl().host -> false
+        val url = request.url.toString()
+        val host = request.url.host
+        val euriaHost = EURIA_MAIN_URL.toHttpUrl().host
+        val path = request.url.encodedPath.orEmpty()
+
+        if (url.startsWith("intent://")) {
+            return handleIntentUri(view, url)
+        }
+
+        if (host == euriaHost && path.endsWith("/download")) {
+            triggerDownloadOnce(url)
+            return true
+        }
+
+        return when (host) {
+            euriaHost -> false
             else -> {
                 openExternalBrowser(view, request)
                 true
@@ -51,9 +91,35 @@ class CustomWebViewClient(
         }
     }
 
+    // When a specific feature is not available for a specific version of the app, the web page will display a modal to ask the
+    // user to update the app. So in that case, we want to redirect to the store
+    private fun handleIntentUri(view: WebView, intentUrl: String): Boolean {
+        return runCatching {
+            val intent = Intent.parseUri(intentUrl, Intent.URI_INTENT_SCHEME)
+            val packageName = intent.`package`
+            val fallbackUrl = intent.getStringExtra("browser_fallback_url")
+
+            when {
+                !packageName.isNullOrBlank() -> {
+                    view.context.goToAppStore(packageName)
+                    true
+                }
+                !fallbackUrl.isNullOrBlank() -> {
+                    view.context.startActivity(Intent(Intent.ACTION_VIEW, fallbackUrl.toUri()))
+                    true
+                }
+                else -> false
+            }
+        }.getOrElse { false }
+    }
+
+    private fun triggerDownloadOnce(url: String) {
+        urlDownloadTriggers.useElement(url) { it.trySend(Unit) }
+    }
+
     override fun onPageFinished(view: WebView, url: String?) {
         super.onPageFinished(view, url)
-        if (!hasReceivedError) onPageSucessfullyLoaded(view)
+        if (!hasReceivedError) onPageSuccessfullyLoaded(view)
     }
 
     override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
