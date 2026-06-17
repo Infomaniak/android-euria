@@ -40,8 +40,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
+import kotlin.time.Duration.Companion.milliseconds
 
 class CustomWebViewClient(
     private val scope: CoroutineScope,
@@ -60,7 +59,7 @@ class CustomWebViewClient(
                     withContext(Dispatchers.Main) {
                         onDownloadRequest(url)
                     }
-                    delay(1_500.toDuration(DurationUnit.MILLISECONDS))
+                    delay(1_500L.milliseconds)
                 }.launchIn(scope)
         }
     }
