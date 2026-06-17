@@ -31,16 +31,15 @@ import com.infomaniak.core.common.extensions.goToAppStore
 import com.infomaniak.euria.BuildConfig
 import com.infomaniak.euria.EURIA_MAIN_URL
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 class CustomWebViewClient(
     private val scope: CoroutineScope,
@@ -51,16 +50,15 @@ class CustomWebViewClient(
     private var hasReceivedError = false
 
     private val urlDownloadTriggers = scope.dynamicLazyMap(cacheManager = { _, _ -> awaitCancellation() }) { url: String ->
-        Channel<Unit>(capacity = Channel.CONFLATED).also { triggerDlEvents ->
+        Channel<Unit>(capacity = Channel.RENDEZVOUS).also { triggerDlEvents ->
             if (url.isEmpty()) return@also
 
-            triggerDlEvents.receiveAsFlow()
-                .onEach {
-                    withContext(Dispatchers.Main) {
-                        onDownloadRequest(url)
-                    }
-                    delay(1_500L.milliseconds)
-                }.launchIn(scope)
+            scope.launch(context = Dispatchers.Main, start = CoroutineStart.UNDISPATCHED) {
+                triggerDlEvents.receiveAsFlow().collect {
+                    onDownloadRequest(url)
+                    delay(1.5.seconds)
+                }
+            }
         }
     }
 
