@@ -38,7 +38,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import kotlin.time.DurationUnit
@@ -52,7 +51,7 @@ class CustomWebViewClient(
 
     private var hasReceivedError = false
 
-    private val urlsToDownloadFlow = scope.dynamicLazyMap(cacheManager = { _, _ -> awaitCancellation() }) { url: String ->
+    private val urlDownloadTriggers = scope.dynamicLazyMap(cacheManager = { _, _ -> awaitCancellation() }) { url: String ->
         Channel<Unit>(capacity = Channel.CONFLATED).also { triggerDlEvents ->
             if (url.isEmpty()) return@also
 
@@ -116,9 +115,7 @@ class CustomWebViewClient(
     }
 
     private fun triggerDownloadOnce(url: String) {
-        scope.launch {
-            urlsToDownloadFlow.useElement(url) { it.trySend(Unit) }
-        }
+        urlDownloadTriggers.useElement(url) { it.trySend(Unit) }
     }
 
     override fun onPageFinished(view: WebView, url: String?) {
