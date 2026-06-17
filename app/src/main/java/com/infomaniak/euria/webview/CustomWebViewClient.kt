@@ -93,6 +93,8 @@ class CustomWebViewClient(
         }
     }
 
+    // When a specific feature is not available for a specific version of the app, the web page will display a modal to ask the
+    // user to update the app. So in that case, we want to redirect to the store
     private fun handleIntentUri(view: WebView, intentUrl: String): Boolean {
         return runCatching {
             val intent = Intent.parseUri(intentUrl, Intent.URI_INTENT_SCHEME)
