@@ -56,7 +56,7 @@ class CustomWebViewClient(
             launch(context = Dispatchers.Main, start = CoroutineStart.UNDISPATCHED) {
                 triggerDlEvents.receiveAsFlow().collect {
                     onDownloadRequest(url)
-                    delay(1.5.seconds)
+                    delay(1.5.seconds) // Avoid re-downloading the same file
                 }
             }
         }
