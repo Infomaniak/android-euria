@@ -37,6 +37,7 @@ import androidx.core.net.toUri
 import androidx.core.os.ConfigurationCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.infomaniak.core.network.utils.await
 import com.infomaniak.core.ui.view.utils.toDp
 import com.infomaniak.euria.EURIA_MAIN_URL
 import com.infomaniak.euria.MainActivity.Companion.EXTRA_QUERY
@@ -170,7 +171,7 @@ class WebViewUtils(
                 val uri = url.toUri()
                 val httpClient = AccountUtils.getHttpClient(userId)
                 val contentDisposition = httpClient.newCall(Request.Builder().url(url).head().build())
-                    .execute()
+                    .await()
                     .use { it.header("Content-Disposition") ?: "" }
 
                 val filename = extractFilename(contentDisposition) ?: uri.lastPathSegment ?: "download"
