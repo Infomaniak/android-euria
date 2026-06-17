@@ -1,0 +1,4 @@
+• Téléchargement des fichiers depuis les conversations
+• Possibilité de définir Euria comme assistant par défaut
+• Amélioration de l'ouverture des liens de mise à jour vers le Play Store
+• Correctifs et améliorations de stabilité

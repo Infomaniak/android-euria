@@ -1,0 +1,4 @@
+• Download files directly from conversations
+• Euria can now be set as your default assistant
+• Improved handling of update links to the Play Store
+• Stability fixes and internal improvements
