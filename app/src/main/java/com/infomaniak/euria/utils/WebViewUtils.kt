@@ -182,6 +182,8 @@ class WebViewUtils(
                     setTitle(filename)
                     setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE or DownloadManager.Request.NETWORK_WIFI)
                     setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, filename)
+                    // API 37 AOSP DownloadManager has a bug where the in-progress notification stays at 0% after the completion
+                    // notification shows up, and is never discarded.
                     setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                 }
 

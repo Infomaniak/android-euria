@@ -4,9 +4,9 @@ buildscript {
     extra.apply {
         set(
             "appCompileSdk",
-            36
+            37
         ) // Ensure any extra configChanges are added into Activities' manifests.
-        set("appTargetSdk", 35)
+        set("appTargetSdk", 37)
         set("appMinSdk", 27)
         set("legacyMinSdk", 27)
         set("javaVersion", JavaVersion.VERSION_17)
