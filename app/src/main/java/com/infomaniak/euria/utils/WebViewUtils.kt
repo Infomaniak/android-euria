@@ -25,7 +25,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Environment
-import android.os.Build.VERSION.SDK_INT
 import android.webkit.CookieManager
 import android.webkit.PermissionRequest
 import android.webkit.ValueCallback
@@ -183,13 +182,7 @@ class WebViewUtils(
                     setTitle(filename)
                     setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE or DownloadManager.Request.NETWORK_WIFI)
                     setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, filename)
-                    setNotificationVisibility(
-                        if (SDK_INT >= 37) {
-                            DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_ONLY_COMPLETION
-                        } else {
-                            DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED
-                        }
-                    )
+                    setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                 }
 
                 (context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager).enqueue(request)
