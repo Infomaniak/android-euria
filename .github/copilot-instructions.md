@@ -1,6 +1,6 @@
 # Copilot Coding Agent Onboarding — android-euria
 
-> **Read `AGENTS.md` first** for architecture, conventions, and module structure. This file focuses on build, CI, and validation.
+> **Read `AGENTS.md` first** for architecture, conventions, and module structure. This file covers build, CI, and validation.
 
 ## Overview
 Euria is an Android AI-assistant app (sovereign, privacy-first) built with Kotlin + Jetpack Compose. It renders the Euria web app in a WebView with a bidirectional JavaScript bridge and adds native features (Hilt DI, WorkManager, FCM). Two build flavors: `standard` (Google Play, includes Firebase) and `fdroid`.
@@ -13,38 +13,31 @@ touch uitest-env.properties               # required by CI; leave empty locally
 ```
 Missing `env.properties` or `uitest-env.properties` → Gradle config phase fails.
 
-## Build
-```bash
-./gradlew assembleStandardDebug    # standard flavor
-./gradlew assembleFdroidDebug      # fdroid flavor (no Firebase)
-./gradlew build                    # all variants — same as CI
-```
-
-## Tests & Lint (CI: `.github/workflows/android.yml`)
-CI runs on every non-draft PR. It runs in order:
+## Build & Test (CI: `.github/workflows/android.yml`)
+CI runs on every non-draft PR:
 ```bash
 ./gradlew clean
 ./gradlew build
 ./gradlew testFdroidDebugUnitTest testStandardDebugUnitTest --stacktrace
 ```
-Replicate locally with the same sequence. Draft PRs are skipped by CI.
 
 ## Project Layout
 ```
 app/src/main/java/com/infomaniak/euria/
 ├── data/        # LocalSettings (SharedPreferences), API models
-├── di/          # Hilt modules (dispatchers, qualifiers)
+├── di/          # Hilt modules
 ├── network/     # ApiRepository
 ├── services/    # WorkManager workers
 ├── ui/          # Compose screens; EuriaWebView + JS bridge ("euria" interface name)
 Core/            # Git submodule — Infomaniak shared library
-gradle/libs.versions.toml   # all dependency versions
-settings.gradle.kts         # includes Core/build-logic via pluginManagement
+gradle/libs.versions.toml
 ```
 
-## Rules the Agent Must Follow
-- All user-visible strings go in `res/values/strings.xml` — never hardcoded.
-- Firebase / Google services are `standardImplementation` only — fdroid must compile without them.
-- The WebView JS bridge interface name `"euria"` must remain stable.
+## PR Review Instructions
+
+- Ensure strings are localized via `strings.xml` resources.
+- Ensure UI is written in Jetpack Compose using Material3 components.
+- `standard` flavor only: Firebase, Google services (`standardImplementation`) — fdroid builds must compile without them.
+- The WebView JS bridge interface name `"euria"` must remain stable — changing it breaks the web app integration.
 - `env.properties` is git-ignored — never commit it.
 - When adding/removing a runtime dependency, update `LICENSES.md` at the repo root.
