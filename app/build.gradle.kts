@@ -164,4 +164,6 @@ dependencies {
     implementation(core.compose.ui.tooling.preview)
     implementation(core.lottie.compose)
     implementation(core.material)
+
+    testImplementation(core.junit)
 }

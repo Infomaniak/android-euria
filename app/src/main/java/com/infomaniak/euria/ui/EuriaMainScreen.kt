@@ -48,6 +48,7 @@ import com.infomaniak.euria.MainViewModel
 import com.infomaniak.euria.ui.components.ReviewAlertDialog
 import com.infomaniak.euria.upload.UploadManager
 import com.infomaniak.euria.utils.WebViewUtils
+import com.infomaniak.euria.utils.extensions.escapeForJavascriptString
 import com.infomaniak.euria.webview.CustomWebViewClient
 import com.infomaniak.euria.webview.JavascriptBridge
 import kotlinx.coroutines.flow.collectLatest
@@ -102,7 +103,7 @@ fun EuriaMainScreen(
                 }
                 launch {
                     mainViewModel.webViewQueries.receiveAsFlow().collect { query ->
-                        currentWebview?.evaluateJavascript("goTo(\"$query\")", null)
+                        currentWebview?.evaluateJavascript("goTo(\"${query.escapeForJavascriptString()}\")", null)
                     }
                 }
                 launch {

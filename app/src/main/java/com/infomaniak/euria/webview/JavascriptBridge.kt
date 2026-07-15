@@ -18,6 +18,8 @@
 package com.infomaniak.euria.webview
 
 import android.webkit.JavascriptInterface
+import com.infomaniak.core.sentry.SentryLog
+import com.infomaniak.euria.utils.extensions.isAllowedUpgradeUrl
 
 data class JavascriptBridge(
     private val onLogin: () -> Unit,
@@ -85,10 +87,16 @@ data class JavascriptBridge(
 
     @JavascriptInterface
     fun upgradeWithLink(link: String) {
-        onUpgradeWithLink(link)
+        if (link.isAllowedUpgradeUrl()) {
+            onUpgradeWithLink(link)
+        } else {
+            SentryLog.w(TAG, "Blocked an upgrade URL with an untrusted origin")
+        }
     }
 
     companion object {
         const val NAME = "euria"
+
+        private const val TAG = "JavascriptBridge"
     }
 }
