@@ -1,0 +1,1 @@
+• Improved WebView reliability and internal stability
