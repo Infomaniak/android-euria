@@ -34,6 +34,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -118,6 +119,7 @@ fun EuriaMainScreen(
     val scope = rememberCoroutineScope()
     WebView(
         url = EURIA_MAIN_URL,
+        modifier = Modifier,
         userAgentString = HttpUtils.getUserAgent,
         domStorageEnabled = true,
         webViewClient = CustomWebViewClient(
@@ -141,7 +143,6 @@ fun EuriaMainScreen(
             launchMediaChooser = { mainViewModel.launchMediaChooser = it },
             microphonePermissionRequest = { mainViewModel.microphonePermissionRequest = it }
         ),
-        withSafeArea = false,
         getWebView = { webView ->
             webView.addJavascriptInterface(webViewUtils.javascriptBridge, JavascriptBridge.NAME)
             currentWebview = webView
@@ -158,6 +159,9 @@ private fun ReviewDialog(
 ) {
     if (shouldDisplayReviewDialog) {
         with(inAppReviewManager) {
+            LaunchedEffect(Unit) {
+                onReviewDialogShown()
+            }
             ReviewAlertDialog(
                 onUserWantsToReview = {
                     onUserWantsToReview()

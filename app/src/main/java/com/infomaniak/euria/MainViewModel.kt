@@ -72,7 +72,7 @@ class MainViewModel @Inject constructor(
     val infomaniakLogin: InfomaniakLogin by lazy { context.getInfomaniakLogin() }
     val cookieManager: CookieManager by lazy { CookieManager.getInstance() }
 
-    val isNetworkAvailable = NetworkAvailability(context).isNetworkAvailable.distinctUntilChanged()
+    val isNetworkAvailable = NetworkAvailability.isNetworkAvailable.distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.Lazily, true)
 
     private val _isWebAppReady: MutableStateFlow<Boolean> = MutableStateFlow(false)
