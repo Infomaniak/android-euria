@@ -1,6 +1,6 @@
 /*
  * Infomaniak Euria - Android
- * Copyright (C) 2025 Infomaniak Network SA
+ * Copyright (C) 2025-2026 Infomaniak Network SA
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,11 +27,9 @@ interface AppReviewManageable {
     fun initAppReviewManager() = inAppReviewManager.init(
         countdownBehavior = Behavior.Manual,
         appReviewThreshold = APP_REVIEW_THRESHOLD,
-        maxAppReviewThreshold = MAX_APP_REVIEW_THRESHOLD,
     )
 
     companion object {
         private const val APP_REVIEW_THRESHOLD = 2
-        private const val MAX_APP_REVIEW_THRESHOLD = 10
     }
 }

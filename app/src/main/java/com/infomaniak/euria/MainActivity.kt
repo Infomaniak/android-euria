@@ -42,8 +42,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.infomaniak.core.common.extensions.isNightModeEnabled
 import com.infomaniak.core.common.extensions.openUrl
-import com.infomaniak.core.common.extensions.parcelable
 import com.infomaniak.core.common.extensions.parcelableArrayList
+import com.infomaniak.core.common.extensions.parcelableExtra
 import com.infomaniak.core.common.extensions.serializableExtra
 import com.infomaniak.core.common.observe
 import com.infomaniak.core.crossapplogin.back.ExternalAccount
@@ -287,7 +287,7 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
                     clipDataContainsUris = true
                 }
                 if (!clipDataContainsUris) {
-                    intent.parcelable<Uri>(Intent.EXTRA_STREAM)?.let {
+                    intent.parcelableExtra<Uri>(Intent.EXTRA_STREAM)?.let {
                         add(it)
                     }
                 }
