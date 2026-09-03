@@ -16,9 +16,8 @@ buildscript {
 plugins {
     alias(core.plugins.android.application) apply false
     alias(core.plugins.android.library) apply false
-    alias(libs.plugins.jetbrains.kotlin.android) apply false
-    alias(libs.plugins.jetbrains.kotlin.serialization) apply false
-    alias(core.plugins.kapt) apply false
+    alias(core.plugins.kotlin.serialization) apply false
+    alias(core.plugins.ksp) apply false
     alias(core.plugins.navigation.safeargs) apply false
 }
 
