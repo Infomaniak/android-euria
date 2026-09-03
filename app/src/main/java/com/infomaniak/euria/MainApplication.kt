@@ -1,6 +1,6 @@
 /*
  * Infomaniak Euria - Android
- * Copyright (C) 2025 Infomaniak Network SA
+ * Copyright (C) 2025-2026 Infomaniak Network SA
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ open class MainApplication : Application() {
             appId = BuildConfig.APPLICATION_ID,
             appVersionCode = BuildConfig.VERSION_CODE,
             appVersionName = BuildConfig.VERSION_NAME,
-            apiEnvironment = if (BuildConfig.DEBUG) ApiEnvironment.PreProd else ApiEnvironment.Prod,
+            apiEnvironment = ApiEnvironment.Prod,
         )
     }
 
