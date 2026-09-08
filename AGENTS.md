@@ -205,3 +205,14 @@ rg -n "class.*Worker" app/src/
 
 <!-- Format: `- **<topic>**: <concise rule or preference>` -->
 
+- **AGP 9 / built-in Kotlin**: Since the migration to AGP 9 (Kotlin 2.4.10, compileSdk 37, Gradle 9.7.1), AGP's built-in
+  Kotlin support is used — do **not** apply `org.jetbrains.kotlin.android` (`libs.plugins.jetbrains.kotlin.android` /
+  `core.plugins.kotlin.android`) in any module's `plugins {}` block; it is no longer required and fails the build if
+  applied alongside AGP 9. `kotlin-parcelize` (`core.plugins.kotlin.parcelize`) must still be applied explicitly wherever
+  `@Parcelize`/`@RawValue` types are used or referenced transitively.
+- **Hilt uses KSP, not kapt**: `kapt` is incompatible with AGP 9 (fails with `Android BaseExtension not found` when
+  Hilt's Gradle plugin is applied). Use `core.plugins.ksp` + `ksp(core.hilt.compiler)` /
+  `ksp(core.hilt.androidx.compiler)` instead of `core.plugins.kapt` + `kapt(...)`. Also use Core's Hilt version
+  (`core.plugins.dagger.hilt`, `core.hilt.android`, `core.hilt.work`) rather than a locally pinned Hilt version in
+  `gradle/libs.versions.toml` — older Hilt versions (e.g. 2.57.2) are incompatible with AGP 9.
+

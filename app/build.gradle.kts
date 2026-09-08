@@ -23,18 +23,18 @@ plugins {
     alias(core.plugins.android.application) // This line should be 1st, or you'll have Gradle sync issue
     alias(core.plugins.compose.compiler)
     alias(libs.plugins.google.services)
-    alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.jetbrains.kotlin.serialization)
-    alias(core.plugins.kapt)
+    alias(core.plugins.kotlin.serialization)
+    alias(core.plugins.kotlin.parcelize)
+    alias(core.plugins.ksp)
     alias(core.plugins.navigation.safeargs)
-    alias(libs.plugins.dagger.hilt)
+    alias(core.plugins.dagger.hilt)
     alias(core.plugins.sentry.plugin)
 }
 
-val appCompileSdk: Int by rootProject.extra
-val appTargetSdk: Int by rootProject.extra
-val appMinSdk: Int by rootProject.extra
-val javaVersion: JavaVersion by rootProject.extra
+val appCompileSdk = rootProject.extra["appCompileSdk"] as Int
+val appTargetSdk = rootProject.extra["appTargetSdk"] as Int
+val appMinSdk = rootProject.extra["appMinSdk"] as Int
+val javaVersion = rootProject.extra["javaVersion"] as JavaVersion
 
 android {
 
@@ -85,6 +85,7 @@ android {
         viewBinding = true
         buildConfig = true
         compose = true
+        resValues = true
     }
 
     productFlavors {
@@ -152,13 +153,12 @@ dependencies {
     implementation(libs.compose.ui.android)
 
     // Hilt
-    implementation(libs.hilt.android)
-    implementation(libs.hilt.androidx.work)
-    kapt(libs.hilt.android.compiler)
-    kapt(libs.hilt.androidx.compiler)
-    kapt(libs.room.processing) // TODO[workaround]: Remove when https://github.com/google/dagger/issues/4693 is fixed.
+    implementation(core.hilt.android)
+    implementation(core.hilt.work)
+    ksp(core.hilt.compiler)
+    ksp(core.hilt.androidx.compiler)
 
-    implementation(libs.kotlinx.serialization.json)
+    implementation(core.kotlinx.serialization.json)
     implementation(core.compose.material3)
     implementation(core.compose.runtime)
     implementation(core.compose.ui.tooling.preview)
