@@ -21,6 +21,7 @@ import java.util.Properties
 
 plugins {
     alias(core.plugins.android.application) // This line should be 1st, or you'll have Gradle sync issue
+    alias(core.plugins.infomaniak.android.debug.signing)
     alias(core.plugins.compose.compiler)
     alias(libs.plugins.google.services)
     alias(core.plugins.kotlin.serialization)
