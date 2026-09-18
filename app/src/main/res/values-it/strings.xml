@@ -33,6 +33,6 @@
     <string name="onboardingLoginArguments">Chatta ora</string>
     <string name="onboardingLoginTemplate">%s con Euria.</string>
     <string name="onboardingLoginTitle">Pronti per iniziare?</string>
-    <string name="onboardingPrivacyDescription">Non viene raccolto nulla, i vostri dati appartengono a te.</string>
+    <string name="onboardingPrivacyDescription">Non viene raccolto nulla, i tuoi dati appartengono a te.</string>
     <string name="onboardingPrivacyTitle">Euria è ospitata in Svizzera.</string>
 </resources>
