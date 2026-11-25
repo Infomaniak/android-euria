@@ -32,6 +32,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -40,7 +41,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.infomaniak.core.common.extensions.isNightModeEnabled
 import com.infomaniak.core.common.extensions.openUrl
 import com.infomaniak.core.common.extensions.parcelableArrayList
 import com.infomaniak.core.common.extensions.parcelableExtra
@@ -116,6 +116,7 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
                 onOpenCamera = { takePicturePreviewLauncher.launch(null) },
                 onOpenReview = { mainViewModel.shouldShowInAppReview(true) },
                 onUpgradeWithLink = { url -> this@MainActivity.openUrl(url) },
+                onThemeChanged = { isDark -> mainViewModel.setDarkTheme(isDark) },
             )
         )
     }
@@ -175,7 +176,10 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
         executeIntentAction(intent)
 
         setContent {
-            EuriaTheme {
+            val webAppDarkTheme by mainViewModel.isDarkTheme.collectAsStateWithLifecycle()
+            val isDarkTheme = webAppDarkTheme ?: isSystemInDarkTheme()
+
+            EuriaTheme(isDarkTheme = isDarkTheme) {
                 val accountsCheckingState by crossAppLoginViewModel.accountsCheckingState.collectAsStateWithLifecycle()
                 val skippedIds by crossAppLoginViewModel.skippedAccountIds.collectAsStateWithLifecycle()
                 val userState by mainViewModel.userState.collectAsStateWithLifecycle()
@@ -215,7 +219,7 @@ class MainActivity : ComponentActivity(), AppReviewManageable {
                         }
                     }
 
-                    TwoFactorAuthApprovalAutoManagedBottomSheet(twoFactorAuthManager, isNightModeEnabled())
+                    TwoFactorAuthApprovalAutoManagedBottomSheet(twoFactorAuthManager, isDarkTheme)
                 }
             }
         }

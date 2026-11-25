@@ -33,6 +33,7 @@ data class JavascriptBridge(
     private val onOpenCamera: () -> Unit,
     private val onOpenReview: () -> Unit,
     private val onUpgradeWithLink: (url: String) -> Unit,
+    private val onThemeChanged: (isDarkTheme: Boolean) -> Unit,
 ) {
 
     @JavascriptInterface
@@ -83,6 +84,15 @@ data class JavascriptBridge(
     @JavascriptInterface
     fun openReview() {
         onOpenReview()
+    }
+
+    @JavascriptInterface
+    fun themeChanged(theme: String) {
+        when (theme) {
+            "dark" -> onThemeChanged(true)
+            "light" -> onThemeChanged(false)
+            else -> SentryLog.w(TAG, "Received an unsupported theme from the web app")
+        }
     }
 
     @JavascriptInterface
