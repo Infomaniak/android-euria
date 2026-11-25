@@ -92,6 +92,9 @@ class MainViewModel @Inject constructor(
     private val _shouldShowInAppReview: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val shouldShowInAppReview: StateFlow<Boolean> = _shouldShowInAppReview.asStateFlow()
 
+    private val _isDarkTheme: MutableStateFlow<Boolean?> = MutableStateFlow(null)
+    val isDarkTheme: StateFlow<Boolean?> = _isDarkTheme.asStateFlow()
+
     var skipOnboarding by mutableStateOf(localSettings.skipOnboarding)
     var launchMediaChooser by mutableStateOf(false)
     var hasSeenWebView by mutableStateOf(false)
@@ -187,6 +190,10 @@ class MainViewModel @Inject constructor(
 
     fun shouldShowInAppReview(state: Boolean) {
         _shouldShowInAppReview.tryEmit(state)
+    }
+
+    fun setDarkTheme(isDark: Boolean) {
+        _isDarkTheme.value = isDark
     }
 
     sealed interface UserState {
