@@ -71,11 +71,9 @@ class WebViewUtils(
         insets: WindowInsets,
         density: Density,
         layoutDirection: LayoutDirection,
-        bottomOverridePx: Int? = null,
     ) {
         val top = insets.getTop(density).toDp(webView)
         val right = insets.getRight(density, layoutDirection).toDp(webView)
-        val bottom = (bottomOverridePx ?: insets.getBottom(density)).toDp(webView)
         val left = insets.getLeft(density, layoutDirection).toDp(webView)
 
         val script = """
@@ -93,7 +91,7 @@ class WebViewUtils(
                     --safe-area-inset-top: ${top}px;
                     --safe-area-inset-left: ${left}px;
                     --safe-area-inset-right: ${right}px;
-                    --safe-area-inset-bottom: ${bottom}px;
+                    --safe-area-inset-bottom: 0px;
                 }
             `;
         })();

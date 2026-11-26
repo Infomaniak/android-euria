@@ -26,10 +26,10 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -79,11 +79,9 @@ fun EuriaMainScreen(
     val layoutDirection = LocalLayoutDirection.current
     val shouldDisplayReviewDialog by mainViewModel.shouldShowInAppReview.collectAsStateWithLifecycle(initialValue = false)
     val userState by mainViewModel.userState.collectAsStateWithLifecycle()
-    val imeBottomPx = WindowInsets.ime.getBottom(density)
-    val bottomPx = if (imeBottomPx > 0) 0 else WindowInsets.systemBars.getBottom(density)
 
     // Need this to apply the insets to the WebView when these changes
-    currentWebview?.let { webViewUtils.applySafeAreaInsets(it, insets, density, layoutDirection, bottomPx) }
+    currentWebview?.let { webViewUtils.applySafeAreaInsets(it, insets, density, layoutDirection) }
 
     AskMicrophonePermission(mainViewModel)
     ShowFileChooser(mainViewModel, filePathCallback)
@@ -124,7 +122,9 @@ fun EuriaMainScreen(
     val scope = rememberCoroutineScope()
     WebView(
         url = EURIA_MAIN_URL,
-        modifier = Modifier.imePadding(),
+        modifier = Modifier.windowInsetsPadding(
+            WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)
+        ),
         userAgentString = HttpUtils.getUserAgent,
         domStorageEnabled = true,
         webViewClient = CustomWebViewClient(
