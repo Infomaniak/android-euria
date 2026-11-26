@@ -26,7 +26,10 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -76,9 +79,11 @@ fun EuriaMainScreen(
     val layoutDirection = LocalLayoutDirection.current
     val shouldDisplayReviewDialog by mainViewModel.shouldShowInAppReview.collectAsStateWithLifecycle(initialValue = false)
     val userState by mainViewModel.userState.collectAsStateWithLifecycle()
+    val imeBottomPx = WindowInsets.ime.getBottom(density)
+    val bottomPx = if (imeBottomPx > 0) 0 else WindowInsets.systemBars.getBottom(density)
 
-    // Need this to apply the insets to the WebView when these ones changes
-    currentWebview?.let { webViewUtils.applySafeAreaInsets(it, insets, density, layoutDirection) }
+    // Need this to apply the insets to the WebView when these changes
+    currentWebview?.let { webViewUtils.applySafeAreaInsets(it, insets, density, layoutDirection, bottomPx) }
 
     AskMicrophonePermission(mainViewModel)
     ShowFileChooser(mainViewModel, filePathCallback)
@@ -119,7 +124,7 @@ fun EuriaMainScreen(
     val scope = rememberCoroutineScope()
     WebView(
         url = EURIA_MAIN_URL,
-        modifier = Modifier,
+        modifier = Modifier.imePadding(),
         userAgentString = HttpUtils.getUserAgent,
         domStorageEnabled = true,
         webViewClient = CustomWebViewClient(
@@ -127,7 +132,6 @@ fun EuriaMainScreen(
             onPageSuccessfullyLoaded = { webView ->
                 // Waiting to get the WebView to inject CSS
                 webViewUtils.applySafeAreaInsets(webView, insets, density, layoutDirection)
-                webViewUtils.setupKeyboardDetection(webView, insets, density)
                 mainViewModel.hasSeenWebView = true
                 keepSplashScreen(false)
             },
