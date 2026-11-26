@@ -26,7 +26,10 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -77,7 +80,7 @@ fun EuriaMainScreen(
     val shouldDisplayReviewDialog by mainViewModel.shouldShowInAppReview.collectAsStateWithLifecycle(initialValue = false)
     val userState by mainViewModel.userState.collectAsStateWithLifecycle()
 
-    // Need this to apply the insets to the WebView when these ones changes
+    // Need this to apply the insets to the WebView when these changes
     currentWebview?.let { webViewUtils.applySafeAreaInsets(it, insets, density, layoutDirection) }
 
     AskMicrophonePermission(mainViewModel)
@@ -119,7 +122,9 @@ fun EuriaMainScreen(
     val scope = rememberCoroutineScope()
     WebView(
         url = EURIA_MAIN_URL,
-        modifier = Modifier,
+        modifier = Modifier.windowInsetsPadding(
+            WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)
+        ),
         userAgentString = HttpUtils.getUserAgent,
         domStorageEnabled = true,
         webViewClient = CustomWebViewClient(
@@ -127,7 +132,6 @@ fun EuriaMainScreen(
             onPageSuccessfullyLoaded = { webView ->
                 // Waiting to get the WebView to inject CSS
                 webViewUtils.applySafeAreaInsets(webView, insets, density, layoutDirection)
-                webViewUtils.setupKeyboardDetection(webView, insets, density)
                 mainViewModel.hasSeenWebView = true
                 keepSplashScreen(false)
             },
